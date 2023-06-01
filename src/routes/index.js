@@ -34,14 +34,6 @@ router.get("/analisis", async (req, res) => {
 });
 router.get("/registrarproductos", async (req, res) => {
   const arduinoUnoVendorIds = ['2341', '2A03'];
-  SerialPort.list().then(ports => {
-    ports.forEach(function (port) {
-      if (typeof port['manufacturer'] !== 'undefined') {
-      
-        console.log(port);
-      }
-    });
-  });
   SerialPort.list()
     .then((result) => {
       const connectedArduinoUno = result.find((port) => arduinoUnoVendorIds.includes(port.vendorId));
