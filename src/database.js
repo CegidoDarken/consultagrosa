@@ -1,5 +1,5 @@
 // connecting to db
-const {createPool} = require('mysql2/promise');
+const {createPool} = require('mysql2');
 const env = require('dotenv');
 require("colors");
 env.config();
