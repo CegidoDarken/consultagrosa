@@ -33,8 +33,6 @@ router.get("/analisis", async (req, res) => {
   res.render("analisis");
 });
 router.get("/registrarproductos", async (req, res) => {
-
-
   const arduinoUnoVendorIds = ['2341', '2A03'];
   SerialPort.list()
     .then((result) => {
@@ -113,25 +111,13 @@ async function buscarProducto(tag) {
     });
   });
 }
-async function mostrarProductos() {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
-    connection.query(sql, [tag], (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        if (results.length > 0) {
-          resolve(results[0]);
-        } else {
-          resolve(null);
-        }
-      }
-    });
-  });
-}
-router.get("/", async (req, res) => {
 
-  credentials = req.session.credentials;
+router.get("/", async (req, res) => {
+  req.session.credentials = {
+    cliente: req.session.credentials.cliente,
+    administrador: req.session.credentials.admin
+  };
+  credentials = req.session.credentials.cliente;
   const query = 'SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria';
   connection.query(query, async (error, results) => {
     if (error) {
@@ -187,7 +173,6 @@ router.post('/importarexcel', async (req, res) => {
       }
     });
 
-    // Itera sobre los datos y crea una fila por cada elemento
     jsonData.forEach(function (data) {
       const values = Object.values(data);
       if (values[1] != "-") {
@@ -287,12 +272,12 @@ router.post('/importarexcel', async (req, res) => {
   }
 });
 router.post("/logout", async (req, res) => {
-  delete req.session.credentials;
+  delete req.session.credentials.cliente;
   res.send();
 });
 
 
-router.post("/authentication/:username/:password", async (req, res) => {
+router.post("/auth/:username/:password", async (req, res) => {
   console.log("authentication".yellow);
   const query = 'SELECT * FROM usuarios WHERE usuario = ?';
   connection.query(query, [req.params.username], (error, results) => {
@@ -317,7 +302,10 @@ router.post("/authentication/:username/:password", async (req, res) => {
         return;
       }
       if (result) {
-        req.session.credentials = usuario;
+        req.session.credentials = {
+          cliente: results[0],
+          administrador: null
+        };
         res.send({ message: "Usuario correcto" });
         console.log("Valid username".green);
       } else {

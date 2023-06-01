@@ -582,7 +582,7 @@
 <script>
   $('#danger-message').fadeOut(1);
   function aunth() {
-    fetch(`/authentication/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
+    fetch(`/auth/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
       .then(element => {
         console.log(element);
         if (element.message == "Usuario o contraseña icorrectos") {
