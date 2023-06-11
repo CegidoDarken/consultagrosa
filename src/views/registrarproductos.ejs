@@ -98,8 +98,8 @@
                                                 <h5 class="card-title text-uppercase">Escanear producto</h5>
                                                 <p class="card-text">Al escanear el producto, podremos recopilar la
                                                     información necesaria y brindarte una experiencia personalizada.</p>
-                                                <a href="#" id="escanear" class="btn btn-primary text-uppercase"
-                                                    data-bs-toggle="modal" data-bs-target="#escanearModal">Empezar</a>
+                                                <button onclick="readSerialData()" id="escanear" class="btn btn-primary text-uppercase"
+                                                    data-bs-toggle="modal" data-bs-target="#escanearModal">Empezar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -175,7 +175,6 @@
                 connected = true;
                 document.getElementById("connected").style.display = "block";
                 document.getElementById("disconnected").style.display = "none";
-                readSerialData();
             } catch (error) {
                 console.error('Error al solicitar permiso de acceso al puerto serie:', error);
             }
@@ -183,6 +182,7 @@
         function handleDisconnect(event) {
             if (event.target === port) {
                 connected = false;
+                $('#escanearModal').modal('hide');
                 document.getElementById("connected").style.display = "none";
                 document.getElementById("disconnected").style.display = "block";
                 console.log('Desconectado del puerto serie.');
@@ -190,6 +190,7 @@
             }
         }
         async function readSerialData() {
+            console.log("Modo lectura");
             try {
                 reader = port.readable.getReader();
                 while (true) {
@@ -201,6 +202,7 @@
                     }
                     const textDecoder = new TextDecoder();
                     const receivedData = textDecoder.decode(value);
+                    console.log(receivedData);
                     tag += receivedData;
                     if (receivedData.includes("\n")) {
                         console.log(tag.trim());
