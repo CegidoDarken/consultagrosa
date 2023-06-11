@@ -98,8 +98,9 @@
                                                 <h5 class="card-title text-uppercase">Escanear producto</h5>
                                                 <p class="card-text">Al escanear el producto, podremos recopilar la
                                                     información necesaria y brindarte una experiencia personalizada.</p>
-                                                <button onclick="readSerialData()" id="escanear" class="btn btn-primary text-uppercase"
-                                                    data-bs-toggle="modal" data-bs-target="#escanearModal">Empezar</button>
+                                                <button onclick="readSerialData()" id="escanear"
+                                                    class="btn btn-primary text-uppercase" data-bs-toggle="modal"
+                                                    data-bs-target="#escanearModal">Empezar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -149,7 +150,7 @@
                             ¡Gracias por elegir nuestro sistema de registro y por tu participación activa!</p> <button
                             onClick="requestSerialPermission()" class="btn btn-primary"><svg class="icon" width="20"
                                 height="20" fill="currentColor">
-                                <use xlink:href="/icons/bootstrap-icons.svg#arrow-clockwise" />
+                                <use xlink:href="/icons/bootstrap-icons.svg#usb-symbol" />
                             </svg> Conectar</button>
                     </div>
                 </div>
@@ -159,20 +160,15 @@
     </body>
     <script>
         let port;
-        let tag = "";
-        let connected = false;
         async function requestSerialPermission() {
             try {
                 port = await navigator.serial.requestPort();
                 await port.open({ baudRate: 9600 });
-                if (port.getInfo().usbVendorId === 9025) {
-                    console.log(port.getInfo());
-                } else {
+                if (port.getInfo().usbVendorId != 9025) {
                     await port.close();
                     return;
                 }
                 port.addEventListener('disconnect', handleDisconnect);
-                connected = true;
                 document.getElementById("connected").style.display = "block";
                 document.getElementById("disconnected").style.display = "none";
             } catch (error) {
@@ -181,39 +177,38 @@
         }
         function handleDisconnect(event) {
             if (event.target === port) {
-                connected = false;
                 $('#escanearModal').modal('hide');
                 document.getElementById("connected").style.display = "none";
                 document.getElementById("disconnected").style.display = "block";
                 console.log('Desconectado del puerto serie.');
-                // Puedes enviar un mensaje o realizar cualquier acción adicional al detectar la desconexión.
             }
         }
         async function readSerialData() {
-            console.log("Modo lectura");
+            let tag = "";
             try {
                 reader = port.readable.getReader();
                 while (true) {
                     const { value, done } = await reader.read();
-
-                    if (done) {
-                        console.log('El lector ha finalizado.');
-                        break;
-                    }
                     const textDecoder = new TextDecoder();
                     const receivedData = textDecoder.decode(value);
-                    console.log(receivedData);
                     tag += receivedData;
                     if (receivedData.includes("\n")) {
-                        console.log(tag.trim());
                         fetch('/buscarproducto', {
                             method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({tag: tag.trim()}),
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({ tag: tag.trim() }),
                         }).then(response => response.json()).then(data => {
-                            console.log('Resultado de la búsqueda:', data);
+                            document.getElementById("inner-message").innerHTML = `<svg class="icon" width="20" height="20" fill="currentColor"><use xlink:href="/icons/bootstrap-icons.svg#check-circle-fill" /></svg><strong> Se ha escaneado exitosamente</strong>`;
+                            $('#inner-message').fadeIn(1000);
+                            setTimeout(function () {
+                                $('#inner-message').fadeOut(1000);
+                            }, 3000);
+                            if (data.message) {
+                                document.getElementById("message").innerHTML = `<h3 class="text-uppercase"><span class="badge bg-danger text-uppercase m-2">${data.message}</span></h3>`;
+                            } else if (data.codigo) {
+
+                                document.getElementById("message").innerHTML = `<div class="card mb-3" ><div class="row g-0"><div class="col-md-2"><img src="${data.imagen}" width="100"  class="img-fluid rounded-start" alt="${data.nombre}"></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p></div></div></div></div>`;
+                            }
                         }).catch(error => {
                             console.error('Error al realizar la búsqueda:', error);
                         });
@@ -222,14 +217,6 @@
                 }
             } catch (error) {
                 console.error('Error al leer desde el puerto serie:', error);
-            } finally {
-                if (reader) {
-                    reader.releaseLock();
-                    reader = null;
-                }
-                if (port && port.readable) {
-                    port.close();
-                }
             }
         }
 
@@ -257,30 +244,10 @@
         socket.on("test:data", function (data) {
             console.log(data);
         });
-        socket.on("arduino:data", function (data) {
-            console.log(data);
-            document.getElementById("inner-message").innerHTML = `<svg class="icon" width="20" height="20" fill="currentColor">
-                            <use xlink:href="/icons/bootstrap-icons.svg#check-circle-fill" />
-                        </svg><strong> Se ha escaneado exitosamente</strong>`;
-            $('#inner-message').fadeIn(1000);
-            setTimeout(function () {
-                $('#inner-message').fadeOut(1000);
-            }, 3000);
-            if (data.value == "Producto no reconocido") {
-                document.getElementById("message").innerHTML = `<h3 class="text-uppercase"><span class="badge bg-danger text-uppercase m-2">${data.value}</span></h3>`;
-            } else {
-                document.getElementById("message").innerHTML = `<div class="card mb-3" ><div class="row g-0"><div class="col-md-2"><img src="${data.imagen}" width="100"  class="img-fluid rounded-start" alt="${data.nombre}"></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p></div></div></div></div>`;
-            }
-        });
+
         $('#escanearModal').on('hidden.bs.modal', function () {
             document.getElementById("message").innerHTML = `<img src="images/rfid.gif"style="width: 35%;height: 30%;"class="align-self-center" alt="...">`;
         })
-        socket.on("estado:data", function (data) {
-            console.log(data);
-            if (data.estado === "Conectado") {
-                document.getElementById("estado").innerHTML = `<div class="card text-center shadow-lg"><div class="row g-0"><div class="col-md-4 p-3"><img src="images/rfid.gif" class="img-fluid rounded-start"></div><div class="col-md-8"><div class="card-body"><h1 class="card-title text-success text-uppercase">Conectado</h1><p class="card-text">Te invitamos a escanear un producto utilizando nuestro sistema RFID para avanzar en el proceso de registro. Al escanear el producto, podremos recopilar la información necesaria y brindarte una experiencia personalizada. Agradecemos tu colaboración y estamos emocionados de tener la oportunidad de servirte. ¡Gracias por elegir nuestro sistema de registro basado en RFID!</p><div id="message"></div></div></div></div></div>`;
-            }
-        });
     </script>
 
     </html>

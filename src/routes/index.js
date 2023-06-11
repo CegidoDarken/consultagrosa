@@ -36,25 +36,11 @@ router.post("/buscarproducto", async (req, res) => {
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
   connection.query(sql, [req.body.tag], (error, results) => {
     if (error) {
-      io.emit('arduino:data', {
-        value: error
-      });
       res.send({ message: error });
     } else {
       if (results.length > 0) {
         res.send(results[0]);
-        io.emit('arduino:data', {
-          codigo: results[0].codigo,
-          categoria: results[0].categoria,
-          nombre: results[0].nombre,
-          descripcion: results[0].descripcion,
-          precio: results[0].precio,
-          imagen: results[0].imagen
-        });
       } else {
-        io.emit('arduino:data', {
-          value: "Producto no reconocido"
-        });
         res.send({ message: "Producto no reconocido" });
       }
     }
