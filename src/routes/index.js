@@ -7,19 +7,15 @@ const fs = require('fs-extra');
 const mime = require('mime-types');
 const { SerialPort } = require('serialport');
 const bcrypt = require('bcrypt');
-let port;
+const { connection } = require('../database');
+let data;
 let io;
 let tag = "";
 let isConnected = false;
-const { connection } = require('../database');
+
 function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
-  io.on("connection", (socket) => {
-    socket.on('estado:data', (data) => {
-      port.write(data);
-    });
-  });
 }
 
 router.get("/admin", async (req, res) => {
@@ -33,84 +29,37 @@ router.get("/analisis", async (req, res) => {
   res.render("analisis");
 });
 router.get("/registrarproductos", async (req, res) => {
-  const arduinoUnoVendorIds = ['2341', '2A03'];
-  SerialPort.list()
-    .then((result) => {
-      const connectedArduinoUno = result.find((port) => arduinoUnoVendorIds.includes(port.vendorId));
-      if (connectedArduinoUno && !isConnected) {
-        port = new SerialPort({
-          path: connectedArduinoUno.path,
-          baudRate: 9600
-        });
-        port.on('error', function (err) {
-          io.emit('estado:data', {
-            estado: "Desconectado"
-          });
-          console.log('Error:', err.message);
-        });
-
-        port.on('open', () => {
-          io.emit('estado:data', {
-            estado: "Conectado"
-          });
-          console.log('Conectado');
-          isConnected = true;
-          port.on('data', async (data) => {
-            if (!data.toString().includes('\n')) {
-              tag += data.toString();
-            } else {
-              tag += data.toString();
-              let productoEncontrado = await buscarProducto(tag.trim());
-              if (productoEncontrado) {
-                io.emit('arduino:data', {
-                  codigo: productoEncontrado.codigo,
-                  categoria: productoEncontrado.categoria,
-                  nombre: productoEncontrado.nombre,
-                  descripcion: productoEncontrado.descripcion,
-                  precio: productoEncontrado.precio,
-                  imagen: productoEncontrado.imagen
-                });
-              } else {
-                io.emit('arduino:data', {
-                  value: "Producto no reconocido"
-                });
-
-              }
-              tag = "";
-            }
-          });
-        });
-        port.on('close', () => {
-          io.emit('estado:data', {
-            estado: "Desconectado"
-          });
-          console.log('Desconectado');
-          isConnected = false;
-        });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-  res.render("registrarproductos", { isConnected });
+  res.render("registrarproductos");
 });
 
-async function buscarProducto(tag) {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
-    connection.query(sql, [tag], (error, results) => {
-      if (error) {
-        reject(error);
+router.post("/buscarproducto", async (req, res) => {
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
+  connection.query(sql, [req.body.tag], (error, results) => {
+    if (error) {
+      io.emit('arduino:data', {
+        value: error
+      });
+      res.send({ message: error });
+    } else {
+      if (results.length > 0) {
+        res.send(results[0]);
+        io.emit('arduino:data', {
+          codigo: results[0].codigo,
+          categoria: results[0].categoria,
+          nombre: results[0].nombre,
+          descripcion: results[0].descripcion,
+          precio: results[0].precio,
+          imagen: results[0].imagen
+        });
       } else {
-        if (results.length > 0) {
-          resolve(results[0]);
-        } else {
-          resolve(null);
-        }
+        io.emit('arduino:data', {
+          value: "Producto no reconocido"
+        });
+        res.send({ message: "Producto no reconocido" });
       }
-    });
+    }
   });
-}
+});
 
 router.get("/", async (req, res) => {
   req.session.credentials = {

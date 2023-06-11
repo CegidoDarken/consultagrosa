@@ -15,7 +15,7 @@ var bodyParser = require("body-parser");
 
 //TODOS connecting to db
 console.log('Connecting....'.yellow);
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 80);
 //TODOS import routes
 const indexRoutes = router;
 app.set("views", path.join(__dirname, "views"));
@@ -47,5 +47,4 @@ app.use("/", indexRoutes);
 server.listen(3000, () => {
   console.log(`Server on PORT:${app.get("port")}`.green);
 });
-
 
