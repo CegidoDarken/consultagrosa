@@ -33,6 +33,7 @@ router.get("/registrarproductos", async (req, res) => {
 });
 
 router.post("/buscarproducto", async (req, res) => {
+  console.log(req.body.tag);
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
   connection.query(sql, [req.body.tag], (error, results) => {
     if (error) {
