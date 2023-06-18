@@ -1,23 +1,22 @@
 const express = require('express');
-const { parse } = require('path')
 const { Server } = require('socket.io');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const { connection } = require('../database');
 const NodeCache = require('node-cache');
 const chache = new NodeCache();
-const session = require('express-session');
 let io;
 function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
 }
-session.credentials = {
-  cliente: null,
-  administrador: null
-};
 router.get("/", async (req, res) => {
-  credentials = req.session.credentials.cliente;
+  if (req.session.credentials == null) {
+    req.session.credentials = {
+      cliente: null,
+      administrador: null
+    };
+  }
   const query = 'SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria';
   connection.query(query, async (error, results) => {
     if (error) {
@@ -25,13 +24,18 @@ router.get("/", async (req, res) => {
       callback(error, null);
       return;
     }
-    res.render("index", { credentials, results });
+    res.render("index", { credentials: req.session.credentials.cliente, results });
   });
 });
 
 router.get("/admin", async (req, res) => {
+  if (req.session.credentials == null) {
+    req.session.credentials = {
+      cliente: null,
+      administrador: null
+    };
+  }
   if (req.session.credentials.administrador) {
-    credentials = req.session.credentials.administrador;
     res.redirect("/panel");
   } else {
     res.render("admin");
