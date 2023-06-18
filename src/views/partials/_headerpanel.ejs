@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <style>
+    .dataTables_filter {
+        display: none;
+    }
+
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
         -webkit-appearance: none;
@@ -154,98 +158,123 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/datatables.min.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/socket.io.min.js"></script>
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/chart.min.js"></script>
-    <script src="/js/jquery.dataTables.min.js"></script>
+    <script src="/js/datatables.min.js"></script>
     <title>Principal</title>
 </head>
 
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 col-xl-2 col-lg-12 px-sm-2 px-0 bg-dark d-flex sticky-bottom float-end">
-                <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start text-white">
-                    <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-lg-start align-items-center align-items-sm-start">
-                        <li class="nav-item">
-                            <a href="/panel" class="nav-link px-sm-0 px-2">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#house-door-fill" />
-                                </svg>
-                                <i class="fs-5 bi-house"></i><span class="ms-1 d-none d-sm-inline"
-                                    style="color: white;">Panel</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/analisis" class="nav-link px-sm-0 px-2">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#bar-chart-line-fill" />
-                                </svg>
-                                <i class="fs-5 bi-speedometer2"></i><span class="ms-1 d-none d-sm-inline"
-                                    style="color: white;">Análisis</span> </a>
-                        </li>
-                        <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-sm-0 px-2">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#people-fill" />
-                                </svg>
-                                <i class="fs-5 bi-speedometer2"></i><span class="ms-1 d-none d-sm-inline"
-                                    style="color: white;">Proveedores</span> </a>
-                        </li>
-                        <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-sm-0 px-2">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#person-fill" />
-                                </svg>
-                                <i class="fs-5 bi-speedometer2"></i><span class="ms-1 d-none d-sm-inline"
-                                    style="color: white;">Clientes</span> </a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" style="color: white;" class="nav-link dropdown-toggle px-sm-0 px-1"
-                                id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#file-earmark-text-fill" />
-                                </svg>
-                                <i class="fs-5 bi-bootstrap"></i><span style="color: white;"
-                                    class="ms-1 d-none d-sm-inline">Reportes</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
-                                <li><a class="dropdown-item" href="/kardex">Kardex</a></li>
-                                <li><a class="dropdown-item" href="/pedidos">Pedidos</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" style="color: white;" class="nav-link dropdown-toggle px-sm-0 px-1"
-                                id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg class="icon" width="20" height="20" fill="white">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#box-seam-fill" />
-                                </svg>
-                                <i class="fs-5 bi-bootstrap"></i><span style="color: white;"
-                                    class="ms-1 d-none d-sm-inline">Productos</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
-                                <li><a class="dropdown-item" href="/registrarproductos">Registar producto</a></li>
-                                <li><a class="dropdown-item" href="#">Administar productos</a></li>
-                            </ul>
-                        </li>
+<header>
+    <nav class="navbar fixed-top  navbar-expand-lg bg-body-tertiary">
+        <a class="navbar-brand text-success" href="/"><img src="/images/logo.png" alt="Logo" width="50px"> CONSULTAGRO
+            S.A</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse ps-3" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/panel">
+                        <svg class="icon" width="20" height="20" fill="currentColor">
+                            <use xlink:href="/icons/bootstrap-icons.svg#house-door-fill" />
+                        </svg> Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Reportes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/kardex">Kardex</a></li>
+                        <li><a class="dropdown-item" href="/pedidos">Pedidos</a></li>
                     </ul>
-                    <div class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg class="icon" width="20" height="20" fill="white">
-                                <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
-                            </svg>
-                            <span class="d-none d-sm-inline mx-1">Nombre usuario</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                            <li><a class="dropdown-item" href="#">Configuración</a></li>
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Productos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/escanearproducto">Escanear productos</a></li>
+                        <li><a class="dropdown-item" href="/adminproducto">Administar productos</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse ps-3" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                <% if (credentials) { %>
+                    <li class="nav-item pe-4">
+                        <div class="dropdown">
+                            <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
+                                <svg class="icon me-1" width="20" height="20" fill="currentColor">
+                                    <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
+                                </svg>
+                                <%= credentials.nombre %>
+                            </a>
+                            <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
+                                <li><a class="dropdown-item" href="#">
+                                        <svg class="icon" width="20" height="20" fill="currentColor">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#gear" />
+                                        </svg> Configuración</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <svg class="icon" width="20" height="20" fill="currentColor">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#person-vcard" />
+                                        </svg> Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <button class="dropdown-item" onclick="logout()" data-bs-toggle="modal"
+                                        data-bs-target="#logoutModal">
+                                        <svg class="icon" width="20" height="20" fill="currentColor">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
+                                        </svg> Cerrar sesión
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <% } %>
+            </ul>
+        </div>
+    </nav>
+</header>
+<script>
+      document.addEventListener("DOMContentLoaded", function () {
+    navbar = document.querySelector('.navbar');
+    if (navbar) {
+      var last_scroll_top = 0;
+      window.addEventListener('scroll', function () {
+        let scroll_top = window.scrollY;
+        if (scroll_top < last_scroll_top) {
+          $('.navbar-collapse').collapse('hide');
+          $('.dropdown-menu').collapse('hide');
+        }
+        else {
+          $('.navbar-collapse').collapse('hide');
+          $('.dropdown-menu').collapse('hide');
+        }
+        last_scroll_top = scroll_top;
+      });
+    }
+  });
+    function logout() {
+        fetch(`/logoutadmin`, { method: 'POST' }).then(res => {
+            location.replace('/admin');
+        });
+    }
+</script>

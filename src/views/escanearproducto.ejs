@@ -1,0 +1,245 @@
+<%- include("partials/_headerpanel") %>
+    <style>
+        #inner-message {
+            position: fixed;
+            bottom: 5px;
+            right: 2%;
+            width: 50%;
+        }
+
+        .w-mid {
+            animation: 4s ease blink infinite;
+            animation-delay: 0.4s;
+        }
+
+        .w-bottom {
+            animation: 4s ease blink infinite;
+        }
+
+        .w-top {
+            animation: 4s ease blink infinite;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .chain-bottom {
+            animation: 4s ease chainBottom infinite alternate;
+        }
+
+        .chain-top {
+            animation: 4s ease chainTop infinite alternate;
+        }
+
+        @keyframes chainBottom {
+            from {
+                transform: translate(-3px, 3px);
+            }
+
+            to {
+                transform: translate(0, 0);
+            }
+        }
+
+        @keyframes chainTop {
+            from {
+                transform: translate(3px, -3px);
+            }
+
+            to {
+                transform: translate(0, 0);
+            }
+        }
+
+        .online {
+            animation: mymove 4s infinite;
+        }
+
+        @keyframes mymove {
+            50% {
+                box-shadow: 10px 20px 30px rgba(31, 111, 64, 0.5);
+            }
+        }
+    </style>
+
+    <body>
+        <div class="container-fluid d-flex flex-column pt-3">
+                <div id="connected" class="row g-0" style="display: none;">
+                    <div class="col">
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-lg-4">
+                                <div class="col">
+                                    <div class="card text-center mb-3 shadow">
+                                        <div class="card-body" style="height: 350px;">
+                                            <svg class="icon m-3" width="100" height="100" fill="#1f6f40">
+                                                <use xlink:href="/icons/bootstrap-icons.svg#upc-scan" />
+                                            </svg>
+                                            <h5 class="card-title text-uppercase">Escanear producto</h5>
+                                            <p class="card-text">Al escanear el producto, podremos recopilar la
+                                                información necesaria y brindarte una experiencia personalizada.</p>
+                                            <button onclick="readSerialData()" id="escanear"
+                                                class="btn btn-primary text-uppercase" data-bs-toggle="modal"
+                                                data-bs-target="#escanearModal">Empezar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card text-center mb-3 shadow">
+                                        <div class="card-body" style="height: 350px;">
+                                            <svg class="icon m-3" width="100" height="100" fill="#1f6f40">
+                                                <use xlink:href="/icons/bootstrap-icons.svg#box-seam" />
+                                            </svg>
+                                            <h5 class="card-title text-uppercase">Asignar producto</h5>
+                                            <p class="card-text">Al escanear el producto, te ofrecemos la posibilidad de
+                                                editar la información del TAG del producto. Esto te permitirá asignar un
+                                                producto según sea necesario.</p>
+                                            <a href="#" class="btn btn-primary">Empezar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="escanearModal" tabindex="-1"
+                                aria-labelledby="escanearModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title fs-5 text-uppercase" id="escanearModalLabel">
+                                                ¡Escanea el producto para mostrar su información detallada!</h3>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body ">
+                                            <div class="card text-center border-0   ">
+                                                <div class="card-body">
+                                                    <div id="message"><img src="images/rfid.gif"
+                                                            style="width: 35%;height: 30%;" alt="..."></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="inner-message" class="alert alert-success text-lg-start w-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div id="disconnected" class="card text-center shadow-lg">
+                <div class="card-header text-danger text-uppercase">
+                    <h1>Desconectado</h1>
+                </div><br><img src="images/usb.gif" style="width: 35%;height: 30%;" class="align-self-center" alt="...">
+                <div class="card-body">
+                    <h2 class="card-title text-uppercase">No se ha encontrado ningún Sensor RFID</h2>
+                    <p class="card-text">Para continuar con el proceso de registro de productos, tepedimos
+                        amablemente que conectes un sensor a tu PC. El sensor nos permitirá recopilar datos
+                        importantes del producto que deseas registrar, lo cual nos ayudará a brindarte una
+                        experiencia personalizada y completa. Agradecemos tu colaboración y estamos entusiasmados
+                        por poder asistirte en este proceso. Si necesitas alguna ayuda adicional durante la conexión
+                        del sensor, nuestro equipo de soporte estará encantado de brindarte la asistencia necesaria.
+                        ¡Gracias por elegir nuestro sistema de registro y por tu participación activa!</p> <button
+                        onClick="requestSerialPermission()" class="btn btn-primary"><svg class="icon" width="20"
+                            height="20" fill="currentColor">
+                            <use xlink:href="/icons/bootstrap-icons.svg#usb-symbol" />
+                        </svg> Conectar</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        let port;
+        async function requestSerialPermission() {
+            try {
+                port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 9600 });
+                if (port.getInfo().usbVendorId != 9025) {
+                    window.alert("Dispoitivo no reconocido como sensor RFID");
+                    await port.close();
+                    return;
+                }
+                port.addEventListener('disconnect', handleDisconnect);
+                document.getElementById("connected").style.display = "block";
+                document.getElementById("disconnected").style.display = "none";
+            } catch (error) {
+                console.error('Error al solicitar permiso de acceso al puerto serie:', error);
+            }
+        }
+        function handleDisconnect(event) {
+            if (event.target === port) {
+                $('#escanearModal').modal('hide');
+                document.getElementById("connected").style.display = "none";
+                document.getElementById("disconnected").style.display = "block";
+                console.log('Desconectado del puerto serie.');
+            }
+        }
+        async function readSerialData() {
+            let tag = "";
+            try {
+                reader = port.readable.getReader();
+                while (true) {
+                    const { value, done } = await reader.read();
+                    const textDecoder = new TextDecoder();
+                    const receivedData = textDecoder.decode(value);
+                    tag += receivedData;
+                    if (receivedData.includes("\n")) {
+                        fetch('/buscarproductotag', {
+                            method: 'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ tag: tag.trim() }),
+                        }).then(response => response.json()).then(data => {
+                            document.getElementById("inner-message").innerHTML = `<svg class="icon" width="20" height="20" fill="currentColor"><use xlink:href="/icons/bootstrap-icons.svg#check-circle-fill" /></svg><strong> Se ha escaneado exitosamente</strong>`;
+                            $('#inner-message').fadeIn(1000);
+                            setTimeout(function () {
+                                $('#inner-message').fadeOut(1000);
+                            }, 3000);
+                            if (data.message) {
+                                document.getElementById("message").innerHTML = `<h3 class="text-uppercase"><span class="badge bg-danger text-uppercase m-2">${data.message}</span></h3>`;
+                            } else if (data.codigo) {
+                                document.getElementById("message").innerHTML = `<div class="card mb-3" ><div class="row g-0"><div class="col-md-2"><img src="${data.imagen}" width="100" class="img-fluid rounded-start" alt="${data.nombre}"></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p></div></div></div></div>`;
+                            }
+                        }).catch(error => {
+                            console.error('Error al realizar la búsqueda:', error);
+                        });
+                        tag = "";
+                    }
+                }
+            } catch (error) {
+                console.error('Error al leer desde el puerto serie:', error);
+            }
+        }
+
+        async function sendData(data) {
+            if (!port) {
+                console.error('No se ha establecido una conexión con el puerto serie.');
+                return;
+            }
+
+            try {
+                const writer = port.writable.getWriter();
+                await writer.write(data);
+                writer.releaseLock();
+            } catch (error) {
+                console.error('Error al enviar datos al puerto serie:', error);
+            }
+        }
+        $('#inner-message').fadeOut(1);
+        const socket = io();
+        document.getElementById('escanear').addEventListener('click', (event) => {
+            socket.emit('estado:data', 'l');
+        });
+        socket.on("test:data", function (data) {
+            console.log(data);
+        });
+
+        $('#escanearModal').on('hidden.bs.modal', function () {
+            document.getElementById("message").innerHTML = `<img src="images/rfid.gif"style="width: 35%;height: 30%;"class="align-self-center" alt="...">`;
+        })
+    </script>
+
+    </html>

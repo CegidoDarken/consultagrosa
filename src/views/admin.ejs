@@ -6,35 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <title>Document</title>
 </head>
 <style>
-    body {
-        background-color: rgba(242, 243, 244, .85);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-
     input[type=checkbox]:checked {
         background-color: rgba(29, 103, 42, 1) !important;
     }
 
     body {
         background-image: linear-gradient(rgba(18, 42, 66, .65), rgba(18, 42, 66, .65)), url('/images/fondo.png');
-        background-repeat: repeat;
+        background-repeat: no-repeat;
         background-size: cover;
     }
 </style>
 
 <body>
-    <div class="container py-5 h-100">
+    <div class="container py-5 h-100 vh-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
 
-                        <h3 class="mb-5">Administrador</h3>
+                        <h3 class="mb-5 text-uppercase">Sistema de control de inventario</h3>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">
@@ -65,17 +60,21 @@
                             </button>
                         </div>
                         <div class="d-grid mx-auto">
-                            <a class="btn btn-primary" type="button" href="/panel" >Iniciar Sesión</a>
+                            <button class="btn btn-primary" type="button" onclick="aunth()">Iniciar Sesión</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="danger-message" class="alert alert-danger w-auto position-fixed bottom-0 end-0 me-3">
+        <strong>¡Atención!</strong> Usuario y/o contraseña incorrectos
+    </div>
 </body>
 <script>
+    $('#danger-message').fadeOut(1);
     function aunth() {
-        fetch(`/auth/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
+        fetch(`/authadmin/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
             .then(element => {
                 console.log(element);
                 if (element.message == "Usuario o contraseña icorrectos") {
@@ -84,14 +83,9 @@
                         $('#danger-message').fadeOut(1000);
                     }, 3000);
                 } else if (element.message == "Usuario correcto") {
-                    location.reload()
+                    location.replace('/panel');
                 }
             });
-    }
-    function logout() {
-        fetch(`/logout`, { method: 'POST' }).then(res => {
-            location.reload()
-        });
     }
     function showpassword() {
         var icon = document.getElementById('icon-use');

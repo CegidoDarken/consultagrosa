@@ -1,0 +1,99 @@
+<%- include("partials/_headerpanel") %>
+    <div class="container-fluid d-flex flex-column pt-3">
+        <div class="input-group rounded shadow">
+            <div class="form-floating ">
+                <input type="email" class="tablesearch-input form-control" id="search" placeholder="Buscar"
+                    data-tablesearch-table="#datatable">
+                <label for="search">Buscar</label>
+            </div>
+            <span class="input-group-text border-0" id="search-addon">
+                <i class="fas fa-search"> <svg class="icon m-2" width="20" height="20" fill="currentColor">
+                        <use xlink:href="/icons/bootstrap-icons.svg#search" />
+                    </svg></i>
+            </span>
+        </div>
+        <br>
+        <table class="table table-hover fl-table shadow tablesort" id="datatable">
+            <thead>
+                <tr class="text-light" style="background-color: #146c45;">
+                    <th>IMAGEN</th>
+                    <th>CODIGO</th>
+                    <th>NOMBRE</th>
+                    <th>CATEGORIA</th>
+                    <th>TAG RFID</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th>MEDIDA</th>
+                    <th>PRECIO</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (productos) { %>
+                    <% productos.forEach(row=> { %>
+                        <tr>
+                            <td><img src="<%= row.imagen %>" width="30" alt=""></td>
+                            <td>
+                                <%= row.codigo %>
+                            </td>
+                            <td>
+                                <%= row.nombre %>
+                            </td>
+                            <td>
+                                <%= row.categoria %>
+                            </td>
+                            <td>
+                                <% if (row.tag) { %><a class="link" href="/escanearproducto">
+                                        <%= row.tag %>
+                                    </a>
+                                    <% } else { %>Ninguno<% } %>
+                            </td>
+                            <td
+                                style="max-width: 300px;text-overflow: ellipsis !important;overflow: hidden;white-space:nowrap;">
+                                <% if (row.tag) { %>
+                                    <%= row.descripcion %>
+                                        <% } else { %>Ninguno<% } %>
+                            </td>
+                            <td>
+                                <%= row.medida %>
+                            </td>
+                            <td>
+                                $<%= row.precio %>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-info btn-sm">
+                                        <svg class="icon" width="20" height="20" fill="white">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#pencil-fill" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm">
+                                        <svg class="icon" width="20" height="20" fill="white">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#eye-fill" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm">
+                                        <svg class="icon" width="20" height="20" fill="white">
+                                            <use xlink:href="/icons/bootstrap-icons.svg#trash3-fill" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                            <% } %>
+            </tbody>
+        </table>
+    </div>
+    </body>
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "lengthChange": false
+            });
+            $('#search').keyup(function () {
+                var table = $('.tablesort').DataTable();
+                table.search($(this).val()).draw();
+            });
+        });
+
+    </script>

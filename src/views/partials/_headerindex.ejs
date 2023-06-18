@@ -1,0 +1,94 @@
+<header>
+    <nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary">
+      <a class="navbar-brand text-success" href="/"><img src="/images/logo.png" alt="Logo" width="50px"> CONSULTAGRO
+        S.A</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse ps-3" id="navbarSupportedContent">
+        <form class="d-flex" role="search">
+          <div class="input-group pe-2">
+            <input class="form-control " type="search" placeholder="Buscar Producto ">
+            <button class="btn btn-primary" type="submit">
+              <svg class="icon" width="20" height="20" fill="currentColor">
+                <use xlink:href="/icons/bootstrap-icons.svg#search" />
+              </svg>
+            </button>
+  
+          </div>
+        </form>
+        <ul class="navbar-nav ms-auto pe-3">
+          <% if (credentials) { %>
+            <li class="nav-item ">
+              <a href="" class="nav-link dropdown-toggle" data-bs-toggle="modal" data-bs-target="#Cart">
+                <svg class="icon" width="20" height="20" fill="currentColor">
+                  <use xlink:href="/icons/bootstrap-icons.svg#cart" />
+                </svg> Carrito
+              </a>
+            </li>
+            <li class="nav-item">
+              <div class="dropdown">
+                <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
+                  <svg class="icon" width="20" height="20" fill="currentColor">
+                    <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
+                  </svg>
+                  <%= credentials.nombre %>
+                </a>
+                <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
+                  <li><a class="dropdown-item" href="#">
+                      <svg class="icon" width="20" height="20" fill="currentColor">
+                        <use xlink:href="/icons/bootstrap-icons.svg#gear" />
+                      </svg> Configuración</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      <svg class="icon" width="20" height="20" fill="currentColor">
+                        <use xlink:href="/icons/bootstrap-icons.svg#person-vcard" />
+                      </svg> Perfil
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                      <svg class="icon" width="20" height="20" fill="currentColor">
+                        <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
+                      </svg> Cerrar sesión
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#SignUp"><svg class="icon" width="20"
+                    height="20" fill="currentColor">
+                    <use xlink:href="/icons/bootstrap-icons.svg#person" />
+                  </svg> Iniciar sesión</a>
+              </li>
+              <% } %>
+        </ul>
+      </div>
+    </nav>
+    <script>
+          document.addEventListener("DOMContentLoaded", function () {
+    navbar = document.querySelector('.navbar');
+    if (navbar) {
+      var last_scroll_top = 0;
+      window.addEventListener('scroll', function () {
+        let scroll_top = window.scrollY;
+        if (scroll_top < last_scroll_top) {
+          $('.navbar-collapse').collapse('hide');
+          $('.dropdown-menu').collapse('hide');
+        }
+        else {
+          $('.navbar-collapse').collapse('hide');
+          $('.dropdown-menu').collapse('hide');
+        }
+        last_scroll_top = scroll_top;
+      });
+    }
+  });
+    </script>
+  </header>

@@ -207,83 +207,8 @@
     text-align: center;
   }
 </style>
-
+<%- include("partials/_headerindex") %>
 <body>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-
-    <a class="navbar-brand text-success" href="/"><img src="/images/logo.png" alt="Logo" width="50px"> CONSULTAGRO
-      S.A</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <form class="d-flex" role="search">
-        <div class="input-group m-2">
-          <input class="form-control " type="search" placeholder="Buscar Producto ">
-          <button class="btn btn-primary" type="submit">
-            <svg class="icon" width="20" height="20" fill="currentColor">
-              <use xlink:href="/icons/bootstrap-icons.svg#search" />
-            </svg>
-          </button>
-
-        </div>
-      </form>
-      <ul class="navbar-nav ms-auto">
-        <% if (credentials) { %>
-          <li class="nav-item ">
-            <a href="" class="nav-link dropdown-toggle" data-bs-toggle="modal" data-bs-target="#Cart">
-              <svg class="icon" width="20" height="20" fill="currentColor">
-                <use xlink:href="/icons/bootstrap-icons.svg#cart" />
-              </svg> Carrito
-            </a>
-          </li>
-          <li class="nav-item">
-            <div class="dropdown">
-              <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
-                <svg class="icon" width="20" height="20" fill="currentColor">
-                  <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
-                </svg>
-                <%= credentials.nombre %>
-              </a>
-              <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
-                <li><a class="dropdown-item" href="#">
-                    <svg class="icon" width="20" height="20" fill="currentColor">
-                      <use xlink:href="/icons/bootstrap-icons.svg#gear" />
-                    </svg> Configuración</a></li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    <svg class="icon" width="20" height="20" fill="currentColor">
-                      <use xlink:href="/icons/bootstrap-icons.svg#person-vcard" />
-                    </svg> Perfil
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li>
-                  <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                    <svg class="icon" width="20" height="20" fill="currentColor">
-                      <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
-                    </svg> Cerrar sesión
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <% } else { %>
-            <li class="nav-item">
-              <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#SignUp"><svg class="icon" width="20"
-                  height="20" fill="currentColor">
-                  <use xlink:href="/icons/bootstrap-icons.svg#person" />
-                </svg> Iniciar sesión</a>
-            </li>
-            <% } %>
-      </ul>
-    </div>
-  </nav>
-
   <div class="modal fade" id="Cart" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -513,6 +438,7 @@
     </div>
   </div>
   <!--- productos -->
+  <div class="container-fluid">
   <ul class="nav nav-pills flex-column flex-sm-row m-3 " id="myTab" role="tablist">
     <li class="nav-item" role="button" role="presentation">
       <a class="flex-sm-fill text-sm-center nav-link active text-uppercase" id="home-tab" data-bs-toggle="tab"
@@ -578,11 +504,12 @@
   <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...
   </div>
   <div class="position-relative">...</div>
+</div>
 </body>
 <script>
   $('#danger-message').fadeOut(1);
   function aunth() {
-    fetch(`/auth/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
+    fetch(`/authclient/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
       .then(element => {
         console.log(element);
         if (element.message == "Usuario o contraseña icorrectos") {
@@ -596,7 +523,7 @@
       });
   }
   function logout() {
-    fetch(`/logout`, { method: 'POST' }).then(res => {
+    fetch(`/logoutclient`, { method: 'POST' }).then(res => {
       location.reload()
     });
   }
@@ -611,24 +538,6 @@
       icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-slash-fill');
     }
   }
-  document.addEventListener("DOMContentLoaded", function () {
-    navbar = document.querySelector('.navbar');
-    if (navbar) {
-      var last_scroll_top = 0;
-      window.addEventListener('scroll', function () {
-        let scroll_top = window.scrollY;
-        if (scroll_top < last_scroll_top) {
-          $('.navbar-collapse').collapse('hide');
-          $('.dropdown-menu').collapse('hide');
-        }
-        else {
-          $('.navbar-collapse').collapse('hide');
-          $('.dropdown-menu').collapse('hide');
-        }
-        last_scroll_top = scroll_top;
-      });
-    }
-  });
 </script>
 
 </html>
