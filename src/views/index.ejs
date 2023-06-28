@@ -1,15 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <script src="/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/jquery-3.6.0.min.js"></script>
-  <title>Inicio</title>
-</head>
 <style>
   .table-wrapper thead th {
     position: sticky;
@@ -208,309 +196,249 @@
   }
 </style>
 <%- include("partials/_headerindex") %>
-<body>
-  <div class="modal fade" id="Cart" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-body-tertiary border-0">
-          <h1 class="modal-title fs-5" id="ModalLabel">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
-              <svg class="icon" width="20" height="20" fill="currentColor">
-                <use xlink:href="/icons/bootstrap-icons.svg#cart" />
-              </svg> Carrito
-            </a>
-          </h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-1">
-          <div class="table-responsive">
-            <table class="table table-striped table-hover">
-              <thead style="background-color: #146c45;">
-                <tr>
-                  <th class="text-light">IMAGEN</th>
-                  <th class="text-light">PRODUCTO</th>
-                  <th class="text-light">CANTIDAD</th>
-                  <th class="text-light">PRECIO</th>
-                  <th class="text-light" colspan="2">TOTAL</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td data-label="IMAGEN: ">
-                    <img src="https://agripac.com.ec/wp-content/uploads/2020/11/4001120-1-1200x1200.jpg.jpg" alt="pamon"
-                      width="60">
-                  </td>
-                  <td data-label="PRODUCTO: ">IMPULSE</td>
-                  <td data-label="CANTIDAD: ">
-                    <div class="number-input">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                        class="minus"></button>
-                      <input class="quantity" min="0" name="quantity" value="1" type="number">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                        class="plus"></button>
-                    </div>
-                  </td>
-                  <td data-label="PRECIO UNITARIO: ">$5.99</td>
-                  <td data-label="PRECIO UNITARIO: ">$5.99</td>
-                  <td data-label="ELIMINAR: ">
-                    <button type="button" class="btn btn-danger btn-sm">
-                      <svg class="icon" width="20" height="20" fill="white">
-                        <use xlink:href="/icons/bootstrap-icons.svg#trash" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td data-label="IMAGEN: ">
-                    <img src="https://agripac.com.ec/wp-content/uploads/2020/11/sonata.jpg" alt="sonata" width="60">
-                  </td>
-                  <td data-label="PRODUCTO: ">SONATA </td>
-                  <td data-label="CANTIDAD: ">
-                    <div class="number-input">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                        class="minus"></button>
-                      <input class="quantity" min="0" name="quantity" value="1" type="number">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                        class="plus"></button>
-                    </div>
-                  </td>
-                  <td data-label="PRECIO UNITARIO: ">$9.99</td>
-                  <td data-label="PRECIO UNITARIO: ">$9.99</td>
-                  <td data-label="ELIMINAR: ">
-                    <button type="button" class="btn btn-danger btn-sm">
-                      <svg class="icon" width="20" height="20" fill="white">
-                        <use xlink:href="/icons/bootstrap-icons.svg#trash" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td data-label="IMAGEN: ">
-                    <img src="https://agripac.com.ec/wp-content/uploads/2020/11/pamon.jpg" alt="pamona" width="60">
-                  </td>
-                  <td data-label="PRODUCTO: ">PAMONA</td>
-                  <td data-label="CANTIDAD: ">
-                    <div class="number-input">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                        class="minus"></button>
-                      <input class="quantity" min="0" name="quantity" value="1" type="number">
-                      <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                        class="plus"></button>
-                    </div>
-                  </td>
-                  <td data-label="PRECIO UNITARIO: ">$15.99</td>
-                  <td data-label="PRECIO UNITARIO: ">$15.99</td>
-                  <td data-label="ELIMINAR: ">
-                    <button type="button" class="btn btn-danger btn-sm">
-                      <svg class="icon" width="20" height="20" fill="white">
-                        <use xlink:href="/icons/bootstrap-icons.svg#trash" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr class=" border-0">
-                  <td class="border-0"></td>
-                  <td class="border-0"></td>
-                  <td class="border-0" colspan="3">
-                    <table class="table table-borderless table-sm">
-                      <tr>
-                        <td style="font-weight: bold;">Subtotal:</td>
-                        <td>$31.97</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: bold;">IVA 12%:</td>
-                        <td>$3.84</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: bold">Total:</td>
-                        <td style="font-size: larger;font-weight: bold">$35.80</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>-->
-          <button type="button" class="btn btn-secondary btn-sm">Vaciar carrito</button>
-          <button type="button" class="btn btn-primary btn-sm">Realizar pedido</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="modal fade" id="SignUp" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="ModalLabel">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#SignUp">
-              <svg class="icon" width="25" height="25" fill="currentColor">
-                <use xlink:href="/icons/bootstrap-icons.svg#person" />
-              </svg> Iniciar sesión
-            </a>
-          </h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <section>
-            <div class="card border-0">
-              <div class="card-body py-5 px-md-5">
-                <form>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">
-                      <svg class="icon" width="20" height="20" fill="currentColor">
-                        <use xlink:href="/icons/bootstrap-icons.svg#person-fill" />
-                      </svg>
-                    </span>
-                    <div class="form-floating">
-                      <input type="text" class="form-control" id="username" placeholder="Usuario">
-                      <label style="background-color: transparent;" for="user">Usuario</label>
-                    </div>
-                  </div>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">
-                      <svg class="icon" width="20" height="20" fill="currentColor">
-                        <use xlink:href="/icons/bootstrap-icons.svg#key-fill" />
-                      </svg>
-                    </span>
-                    <div class="form-floating">
-                      <input type="password" class="form-control" id="password" placeholder="Contaseña">
-                      <label for="password">Contaseña</label>
-                    </div>
-                    <button class="btn btn-outline-primary" type="button" onclick="showpassword()">
-                      <svg class="icon" width="20" height="20" fill="currentColor">
-                        <use id="icon-use" xlink:href="/icons/bootstrap-icons.svg#eye-slash-fill" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="d-grid mx-auto">
-                    <button class="btn btn-primary" type="button" onclick="aunth()">Iniciar Sesión</button>
-                    <div class="text-center align-content-center m-2">
-                      <p class="m-0">o registrarte aquí:</p>
-                    </div>
-                    <button class="btn btn-secondary" type="button">Registrarse</button>
-                  </div>
-                </form>
-              </div>
-          </section>
-          <div id="danger-message" class="alert alert-danger w-auto position-fixed bottom-0 end-0 me-3">
-            <strong>¡Atención!</strong> Usuario y/o contraseña incorrectos
+  <body class="overflow-hidden">
+    <div class="modal fade ove" id="Cart" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-body-tertiary border-0">
+            <h1 class="modal-title fs-5" id="ModalLabel">
+              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
+                <svg class="icon" width="20" height="20" fill="currentColor">
+                  <use xlink:href="/icons/bootstrap-icons.svg#cart" />
+                </svg> Carrito
+              </a>
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-1">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead style="background-color: #146c45;">
+                  <tr>
+                    <th class="text-light">IMAGEN</th>
+                    <th class="text-light">PRODUCTO</th>
+                    <th class="text-light">CANTIDAD</th>
+                    <th class="text-light">PRECIO</th>
+                    <th class="text-light" colspan="2">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="IMAGEN: ">
+                      <img src="https://agripac.com.ec/wp-content/uploads/2020/11/4001120-1-1200x1200.jpg.jpg"
+                        alt="pamon" width="60">
+                    </td>
+                    <td data-label="PRODUCTO: ">IMPULSE</td>
+                    <td data-label="CANTIDAD: ">
+                      <div class="number-input">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                          class="minus"></button>
+                        <input class="quantity" min="0" name="quantity" value="1" type="number">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                          class="plus"></button>
+                      </div>
+                    </td>
+                    <td data-label="PRECIO UNITARIO: ">$5.99</td>
+                    <td data-label="PRECIO UNITARIO: ">$5.99</td>
+                    <td data-label="ELIMINAR: ">
+                      <button type="button" class="btn btn-danger btn-sm">
+                        <svg class="icon" width="20" height="20" fill="white">
+                          <use xlink:href="/icons/bootstrap-icons.svg#trash" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td data-label="IMAGEN: ">
+                      <img src="https://agripac.com.ec/wp-content/uploads/2020/11/sonata.jpg" alt="sonata" width="60">
+                    </td>
+                    <td data-label="PRODUCTO: ">SONATA </td>
+                    <td data-label="CANTIDAD: ">
+                      <div class="number-input">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                          class="minus"></button>
+                        <input class="quantity" min="0" name="quantity" value="1" type="number">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                          class="plus"></button>
+                      </div>
+                    </td>
+                    <td data-label="PRECIO UNITARIO: ">$9.99</td>
+                    <td data-label="PRECIO UNITARIO: ">$9.99</td>
+                    <td data-label="ELIMINAR: ">
+                      <button type="button" class="btn btn-danger btn-sm">
+                        <svg class="icon" width="20" height="20" fill="white">
+                          <use xlink:href="/icons/bootstrap-icons.svg#trash" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td data-label="IMAGEN: ">
+                      <img src="https://agripac.com.ec/wp-content/uploads/2020/11/pamon.jpg" alt="pamona" width="60">
+                    </td>
+                    <td data-label="PRODUCTO: ">PAMONA</td>
+                    <td data-label="CANTIDAD: ">
+                      <div class="number-input">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                          class="minus"></button>
+                        <input class="quantity" min="0" name="quantity" value="1" type="number">
+                        <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                          class="plus"></button>
+                      </div>
+                    </td>
+                    <td data-label="PRECIO UNITARIO: ">$15.99</td>
+                    <td data-label="PRECIO UNITARIO: ">$15.99</td>
+                    <td data-label="ELIMINAR: ">
+                      <button type="button" class="btn btn-danger btn-sm">
+                        <svg class="icon" width="20" height="20" fill="white">
+                          <use xlink:href="/icons/bootstrap-icons.svg#trash" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class=" border-0">
+                    <td class="border-0"></td>
+                    <td class="border-0"></td>
+                    <td class="border-0" colspan="3">
+                      <table class="table table-borderless table-sm">
+                        <tr>
+                          <td style="font-weight: bold;">Subtotal:</td>
+                          <td>$31.97</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight: bold;">IVA 12%:</td>
+                          <td>$3.84</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight: bold">Total:</td>
+                          <td style="font-size: larger;font-weight: bold">$35.80</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>-->
+            <button type="button" class="btn btn-secondary btn-sm">Vaciar carrito</button>
+            <button type="button" class="btn btn-primary btn-sm">Realizar pedido</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="modal fade" id="SignUp" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="ModalLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Regsitrar</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header border-0">
-          <h1 class="modal-title fs-5" id="logoutModalLabel">¿Deseas cerrar sesión?</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary btn-sm" onclick="logout()">Cerrar Sesión</button>
+    <div class="modal fade" id="SignUp" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="ModalLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Regsitrar</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!--- productos -->
-  <div class="container-fluid">
-  <ul class="nav nav-pills flex-column flex-sm-row m-3 " id="myTab" role="tablist">
-    <li class="nav-item" role="button" role="presentation">
-      <a class="flex-sm-fill text-sm-center nav-link active text-uppercase" id="home-tab" data-bs-toggle="tab"
-        data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true">Todos los
-        productos</a>
-    </li>
-    <li class="nav-item pointer-event" role="button" role="presentation">
-      <a class="flex-sm-fill text-sm-center nav-link text-uppercase" id="profile-tab" data-bs-toggle="tab"
-        data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Más
-        vendidos</a>
-    </li>
-    <li class="nav-item" role="button" role="presentation">
-      <a class="flex-sm-fill text-sm-center nav-link text-uppercase" id="contact-tab" data-bs-toggle="tab"
-        data-bs-target="#contact-tab-pane" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Ofertas</a>
-    </li>
-  </ul>
-  <div class="tab-content position-static" id="myTabContent">
-    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-      <div class="container-fluid align-self-center">
-        <div class="row row-cols-1 row-cols-lg-4"
-          data-infinite-scroll='{ "path": ".pagination__next", "append": ".post", "history": false }'>
-          <% if (results) { %>
-            <% results.forEach(value=> { %>
-              <div class="col mb-3">
-                <div class="card shadow">
-                  <span class="position-absolute p-2 translate-middle badge rounded-pill bg-danger"
-                    style="right: -10px;top: 30px;">
-                    <span class="fs-4">$<%= value.precio%></span>
-                  </span>
-                  <img src="<%= value.imagen %>" class="align-self-center" width="200" height="400"
-                    alt="<%= value.nombre %>">
-                  <div class="card-body">
-                    <h5 class="card-title">
-                      <%= value.nombre %> <span class="badge bg-primary rounded-pill">
-                          <%= value.categoria %>
-                        </span>
-                    </h5>
-                    <p class="card-text text-sm-center">
-                      <%= value.descripcion %>
-                    </p>
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                      <a href="#" class="btn btn-primary">
-                        <svg class="icon" width="20" height="20" fill="currentColor">
-                          <use xlink:href="/icons/bootstrap-icons.svg#cart" />
-                        </svg> Añadir al carrito</a>
-                      <a href="#" class="btn btn-primary align-items-center">
-                        <svg class="icon" width="20" height="20" fill="currentColor">
-                          <use xlink:href="/icons/bootstrap-icons.svg#eye" />
-                        </svg>Ver</a>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h1 class="modal-title fs-5" id="logoutModalLabel">¿Deseas cerrar sesión?</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="logout()">Cerrar Sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--- productos -->
+    <div class="container-fluid">
+      <ul class="nav nav-pills flex-column flex-sm-row m-3 " id="myTab" role="tablist">
+        <li class="nav-item" role="button" role="presentation">
+          <a class="flex-sm-fill text-sm-center nav-link active text-uppercase" id="home-tab" data-bs-toggle="tab"
+            data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true">Todos los
+            productos</a>
+        </li>
+        <li class="nav-item pointer-event" role="button" role="presentation">
+          <a class="flex-sm-fill text-sm-center nav-link text-uppercase" id="profile-tab" data-bs-toggle="tab"
+            data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Más
+            vendidos</a>
+        </li>
+        <li class="nav-item" role="button" role="presentation">
+          <a class="flex-sm-fill text-sm-center nav-link text-uppercase" id="contact-tab" data-bs-toggle="tab"
+            data-bs-target="#contact-tab-pane" role="tab" aria-controls="contact-tab-pane"
+            aria-selected="false">Ofertas</a>
+        </li>
+      </ul>
+      <div class="tab-content position-static" id="myTabContent">
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+          tabindex="0">
+          <div class="container-fluid align-self-center overflow-y-scroll" style="height: 82vh;">
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2  row-cols-lg-3"
+              data-infinite-scroll='{ "path": ".pagination__next", "append": ".post", "history": false }'>
+              <% if (results) { %>
+                <% results.forEach(value=> { %>
+                  <div class="col mb-3">
+                    <div class="card shadow">
+                      <span class="position-absolute p-2 translate-middle badge rounded-pill bg-danger"
+                        style="right: -10px;top: 30px;">
+                        <span class="fs-4">$<%= value.precio%></span>
+                      </span>
+                      <img src="<%= value.img %>" class="align-self-center" width="200" height="400"
+                        alt="<%= value.nombre %>">
+                      <div class="card-body">
+                        <h5 class="card-title">
+                          <%= value.nombre %> <span class="badge bg-primary rounded-pill">
+                              <%= value.categoria %>
+                            </span>
+                        </h5>
+                        <p class="card-text text-sm-center">
+                          <%= value.descripcion %>
+                        </p>
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                          <button onclick="addcar('<%= value.id_producto %>')" class="btn btn-primary">
+                            <svg class="icon" width="20" height="20" fill="currentColor">
+                              <use xlink:href="/icons/bootstrap-icons.svg#cart" />
+                            </svg> Añadir al carrito</button>
+                          <a href="#" class="btn btn-primary align-items-center">
+                            <svg class="icon" width="20" height="20" fill="currentColor">
+                              <use xlink:href="/icons/bootstrap-icons.svg#eye" />
+                            </svg>Ver</a>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <% }); %>
-                <% }; %>
-
+                  <% }); %>
+                    <% }; %>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...
+      </div>
+      <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...
+      </div>
     </div>
-  </div>
-  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...
-  </div>
-  <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...
-  </div>
-  <div class="position-relative">...</div>
-</div>
-</body>
-<script>
-  $('#danger-message').fadeOut(1);
-  function aunth() {
-    fetch(`/authclient/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
-      .then(element => {
+  </body>
+  <script>
+    $('#danger-message').fadeOut(1);
+    function addcar(id) {
+      fetch('/carrito', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
+      }).then(element => {
         console.log(element);
         if (element.message == "Usuario o contraseña icorrectos") {
           $('#danger-message').fadeIn(1000);
@@ -521,23 +449,53 @@
           location.reload()
         }
       });
-  }
-  function logout() {
-    fetch(`/logoutclient`, { method: 'POST' }).then(res => {
-      location.reload()
-    });
-  }
-  function showpassword() {
-    var icon = document.getElementById('icon-use');
-    var password = document.getElementById("password");
-    if (password.type === "password") {
-      password.type = "text";
-      icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-fill');
-    } else {
-      password.type = "password";
-      icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-slash-fill');
     }
-  }
-</script>
+    function login() {
+      Swal.fire({
+        icon: 'info',
+        html: `<div class="card border-0"><strong>¡Por favor ingrese su usuario y contraseña!</strong><div class="card-body"><form><div class="input-group mb-3"><span class="input-group-text"><svg class="icon" width="20" height="20" fill="currentColor"><use xlink:href="/icons/bootstrap-icons.svg#person-fill" /></svg></span><div class="form-floating"><input type="text" class="form-control" id="username" placeholder="Usuario"><label style="background-color: transparent;" for="user">Usuario</label></div></div><div class="input-group mb-3"><span class="input-group-text"><svg class="icon" width="20" height="20" fill="currentColor"><use xlink:href="/icons/bootstrap-icons.svg#key-fill" /></svg></span><div class="form-floating"><input type="password" class="form-control" id="password" placeholder="Contaseña"><label for="password">Contaseña</label></div><button class="btn btn-outline-primary" type="button" onclick="showpassword()"><svg class="icon" width="20" height="20" fill="currentColor"><use id="icon-use" xlink:href="/icons/bootstrap-icons.svg#eye-slash-fill" /></svg></button></div><div class="d-grid mx-auto"><button class="btn btn-primary" type="button" onclick="aunth()">Iniciar Sesión</button><div class="text-center align-content-center m-2"><p class="m-0">o registrarte aquí:</p></div><button class="btn btn-secondary" type="button">Registrarse</button></div></form></div></section>
+          </div>`,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: false,
+      });
+    }
 
-</html>
+   async function aunth() {
+      await fetch(`/authclient/${$("#username").val() || null}/${$("#password").val() || null}`, { method: 'POST' }).then(res => res.json())
+        .then(element => {
+          console.log(element);
+          if (element.message.includes("Wrong")) {
+            Swal.fire({
+              toast: true,
+              position: 'bottom-end',
+              icon: 'error',
+              title: 'Usuario y/o contraseña incorrectos',
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000
+            });
+          } else if (element.message.includes("Pass")) {
+            location.reload()
+          }
+        });
+    }
+    function logout() {
+      fetch(`/logoutclient`, { method: 'POST' }).then(res => {
+        location.reload()
+      });
+    }
+    function showpassword() {
+      var icon = document.getElementById('icon-use');
+      var password = document.getElementById("password");
+      if (password.type === "password") {
+        password.type = "text";
+        icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-fill');
+      } else {
+        password.type = "password";
+        icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-slash-fill');
+      }
+    }
+  </script>
+
+  </html>

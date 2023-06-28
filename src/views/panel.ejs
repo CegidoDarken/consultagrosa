@@ -6,12 +6,6 @@
             justify-content: center;
             align-items: center;
         }
-
-        .label {
-            position: absolute;
-            font-weight: bold;
-            font-size: 6vh;
-        }
     </style>
     <div class="container-fluid">
         <div class="accordion mb-5" id="accordionPanelsStayOpenExample">
@@ -25,7 +19,7 @@
                                 <svg class="icon" width="20" height="20" fill="white">
                                     <use xlink:href="/icons/bootstrap-icons.svg#speedometer2" />
                                 </svg>
-                            </span> Dashboard
+                            </span> General
                         </h5>
                     </button>
                 </h2>
@@ -34,10 +28,10 @@
                         <div class="row">
                             <div class="container">
                                 <br>
-                                <div class="row row-cols-1 row-cols-md-2 row-cols-sm-2 row-cols-lg-4">
-                                    <div class="col">
-                                        <div class="card mx-2 my-2 text-white bg-success">
-                                            <div class="row g-0">
+                                <div class="row row-cols-1 row-cols-sm-1  row-cols-md-2 row-cols-lg-4">
+                                    <div class="col my-1">
+                                        <div class="card text-white bg-success shadow">
+                                            <div class="row">
                                                 <div class="col p-1">
                                                     <center>
                                                         <svg class="icon align-self-center" width="80" height="80"
@@ -47,7 +41,7 @@
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <div class="card-body p-2">
+                                                    <div class="card-body p-2 text-sm-start text-lg-start text-center">
                                                         <h5 class="card-title">Proveedores</h5>
                                                         <p class="card-text fs-1 fw-bold">22</p>
                                                         <p class="card-text"><small>Última actualización hace 3
@@ -58,8 +52,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col">
-                                        <div class="card mx-2 my-2 bg-danger text-white">
+                                    <div class="col my-1">
+                                        <div class="card bg-danger text-white shadow">
                                             <div class="row g-0">
                                                 <div class="col p-1">
                                                     <center>
@@ -69,7 +63,7 @@
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <div class="card-body p-2">
+                                                    <div class="card-body p-2 text-sm-start text-lg-start text-center">
                                                         <h5 class="card-title">Productos</h5>
                                                         <p class="card-text fs-1 fw-bold">1.5k</p>
                                                         <p class="card-text">
@@ -82,8 +76,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col">
-                                        <div class="card mx-2 my-2 text-white bg-primary">
+                                    <div class="col my-1">
+                                        <div class="card text-white bg-primary shadow">
                                             <div class="row g-0">
                                                 <div class="col p-1">
                                                     <center>
@@ -93,7 +87,7 @@
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <div class="card-body p-2">
+                                                    <div class="card-body p-2 text-sm-start text-lg-start text-center">
                                                         <h5 class="card-title">Clientes</h5>
                                                         <p class="card-text fs-1 fw-bold">250</p>
                                                         <p class="card-text">
@@ -114,7 +108,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true"
                         aria-controls="panelsStayOpen-collapseTwo">
                         <h5>
@@ -126,7 +120,7 @@
                         </h5>
                     </button>
                 </h2>
-                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse show">
                     <div class="accordion-body">
                         <div class="table-wrapper">
                             <table class="table table-hover fl-table">
@@ -146,7 +140,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true"
                         aria-controls="panelsStayOpen-collapseThree">
                         <h5>
@@ -158,11 +152,11 @@
                         </h5>
                     </button>
                 </h2>
-                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+                <div id="panelsStayOpen-collapseThree" class="accordion-collapse show">
                     <div class="accordion-body">
                         <div class="row row-cols-1 row-cols-md-2 row-cols-sm-2 row-cols-lg-4">
                             <div class="col mb-2">
-                                <div class="card bg-danger text-light" style="height: 150px;">
+                                <div class="card bg-danger text-light shadow" style="height: 150px;">
                                     <div style="height: 60px;position: relative;bottom: -88px;">
                                         <canvas class="card-img" id="cv1"></canvas>
                                     </div>
@@ -176,7 +170,7 @@
                                 </div>
                             </div>
                             <div class="col mb-2">
-                                <div class="card bg-warning text-light" style="height: 150px;">
+                                <div class="card bg-warning text-light shadow" style="height: 150px;">
                                     <div style="height: 60px;position: relative;bottom: -88px;">
                                         <canvas class="card-img" id="cv2"></canvas>
                                     </div>
@@ -190,7 +184,7 @@
                                 </div>
                             </div>
                             <div class="col mb-2">
-                                <div class="card bg-primary text-light" style="height: 150px;">
+                                <div class="card bg-primary text-light shadow" style="height: 150px;">
                                     <div style="height: 60px;position: relative;bottom: -88px;">
                                         <canvas class="card-img" id="cv3"></canvas>
                                     </div>
@@ -204,7 +198,7 @@
                                 </div>
                             </div>
                             <div class="col mb-2">
-                                <div class="card bg-success text-light" style="height: 150px;">
+                                <div class="card bg-success text-light shadow" style="height: 150px;">
                                     <div style="height: 60px;position: relative;bottom: -88px;">
                                         <canvas class="card-img" id="cv4"></canvas>
                                     </div>
@@ -218,6 +212,7 @@
                                 </div>
                             </div>
                         </div>
+                        <br>
                         <div class="row row-cols-1 row-cols-lg-2">
                             <div class="col mb-2">
                                 <div class="card shadow">
@@ -234,9 +229,9 @@
                                             </small>
                                         </p>
                                     </div>
-                                    <section class="content p-1">
-                                        <canvas class="card-img" id="cv5"></canvas>
-                                    </section>
+                                    <div class="container m-2 pe-3" style="height: 300px;">
+                                        <canvas class="h-100 w-100" id="cv5"></canvas>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col">
@@ -247,15 +242,15 @@
                                             un corredor o
                                             firma
                                             de corretaje para comprar o vender</p>
-                                        <p class="card-text"><small class="text-body-secondary">Última actualización
-                                                hace 3
-                                                minutos</small></p>
+                                        <p class="card-text">
+                                            <small class="text-body-secondary">
+                                                Última actualización hace 3 minutos
+                                            </small>
+                                        </p>
                                     </div>
-                                    <section class="content">
+                                    <div class="w-auto align-self-center">
                                         <canvas class="card-img" id="cv6"></canvas>
-                                        <p class="label">83%</p>
-                                    </section>
-
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -429,7 +424,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
             }
         });
         const cv6 = document.getElementById('cv6');
@@ -445,7 +440,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
             }
         });
 

@@ -34,7 +34,7 @@
 
     .fl-table td,
     .fl-table th {
-        text-align: left;
+        text-align: center;
         padding: 8px;
     }
 
@@ -68,7 +68,7 @@
         .table-wrapper:before {
             content: "Scroll horizontally >";
             display: block;
-            text-align: right;
+            text-align: center;
             font-size: 11px;
             color: white;
             padding: 0 0 10px;
@@ -157,13 +157,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/datatables.min.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/socket.io.min.js"></script>
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/chart.min.js"></script>
     <script src="/js/datatables.min.js"></script>
+    <script src="js/sweetalert2.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <link rel="stylesheet" href="css/sweetalert2.min.css"> 
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/datatables.min.css">
+    <link rel="stylesheet" href="css/select2.min.css">
+    <link rel="stylesheet" href="css/select2-bootstrap-5-theme.min.css">
     <title>Principal</title>
 </head>
 
@@ -182,12 +187,6 @@
                         <svg class="icon" width="20" height="20" fill="currentColor">
                             <use xlink:href="/icons/bootstrap-icons.svg#house-door-fill" />
                         </svg> Panel</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

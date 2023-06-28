@@ -38,7 +38,7 @@
                                 </svg>
                             </span>
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="username" placeholder="Usuario">
+                                <input type="text" class="form-control" id="username" placeholder="Usuario" autocomplete="fals">
                                 <label style="background-color: transparent;" for="user">Usuario</label>
                             </div>
                         </div>
@@ -77,12 +77,12 @@
         fetch(`/authadmin/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
             .then(element => {
                 console.log(element);
-                if (element.message == "Usuario o contraseña icorrectos") {
+                if (element.message == "Worng") {
                     $('#danger-message').fadeIn(1000);
                     setTimeout(function () {
                         $('#danger-message').fadeOut(1000);
                     }, 3000);
-                } else if (element.message == "Usuario correcto") {
+                } else if (element.message == "Pass") {
                     location.replace('/panel');
                 }
             });

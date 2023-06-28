@@ -3,8 +3,11 @@ const { Server } = require('socket.io');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const { connection } = require('../database');
+const XLSX = require('xlsx');
+const fs = require('fs-extra');
+const mime = require('mime-types');
 const NodeCache = require('node-cache');
-const chache = new NodeCache();
+const cache = new NodeCache();
 let io;
 function configureSocket(server) {
   io = new Server(server);
@@ -52,7 +55,18 @@ router.get("/analisis", async (req, res) => {
 });
 router.get("/escanearproducto", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  res.render("escanearproducto", { credentials });
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
+  connection.query(sql, (error, results) => {
+    if (error) {
+      res.send({ message: error });
+    } else {
+      if (results) {
+        res.render("escanearproducto", { credentials, productos: results });
+      } else {
+        res.send({ message: "Producto no reconocido" });
+      }
+    }
+  });
 });
 router.get("/panel", async (req, res) => {
   credentials = req.session.credentials.administrador;
@@ -64,7 +78,7 @@ router.get("/kardex", async (req, res) => {
 });
 
 router.get("/adminproducto", async (req, res) => {
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria";
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
   connection.query(sql, (error, results) => {
     if (error) {
       res.render("adminproducto", { productos: error.message });
@@ -79,21 +93,24 @@ router.get("/adminproducto", async (req, res) => {
 });
 
 router.post('/carrito', (req, res) => {
-  const { producto } = req.body;
+  const { id } = req.body;
   const carrito = cache.get('carrito') || [];
-  carrito.push(producto);
+  carrito.push(id);
   cache.set('carrito', carrito);
-
+  console.log(cache.get('carrito'));
   res.send('Producto agregado al carrito');
 });
 
 router.post("/buscarproductotag", async (req, res) => {
+  const { tag } = req.body;
+  console.log(tag);
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
-  connection.query(sql, [req.body.tag], (error, results) => {
+  connection.query(sql, [tag], (error, results) => {
     if (error) {
       res.send({ message: error });
     } else {
       if (results.length > 0) {
+        results[0].img = results[0].img.toString();
         res.send(results[0]);
       } else {
         res.send({ message: "Producto no reconocido" });
@@ -110,6 +127,11 @@ router.post("/buscarproductoid", async (req, res) => {
       res.send({ message: error });
     } else {
       if (results.length > 0) {
+        try {
+          results[0].img = results[0].img.toString();
+        } catch (error) {
+          console.log(error);
+        }
         res.send(results[0]);
       } else {
         res.send({ message: "Producto no reconocido" });
@@ -124,7 +146,7 @@ router.post("/productos", async (req, res) => {
     if (error) {
       res.send({ message: error });
     } else {
-      if (results.length > 0) {
+      if (results) {
         res.send(results[0]);
       } else {
         res.send({ message: "Producto no reconocido" });
@@ -144,46 +166,44 @@ router.post("/logoutadmin", async (req, res) => {
   res.send();
 });
 router.post("/authclient/:username/:password", async (req, res) => {
-  console.log("authentication".yellow);
-  const query = 'SELECT * FROM usuarios WHERE usuario = ?';
+  console.log("Authentication".yellow);
+  const query = 'SELECT * FROM usuarios WHERE usuario = ? AND perfil_id = 2';
   connection.query(query, [req.params.username], (error, results) => {
     if (error) {
       res.send(error.message);
       callback(error, null);
       return;
     }
-    if (results.length === 0) {
-      // Usuario no encontrado
+    if (results[0] == null) {
       console.log("User not found".red);
-      res.send({ message: "Usuario o contraseña icorrectos" });
+      res.send({ message: "Wrong" });
       return;
+    } else {
+      const usuario = results[0];
+      bcrypt.compare(req.params.password, usuario.contrasena, (err, match) => {
+        if (err) {
+          console.error('Error:', err.message);
+          res.send({ message: err.message });
+          return;
+        }
+        if (match) {
+          req.session.credentials = {
+            cliente: usuario,
+            administrador: req.session.credentials.administrador
+          };
+          console.log("Correct user".green);
+          res.send({ message: "Pass" });
+        } else {
+          console.log("Password does not match ".red);
+          res.send({ message: "Wrong" });
+        }
+      });
     }
-
-    const usuario = results[0];
-
-    // Comparar la contraseña ingresada con la contraseña almacenada utilizando bcrypt
-    bcrypt.compare(req.params.password, usuario.contrasena, (err, result) => {
-      if (err) {
-        console.error('Error al comparar las contraseñas:', err);
-        return;
-      }
-      if (result) {
-        req.session.credentials = {
-          cliente: usuario,
-          administrador: req.session.credentials.administrador
-        };
-        res.send({ message: "Usuario correcto" });
-        console.log("Valid username".green);
-      } else {
-        console.log("Incorrect password".red);
-        res.send({ message: "Usuario o contraseña icorrectos" });
-      }
-    });
   });
 });
 
 router.post("/authadmin/:username/:password", async (req, res) => {
-  console.log("authentication".yellow);
+  console.log("Authentication".yellow);
   const query = 'SELECT * FROM usuarios WHERE usuario = ? AND perfil_id = 1';
   connection.query(query, [req.params.username], (error, results) => {
     if (error) {
@@ -191,33 +211,31 @@ router.post("/authadmin/:username/:password", async (req, res) => {
       callback(error, null);
       return;
     }
-    if (results.length === 0) {
-      // Usuario no encontrado
+    if (results[0] == null) {
       console.log("User not found".red);
-      res.send({ message: "Usuario o contraseña icorrectos" });
+      res.send({ message: "Wrong" });
       return;
+    } else {
+      const usuario = results[0];
+      bcrypt.compare(req.params.password, usuario.contrasena, (err, match) => {
+        if (err) {
+          console.error('Error:', err.message);
+          res.send({ message: err.message });
+          return;
+        }
+        if (match) {
+          req.session.credentials = {
+            cliente: req.session.credentials.cliente,
+            administrador: usuario
+          };
+          console.log("Correct user".green);
+          res.send({ message: "Pass" });
+        } else {
+          console.log("Password does not match ".red);
+          res.send({ message: "Wrong" });
+        }
+      });
     }
-
-    const usuario = results[0];
-
-    // Comparar la contraseña ingresada con la contraseña almacenada utilizando bcrypt
-    bcrypt.compare(req.params.password, usuario.contrasena, (err, result) => {
-      if (err) {
-        console.error('Error al comparar las contraseñas:', err);
-        return;
-      }
-      if (result) {
-        req.session.credentials = {
-          cliente: req.session.credentials.cliente,
-          administrador: usuario
-        };
-        res.send({ message: "Usuario correcto" });
-        console.log("Valid username".green);
-      } else {
-        console.log("Incorrect password".red);
-        res.send({ message: "Usuario o contraseña icorrectos" });
-      }
-    });
   });
 });
 module.exports = { router, configureSocket };
