@@ -27,23 +27,23 @@
                     <div class="accordion-body">
                         <div class="row">
                             <div class="container">
-                                <br>
-                                <div class="row row-cols-1 row-cols-sm-1  row-cols-md-2 row-cols-lg-4">
+                                <div
+                                    class="row row-cols-1 row-cols-sm-1 row-cols-md-4 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
                                     <div class="col my-1">
                                         <div class="card text-white bg-success shadow">
                                             <div class="row">
-                                                <div class="col p-1">
+                                                <div class="col ms-1 mt-2">
                                                     <center>
                                                         <svg class="icon align-self-center" width="80" height="80"
                                                             fill="white">
-                                                            <use xlink:href="/icons/bootstrap-icons.svg#people-fill" />
+                                                            <use xlink:href="/icons/bootstrap-icons.svg#person-workspace" />
                                                         </svg>
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body p-2 text-sm-start text-lg-start text-center">
-                                                        <h5 class="card-title">Proveedores</h5>
-                                                        <p class="card-text fs-1 fw-bold">22</p>
+                                                        <h6 class="card-title fw-bold">Proveedores</h6>
+                                                        <p class="card-text fs-2 m-0 fw-bold">22</p>
                                                         <p class="card-text"><small>Última actualización hace 3
                                                                 minutos</small>
                                                         </p>
@@ -53,23 +53,22 @@
                                         </div>
                                     </div>
                                     <div class="col my-1">
-                                        <div class="card bg-danger text-white shadow">
-                                            <div class="row g-0">
-                                                <div class="col p-1">
+                                        <div class="card text-white bg-danger shadow">
+                                            <div class="row">
+                                                <div class="col ms-1 mt-2">
                                                     <center>
-                                                        <svg class="icon" width="80" height="80" fill="white">
+                                                        <svg class="icon align-self-center" width="80" height="80"
+                                                            fill="white">
                                                             <use xlink:href="/icons/bootstrap-icons.svg#box-fill" />
                                                         </svg>
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body p-2 text-sm-start text-lg-start text-center">
-                                                        <h5 class="card-title">Productos</h5>
-                                                        <p class="card-text fs-1 fw-bold">1.5k</p>
-                                                        <p class="card-text">
-                                                            <small>
-                                                                Última actualización hace 3 minutos
-                                                            </small>
+                                                        <h6 class="card-title fw-bold">Productos</h6>
+                                                        <p class="card-text fs-2 m-0 fw-bold">1.5k</p>
+                                                        <p class="card-text"><small>Última actualización hace 3
+                                                                minutos</small>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -78,22 +77,21 @@
                                     </div>
                                     <div class="col my-1">
                                         <div class="card text-white bg-primary shadow">
-                                            <div class="row g-0">
-                                                <div class="col p-1">
+                                            <div class="row">
+                                                <div class="col ms-1 mt-2">
                                                     <center>
-                                                        <svg class="icon" width="80" height="80" fill="white">
-                                                            <use xlink:href="/icons/bootstrap-icons.svg#person-fill" />
+                                                        <svg class="icon align-self-center" width="80" height="80"
+                                                            fill="white">
+                                                            <use xlink:href="/icons/bootstrap-icons.svg#people-fill" />
                                                         </svg>
                                                     </center>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body p-2 text-sm-start text-lg-start text-center">
-                                                        <h5 class="card-title">Clientes</h5>
-                                                        <p class="card-text fs-1 fw-bold">250</p>
-                                                        <p class="card-text">
-                                                            <small>
-                                                                Última actualización hace 3 minutos
-                                                            </small>
+                                                        <h6 class="card-title fw-bold">Clientes</h6>
+                                                        <p class="card-text fs-2 m-0 fw-bold">250</p>
+                                                        <p class="card-text"><small>Última actualización hace 3
+                                                                minutos</small>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -203,7 +201,23 @@
                                         <canvas class="card-img" id="cv4"></canvas>
                                     </div>
                                     <div class="card-img-overlay">
-                                        <h5 class="card-title">Productos vendidos</h5>
+                                        <div
+                                            class="card-header d-flex flex-row align-items-center justify-content-between p-0 border-0">
+                                            <h5 class="card-title">Productos vendidos</h5>
+                                            <div class="dropdown align-self-end">
+                                                <button class="btn bg-transparent border-0" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <svg class="icon" width="20" height="20" fill="white">
+                                                        <use
+                                                            xlink:href="/icons/bootstrap-icons.svg#three-dots-vertical" />
+                                                    </svg>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><button class="dropdown-item" type="button">Ver grafico</button></li>
+                                                    <li><button class="dropdown-item" type="button">Ocultar</button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                         <p class="card-text">
                                         <h3>$4,820.50</h3>
                                         </p>

@@ -77,16 +77,47 @@ router.get("/kardex", async (req, res) => {
   res.render("kardex", { credentials });
 });
 
-router.get("/adminproducto", async (req, res) => {
+router.get("/inventario", async (req, res) => {
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
-  connection.query(sql, (error, results) => {
+  connection.query(sql, (error, productos) => {
     if (error) {
       res.render("adminproducto", { productos: error.message });
     } else {
-      if (results.length > 0) {
-        res.render("adminproducto", { productos: results });
+      if (productos.length > 0) {
+        const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
+        connection.query(sql, (error, categorias) => {
+          if (error) {
+            res.render("inventario", { categorias: error.message });
+          } else {
+            if (categorias.length > 0) {
+
+              res.render("inventario", { productos, categorias });
+            } else {
+              res.render("inventario", { categorias: null });
+            }
+          }
+        });
       } else {
-        res.render("adminproducto", { productos: null });
+        res.render("inventario", { productos: null });
+      }
+    }
+  });
+});
+router.post("/obtener_inventario", async (req, res) => {
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
+  connection.query(sql, (error, productos) => {
+    if (error) {
+      res.send({ data: error.message });
+    } else {
+      productos.forEach(element => {
+        if (element.img) {
+          element.img = element.img.toString();
+        }
+      });
+      if (productos.length > 0) {
+        res.json({ data: productos });
+      } else {
+        res.json({ data: null });
       }
     }
   });
@@ -99,6 +130,40 @@ router.post('/carrito', (req, res) => {
   cache.set('carrito', carrito);
   console.log(cache.get('carrito'));
   res.send('Producto agregado al carrito');
+});
+
+router.post('/update_producto', (req, res) => {
+  const { codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
+  if (img) {
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
+      if (error) {
+        console.log(error);
+        res.send({ message: error });
+      } else {
+        if (results) {
+          res.send({ message: "Success" });
+        } else {
+          res.send({ message: "No found" });
+        }
+      }
+    });
+  } else {
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
+      if (error) {
+        console.log(error);
+        res.send({ message: error });
+      } else {
+        if (results) {
+          res.send({ message: "Success" });
+        } else {
+          res.send({ message: "No found" });
+        }
+      }
+    });
+  }
+
 });
 
 router.post("/buscarproductotag", async (req, res) => {
