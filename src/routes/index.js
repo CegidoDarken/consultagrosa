@@ -49,6 +49,9 @@ router.get("/pedidos", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("pedidos", { credentials });
 });
+router.get("/test", async (req, res) => {
+  res.render("test");
+});
 router.get("/analisis", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("analisis", { credentials });

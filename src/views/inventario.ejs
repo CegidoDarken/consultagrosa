@@ -40,11 +40,8 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <div class="input-group rounded shadow">
-                            <div class="form-floating ">
-                                <input type="email" class="tablesearch-input form-control" id="search"
-                                    placeholder="Buscar" data-tablesearch-table="#datatable">
-                                <label for="search">Buscar</label>
-                            </div>
+                            <input type="search" class="tablesearch-input form-control" id="search" placeholder="Buscar"
+                                data-tablesearch-table="#datatable">
                             <span class="input-group-text border-0" id="search-addon">
                                 <i class="fas fa-search">
                                     <svg class="icon m-2" width="20" height="20" fill="currentColor">
@@ -128,9 +125,16 @@
                                 <div class="form-floating">
                                     <select name="medida" class="form-select"
                                         id="medida">
+                                        <optgroup label="Litros">
                                         <option ${data.medida === "1 L" ? 'selected' : ''}>1 L</option>
                                         <option ${data.medida === "5 L" ? 'selected' : ''}>5 L</option>
                                         <option ${data.medida === "20 L" ? 'selected' : ''}>20 L</option>
+                                        </optgroup>
+                                        <optgroup label="Kilogramos">
+                                        <option ${data.medida === "1 Kg" ? 'selected' : ''}>1 Kg</option>
+                                        <option ${data.medida === "5 Kg" ? 'selected' : ''}>5 Kg</option>
+                                        <option ${data.medida === "25 Kg" ? 'selected' : ''}>25 Kg</option>
+                                        </optgroup>
                                     </select>
                                     <label for="medida">Selecione una medida</label>
                                 </div>
@@ -417,11 +421,14 @@
                     }
                 }
             });
-            $('#search').keyup(function () {
+            $('#search').keypress(function () {
                 table = $('.tablesort').DataTable();
                 table.search($(this).val()).draw();
             });
-
+            $('#search').on("search", function () {
+                table = $('.tablesort').DataTable();
+                table.search($(this).val()).draw();
+            });
             $('#actualizar').click(async function () {
                 await table.ajax.reload()
             });

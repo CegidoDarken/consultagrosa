@@ -195,6 +195,7 @@
     text-align: center;
   }
 </style>
+
 <%- include("partials/_headerindex") %>
 
   <body class="overflow-hidden">
@@ -384,29 +385,29 @@
       <div class="tab-content position-static" id="myTabContent">
         <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
           tabindex="0">
-          <div class="container-fluid align-self-center overflow-y-scroll" style="height: 82vh;">
-            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2  row-cols-lg-3 row-cols-xxl-4"
+          <div class="container-fluid align-self-center overflow-y-scroll" style="height: 82vh;" id="content">
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4" id="list"
               data-infinite-scroll='{ "path": ".pagination__next", "append": ".post", "history": false }'>
               <% if (results) { %>
                 <% results.forEach(value=> { %>
-                  <div class="col mb-2">
-                    <div class="card shadow" >
+                  <div class="col mb-2 filter <%= value.categoria %> <%= value.medida.replace(/\s/g, '') %>">
+                    <div class="card shadow">
                       <span class="position-absolute p-2 translate-middle badge rounded-pill bg-danger"
                         style="right: -10px;top: 30px;">
                         <span class="fs-4">$<%= value.precio%></span>
                       </span>
-                      <img src="<%= value.img %>" class="align-self-center" width="200" height="400"
-                        alt="<%= value.nombre %>">
+                      <img data-src="<%= value.img? value.img : '/images/image-not-found.png' %>"
+                        class="align-self-center" width="250" height="350" alt="<%= value.nombre %>">
                       <div class="card-body">
                         <h5 class="card-title">
-                          <%= value.nombre %> <span class="badge bg-primary rounded-pill">
-                              <%= value.categoria %>
-                            </span>
+                          <%= value.nombre %> (<%= value.medida %>) <span class="badge bg-primary rounded-pill">
+                                <%= value.categoria %>
+                              </span>
                         </h5>
                         <p class="card-text text-sm-center">
                           <%= value.descripcion %>
                         </p>
-                        <div class="d-grid gap-2 col-6 mx-auto">
+                        <div class="d-grid gap-2 col-10 mx-auto">
                           <button onclick="addcar('<%= value.id_producto %>')" class="btn btn-primary">
                             <svg class="icon" width="20" height="20" fill="currentColor">
                               <use xlink:href="/icons/bootstrap-icons.svg#cart" />
@@ -432,6 +433,46 @@
     </div>
   </body>
   <script>
+    $(document).ready(function () {
+
+      var input = document.getElementById("search");
+      input.addEventListener("input", myFunction);
+
+      function myFunction(e) {
+        var filter = e.target.value.toUpperCase();
+        var list = document.getElementById("list");
+        var divs = list.getElementsByTagName("div");
+        for (var i = 0; i < divs.length; i++) {
+          var a = divs[i].getElementsByTagName("h5")[0];
+
+          if (a) {
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+              divs[i].style.display = "";
+            } else {
+              divs[i].style.display = "none";
+            }
+          }
+        }
+
+      }
+      $(".filter-button").click(function () {
+        var value = $(this).attr('data-filter');
+        if (value == "all") {
+          $('.filter').css("display", "block");
+        }
+        else {
+          $(".filter").not('.' + value).css("display", "none");
+          $('.filter').filter('.' + value).css("display", "block");
+
+        }
+      });
+
+      if ($(".filter-button").removeClass("active")) {
+        $(this).removeClass("active");
+      }
+      $(this).addClass("active");
+    });
+
     $('#danger-message').fadeOut(1);
     function addcar(id) {
       fetch('/carrito', {
@@ -461,7 +502,7 @@
       });
     }
 
-   async function aunth() {
+    async function aunth() {
       await fetch(`/authclient/${$("#username").val() || null}/${$("#password").val() || null}`, { method: 'POST' }).then(res => res.json())
         .then(element => {
           console.log(element);
@@ -495,6 +536,28 @@
         password.type = "password";
         icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-slash-fill');
       }
+    }
+    if ("IntersectionObserver" in window) {
+      const images = document.querySelectorAll("img");
+
+      let observer = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const image = entry.target;
+            const newURL = image.getAttribute("data-src");
+            image.src = newURL;
+            observer.unobserve(image);
+          });
+        },
+        {
+          threshold: [0.2]
+        }
+      );
+
+      images.forEach((image) => {
+        observer.observe(image);
+      });
     }
   </script>
 
