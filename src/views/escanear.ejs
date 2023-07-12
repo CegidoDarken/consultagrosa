@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Inventario</title>
+</head>
+
+<body>
+    <%- include("partials/_headerpanel") %>
+        <%- include("partials/_sidebarpanel") %>
+            <main id="main" class="main">
+
+                <div class="pagetitle">
+                    <h1>Inventario</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Productos</li>
+                            <li class="breadcrumb-item active">Escanear</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header text-danger text-uppercase text-center">
+                                    <h1>Desconectado</h1>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container-fluid mt-2">
+                                        <div id="disconnected" class="card text-center container">
+                                            <img src="img/usb.gif" style="width: 35%;height: 30%;"
+                                                class="align-self-center" alt="...">
+                                            <div class="container">
+                                                <h2 class="card-title text-uppercase">No se ha encontrado ningún Sensor
+                                                    RFID</h2>
+                                                <p class="card-text">Para continuar con el proceso de registro de
+                                                    productos, tepedimos
+                                                    amablemente que conectes un sensor a tu PC. El sensor nos permitirá
+                                                    recopilar datos
+                                                    importantes del producto que deseas registrar, lo cual nos ayudará a
+                                                    brindarte una
+                                                    experiencia personalizada y completa. Agradecemos tu colaboración y
+                                                    estamos entusiasmados
+                                                    por poder asistirte en este proceso. Si necesitas alguna ayuda
+                                                    adicional durante la conexión
+                                                    del sensor, nuestro equipo de soporte estará encantado de brindarte
+                                                    la asistencia necesaria.
+                                                    ¡Gracias por elegir nuestro sistema de registro y por tu
+                                                    participación activa!</p> <button
+                                                    onClick="requestSerialPermission()" class="btn btn-primary"><i class="bi bi-usb-symbol"></i> Conectar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <%- include("partials/_fotterpanel") %>
+</body>
+
+</html>

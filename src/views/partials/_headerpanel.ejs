@@ -1,277 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<style>
-    .dataTables_filter {
-        display: none;
-    }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    .table-wrapper thead th {
-        position: sticky;
-        top: 0;
-    }
-
-    .fl-table {
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: normal;
-        border: none;
-        border-collapse: collapse;
-        width: 100%;
-        max-width: 100%;
-        white-space: nowrap;
-        background-color: white;
-    }
-
-    .fl-table td,
-    .fl-table th {
-        text-align: center;
-        padding: 8px;
-    }
-
-    .fl-table td {
-        font-size: 12px;
-        border-left: 1px solid #E6E4E4 !important;
-    }
-
-    .fl-table thead th {
-        color: #ffffff;
-        background: #198754;
-        cursor: pointer;
-    }
-
-
-    .fl-table thead th:nth-child(odd) {
-        color: #ffffff;
-        background: #198754;
-    }
-
-    .fl-table tr:nth-child(even) {
-        background: #c1e4d4;
-    }
-
-    @media (max-width: 767px) {
-        .fl-table {
-            display: block;
-            width: 100%;
-        }
-
-        .table-wrapper:before {
-            content: "Scroll horizontally >";
-            display: block;
-            text-align: center;
-            font-size: 11px;
-            color: white;
-            padding: 0 0 10px;
-        }
-
-        .fl-table thead,
-        .fl-table tbody,
-        .fl-table thead th {
-            display: block;
-        }
-
-        .fl-table thead th:last-child {
-            border-bottom: none;
-        }
-
-        .fl-table thead {
-            float: left;
-        }
-
-        .fl-table tbody {
-            width: auto;
-            position: relative;
-            overflow-x: auto;
-        }
-
-        .fl-table thead td,
-        .fl-table thead th {
-            padding: 20px .625em .625em .625em;
-            height: 60px;
-            vertical-align: middle;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-y: auto;
-            width: 120px;
-            font-size: 13px;
-            text-overflow: ellipsis;
-        }
-
-        .fl-table td,
-        .fl-table th {
-            padding: 20px .625em .625em .625em;
-            height: 60px;
-            vertical-align: middle;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-y: auto;
-            width: 100%;
-            font-size: 13px;
-            text-overflow: ellipsis;
-        }
-
-        .fl-table thead th {
-            text-align: left;
-            border-bottom: 1px solid #f7f7f9;
-        }
-
-        .fl-table tbody tr {
-            display: table-cell;
-        }
-
-        .fl-table tbody tr:nth-child(odd) {
-            background: #c1e4d4;
-        }
-
-        .fl-table tr:nth-child(even) {
-            background: #c1e4d4;
-        }
-
-        .fl-table tr td:nth-child(odd) {
-            background: #F8F8F8;
-            border: 1px solid #E6E4E4;
-        }
-
-        .fl-table tr td:nth-child(even) {
-            border: 1px solid #E6E4E4;
-        }
-
-        .fl-table tbody td {
-            display: block;
-            text-align: justify;
-        }
-    }
-</style>
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <link href="/img/favicon.png" rel="icon">
+    <link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+    <link href="/css/select2.min.css" rel="stylesheet" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/quill/quill.snow.css" rel="stylesheet">
+    <link href="/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/datatables.min.css" rel="stylesheet">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/apexcharts/apexcharts.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/socket.io.min.js"></script>
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="/js/chart.min.js"></script>
-    <script src="/js/datatables.min.js"></script>
-    <script src="js/sweetalert2.min.js"></script>
-    <script src="js/select2.min.js"></script>
-    <link rel="stylesheet" href="css/sweetalert2.min.css"> 
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/datatables.min.css">
-    <link rel="stylesheet" href="css/select2.min.css">
-    <link rel="stylesheet" href="css/select2-bootstrap-5-theme.min.css">
-    <title>Principal</title>
+    <script src="/chart.js/chart.umd.js"></script>
+    <script src="/echarts/echarts.min.js"></script>
+    <script src="/quill/quill.min.js"></script>
+    <script src="/js/dataTables.min.js"></script>
+    <script src="/tinymce/tinymce.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/select2.min.js"></script>
 </head>
+<header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+        <a href="/admin" class="logo d-flex align-items-center">
+            <span class="d-none d-lg-block text-uppercase">Consultagro S.A</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
 
-<header style="margin-bottom: 100px;">
-    <nav class="navbar fixed-top  navbar-expand-lg bg-body-tertiary">
-        <a class="navbar-brand text-success" href="/"><img src="/images/logo.png" alt="Logo" width="50px"> CONSULTAGRO
-            S.A</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse ps-3" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/panel">
-                        <svg class="icon" width="20" height="20" fill="currentColor">
-                            <use xlink:href="/icons/bootstrap-icons.svg#house-door-fill" />
-                        </svg> Panel</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Reportes
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/kardex">Kardex</a></li>
-                        <li><a class="dropdown-item" href="/pedidos">Pedidos</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Productos
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/escanearproducto">Escanear productos</a></li>
-                        <li><a class="dropdown-item" href="/inventario">Inventario</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        <div class="collapse navbar-collapse ps-3" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto">
-                    <li class="nav-item pe-4">
-                        <div class="dropdown">
-                            <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
-                                <svg class="icon me-1" width="20" height="20" fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
-                                </svg>
-                                <%= credentials.nombre %>
-                            </a>
-                            <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
-                                <li><a class="dropdown-item" href="#">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#gear" />
-                                        </svg> Configuración</a></li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#person-vcard" />
-                                        </svg> Perfil
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <button class="dropdown-item" onclick="logout()" data-bs-toggle="modal"
-                                        data-bs-target="#logoutModal">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
-                                        </svg> Cerrar sesión
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+    <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+            <li class="nav-item dropdown pe-3">
+
+                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-md-block dropdown-toggle ps-2">
+                        <%= credentials.nombre %>
+                    </span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                        <h6>
+                            <%= credentials.nombre %>
+                        </h6>
+                        <span>Administrador</span>
                     </li>
-            </ul>
-        </div>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                            <i class="bi bi-person"></i>
+                            <span>Mi Perfil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                            <i class="bi bi-gear"></i>
+                            <span>Configuración</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                            <i class="bi bi-question-circle"></i>
+                            <span>¿Necesitas ayuda?</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal"
+                            data-bs-target="#logoutModal" href="">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </nav>
 </header>
-<script>
-      document.addEventListener("DOMContentLoaded", function () {
-    navbar = document.querySelector('.navbar');
-    if (navbar) {
-      var last_scroll_top = 0;
-      window.addEventListener('scroll', function () {
-        let scroll_top = window.scrollY;
-        if (scroll_top < last_scroll_top) {
-          $('.navbar-collapse').collapse('hide');
-          $('.dropdown-menu').collapse('hide');
-        }
-        else {
-          $('.navbar-collapse').collapse('hide');
-          $('.dropdown-menu').collapse('hide');
-        }
-        last_scroll_top = scroll_top;
-      });
-    }
-  });
-    function logout() {
-        fetch(`/logoutadmin`, { method: 'POST' }).then(res => {
-            location.replace('/admin');
-        });
-    }
-</script>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cerrar sesión</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">¿Estás seguro de que deseas cerrar sesión?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a class="btn btn-danger" href="/logoutadmin">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -49,6 +49,10 @@ router.get("/pedidos", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("pedidos", { credentials });
 });
+router.get("/usuarios", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  res.render("usuarios", { credentials });
+});
 router.get("/test", async (req, res) => {
   res.render("test");
 });
@@ -56,7 +60,7 @@ router.get("/analisis", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("analisis", { credentials });
 });
-router.get("/escanearproducto", async (req, res) => {
+router.get("/escanear", async (req, res) => {
   credentials = req.session.credentials.administrador;
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
   connection.query(sql, (error, results) => {
@@ -64,7 +68,7 @@ router.get("/escanearproducto", async (req, res) => {
       res.send({ message: error });
     } else {
       if (results) {
-        res.render("escanearproducto", { credentials, productos: results });
+        res.render("escanear", { credentials, productos: results });
       } else {
         res.send({ message: "Producto no reconocido" });
       }
@@ -81,27 +85,16 @@ router.get("/kardex", async (req, res) => {
 });
 
 router.get("/inventario", async (req, res) => {
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
-  connection.query(sql, (error, productos) => {
+  credentials = req.session.credentials.administrador;
+  const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
+  connection.query(sql, (error, categorias) => {
     if (error) {
-      res.render("adminproducto", { productos: error.message });
+      res.render("inventario", { credentials, categorias: error.message });
     } else {
-      if (productos.length > 0) {
-        const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
-        connection.query(sql, (error, categorias) => {
-          if (error) {
-            res.render("inventario", { categorias: error.message });
-          } else {
-            if (categorias.length > 0) {
-
-              res.render("inventario", { productos, categorias });
-            } else {
-              res.render("inventario", { categorias: null });
-            }
-          }
-        });
+      if (categorias.length > 0) {
+        res.render("inventario", { credentials, categorias });
       } else {
-        res.render("inventario", { productos: null });
+        res.render("inventario", { credentials, categorias: null });
       }
     }
   });
@@ -110,7 +103,7 @@ router.post("/obtener_inventario", async (req, res) => {
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
   connection.query(sql, (error, productos) => {
     if (error) {
-      res.send({ data: error.message });
+      res.json({ data: error.message });
     } else {
       productos.forEach(element => {
         if (element.img) {
@@ -119,6 +112,20 @@ router.post("/obtener_inventario", async (req, res) => {
       });
       if (productos.length > 0) {
         res.json({ data: productos });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+router.post("/obtener_usuarios", async (req, res) => {
+  const sql = "SELECT * FROM usuarios INNER JOIN perfiles ON usuarios.perfil_id = perfiles.id_perfil LEFT JOIN ciudades ON usuarios.ciudad_id = ciudades.id_ciudad LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
       } else {
         res.json({ data: null });
       }
@@ -224,18 +231,18 @@ router.post("/productos", async (req, res) => {
 });
 
 
-router.post("/logoutclient", async (req, res) => {
+router.get("/logoutclient", async (req, res) => {
   delete req.session.credentials.cliente;
-  res.send();
+  res.redirect("/admin");
 });
 
-router.post("/logoutadmin", async (req, res) => {
+router.get("/logoutadmin", async (req, res) => {
   delete req.session.credentials.administrador;
-  res.send();
+  res.redirect("/admin");
 });
 router.post("/authclient/:username/:password", async (req, res) => {
   console.log("Authentication".yellow);
-  const query = 'SELECT * FROM usuarios WHERE usuario = ? AND perfil_id = 2';
+  const query = 'SELECT * FROM usuarios, perfiles WHERE usuario = ? AND usuarios.perfil_id = perfiles.id_perfil AND perfil_id = 2';
   connection.query(query, [req.params.username], (error, results) => {
     if (error) {
       res.send(error.message);
@@ -272,7 +279,7 @@ router.post("/authclient/:username/:password", async (req, res) => {
 
 router.post("/authadmin/:username/:password", async (req, res) => {
   console.log("Authentication".yellow);
-  const query = 'SELECT * FROM usuarios WHERE usuario = ? AND perfil_id = 1';
+  const query = 'SELECT * FROM usuarios, perfiles WHERE usuario = ? AND usuarios.perfil_id = perfiles.id_perfil AND perfil_id = 1';
   connection.query(query, [req.params.username], (error, results) => {
     if (error) {
       res.send(error.message);

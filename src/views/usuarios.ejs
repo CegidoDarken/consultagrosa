@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Inventario</title>
+</head>
+
+<body>
+    <%- include("partials/_headerpanel") %>
+        <%- include("partials/_sidebarpanel") %>
+            <main id="main" class="main">
+
+                <div class="pagetitle">
+                    <h1>Inventario</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Productos</li>
+                            <li class="breadcrumb-item active">Inventario</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="input-group mb-3">
+                                        <form class="form-floating">
+                                            <input type="text" class="form-control" id="search" placeholder="Buscar"
+                                                value="">
+                                            <label for="search">Buscar</label>
+                                        </form>
+                                        <span class="input-group-text" id="basic-addon1"><i
+                                                class="bi bi-search"></i></span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container-fluid mt-2">
+                                        <table class="table table-sm table-hover text-center fl-table tablesort w-100"
+                                            id="datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Usuario</th>
+                                                    <th>Identificacion</th>
+                                                    <th>Correo</th>
+                                                    <th>Teléfono</th>
+                                                    <th>Provincia</th>
+                                                    <th>Ciudad</th>
+                                                    <th>Dirección</th>
+                                                    <th>Perfil</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="editModalLabel">Editar usuario</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formulario">
+                                <div class="card mb-3 border-0">
+                                    <div class="row g-0">
+                                        <div class="col-md-12">
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-12 text-start">
+                                                        <label for="editnombre" class="form-label">Nombre</label>
+                                                        <input type="text" class="form-control" id="editnombre"
+                                                            placeholder="Ingrese un código" value="" name="codigo"
+                                                            required>
+                                                    </div>
+                                                    <div class=" col-12 text-start">
+                                                        <label for="editusuario" class="form-label">Usuario</label>
+                                                        <input type="text" class="form-control" id="editusuario"
+                                                            placeholder="Ingrese un nombre de producto" value=""
+                                                            name="nombre" required>
+                                                    </div>
+                                                    <div class=" col-12">
+                                                        <label for="editidentificacion"
+                                                            class="form-label">Identificacion</label>
+                                                        <div class="input-group mb-3">
+                                                            <input type="number" class="form-control"
+                                                                id="editidentificacion" placeholder="Ingrese un tag"
+                                                                value="" name="tag">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="editcorreo" class="form-label">Correo</label>
+                                                        <input type="email" class="form-control" id="editcorreo"
+                                                            placeholder="Ingrese un tag" value="" name="tag">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="editcategoria" class="form-label">Provincia</label>
+                                                        <div class="form-floating">
+                                                            <select name="categoria" class="form-select"
+                                                                id="editcategoria">
+                                                            </select>
+                                                            <label for="floatingSelect">Selecione una provincia</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="editcategoria" class="form-label">Ciudad</label>
+                                                        <div class="form-floating">
+                                                            <select name="categoria" class="form-select"
+                                                                id="editcategoria" disabled>
+                                                            </select>
+                                                            <label for="floatingSelect">Selecione una ciudad</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class=" col-12">
+                                                        <label for="editdireccion" class="form-label">Dirección</label>
+                                                        <div class="input-group mb-3">
+                                                            <input type="text" class="form-control" id="editdireccion"
+                                                                placeholder="Ingrese una dirección" value="" name="tag">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="editcategoria" class="form-label">Perfil</label>
+                                                        <div class="form-floating">
+                                                            <select name="categoria" class="form-select"
+                                                                id="editcategoria">
+                                                            </select>
+                                                            <label for="floatingSelect">Selecione un perfil</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar usuario</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">¿Estás seguro de que deseas eiminar este usuario?</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a class="btn btn-danger" href="">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <%- include("partials/_fotterpanel") %>
+                <script>
+                    $(document).ready(function () {
+                        var table = $('#datatable').DataTable({
+                            ajax: {
+                                url: "/obtener_usuarios",
+                                "type": "POST",
+                                "dataSrc": "data",
+                            },
+                            bLengthChange: false,
+                            info: true,
+                            paging: true, columns: [
+                                { data: "nombre", defaultContent: "-" },
+                                { data: "usuario", defaultContent: "-" },
+                                { data: "identificacion", defaultContent: "-" },
+                                { data: "correo", defaultContent: "-" },
+                                { data: "telefono", defaultContent: "-" },
+                                { data: "provincia", defaultContent: "-" },
+                                { data: "ciudad", defaultContent: "-" },
+                                { data: "direccion", defaultContent: "-" },
+                                { data: "perfil", defaultContent: "-" },
+                            ],
+                            columnDefs: [
+                                {
+                                    targets: "_all",
+                                    className: "dt-center",
+                                },
+                                {
+                                    targets: 9,
+                                    render: function (data, type, row, meta) {
+                                        var data = table.row(meta.row).data();
+                                        var dataAsString = JSON.stringify(data);
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
+                                    }
+                                }
+                            ],
+                            "language": {
+                                "sEmptyTable": "No hay datos disponibles en la tabla",
+                                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                                "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                                "sInfoPostFix": "",
+                                "sInfoThousands": ",",
+                                "sLengthMenu": "Mostrar _MENU_ entradas",
+                                "sLoadingRecords": "Cargando...",
+                                "sProcessing": "Procesando...",
+                                "sSearch": "Buscar:",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Último",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                },
+                                "buttons": {
+                                    "copy": "Copiar",
+                                    "colvis": "Visibilidad"
+                                }
+                            }
+                        });
+                        $("#datatable_filter").hide();
+                        $('.js-example-basic-single').select2();
+                        $('#search').keyup(function () {
+                            table = $('.tablesort').DataTable();
+                            table.search($(this).val()).draw();
+                        });
+                        $('#actualizar').click(async function () {
+                            await table.ajax.reload()
+                        });
+                    });
+                    function edit(button) {
+                        var nombre = button.getAttribute('data-nombre');
+                        var usuario = button.getAttribute('data-usuario');
+                        var identificacion = button.getAttribute('data-identificacion');
+                        var correo = button.getAttribute('data-correo');
+                        var direccion = button.getAttribute('data-direccion');
+                        $("#editnombre").val(nombre);
+                        $("#editusuario").val(usuario);
+                        $("#editidentificacion").val(identificacion);
+                        $("#editcorreo").val(correo);
+                        $("#editdireccion").val(direccion);
+                        $('#editModal').modal('show');
+                    }
+                    function calculardesc() {
+                        var desc = $('#descuento').val();
+                        var precio = $('#precio').val();
+                        $('#preciodesc').val(parseFloat(precio - (precio * (desc / 100))).toFixed(2));
+                    }
+
+                    function calculartotal() {
+                        var cantidad = $('#cantidad').val();
+                        var precio = $('#precio').val();
+                        $('#total').val(parseFloat(cantidad * precio).toFixed(2));
+                    }
+                    function limit(input) {
+                        if (input.id === "descuento") {
+                            input.value = input.value.replace(/^0+/, '');
+                            if (input.value === '') {
+                                input.value = 0;
+                            }
+                            if (input.value > 100) {
+                                input.value = 100;
+                            }
+                        } else if (input.id === "cantidad") {
+                            input.value = input.value.replace(/^0+/, '');
+                            if (input.value === '') {
+                                input.value = 0;
+                            }
+                        }
+                    }
+                </script>
+
+</body>
+
+</html>
