@@ -134,6 +134,7 @@
                                                                 autocomplete="off" name="25kg" value="25Kg">
                                                             <label class="btn btn-outline-primary btn-sm mb-1"
                                                                 for="25kg">25Kg</label>
+                                                            <input type="hidden" name="medidas" id="medidas" value="">
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
@@ -254,6 +255,20 @@
                             } else {
                                 $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', false);
                             }
+                        });
+                        $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
+                            var medidasSeleccionadas = [];
+                            $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked').each(function () {
+                                medidasSeleccionadas.push($(this).val());
+                            });
+                            $('#medidas').val(medidasSeleccionadas.join('/'));
+                        });
+                        $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
+                            var medidasSeleccionadas = [];
+                            $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked').each(function () {
+                                medidasSeleccionadas.push($(this).val());
+                            });
+                            $('#medidas').val(medidasSeleccionadas.join('/'));
                         });
                         var table = $('#datatable').DataTable({
                             ajax: {

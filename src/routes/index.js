@@ -157,10 +157,10 @@ router.post('/carrito', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
+  const { codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
   if (img) {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
       if (error) {
         console.log(error);
         res.json({ message: error });
@@ -173,8 +173,8 @@ router.post('/update_producto', (req, res) => {
       }
     });
   } else {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
       if (error) {
         console.log(error);
         res.json({ message: error });
