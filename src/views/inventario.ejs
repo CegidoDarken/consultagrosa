@@ -4,6 +4,101 @@
 <head>
     <title>Inventario</title>
 </head>
+<style>
+
+.fl-table {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    background-color: white;
+}
+
+.fl-table td, .fl-table th {
+    text-align: center;
+    padding: 8px;
+}
+
+.fl-table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 12px;
+}
+
+
+.fl-table tr:nth-child(even) {
+    background: #F8F8F8;
+}
+
+/* Responsive */
+
+@media (max-width: 1010px) {
+    .fl-table {
+        display: block;
+        width: 100%;
+    }
+    .table-wrapper:before{
+        content: "Scroll horizontally >";
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: white;
+        padding: 0 0 10px;
+    }
+    .fl-table thead, .fl-table tbody, .fl-table thead th {
+        display: block;
+    }
+    .fl-table thead th:last-child{
+        border-bottom: none;
+    }
+    .fl-table thead {
+        float: left;
+    }
+    .fl-table tbody {
+        width: auto;
+        position: relative;
+        overflow-x: auto;
+    }
+    .fl-table td, .fl-table th {
+        padding: 20px .625em .625em .625em;
+        height: 60px;
+        vertical-align: middle;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 120px;
+        font-size: 13px;
+        text-overflow: ellipsis;
+    }
+    .fl-table thead th {
+        text-align: left;
+        border-bottom: 1px solid #f7f7f9;
+    }
+    .fl-table tbody tr {
+        display: table-cell;
+    }
+    .fl-table tbody tr:nth-child(odd) {
+        background: none;
+    }
+    .fl-table tr:nth-child(even) {
+        background: transparent;
+    }
+    .fl-table tr td:nth-child(odd) {
+        background: #F8F8F8;
+        border-right: 1px solid #E6E4E4;
+    }
+    .fl-table tr td:nth-child(even) {
+        border-right: 1px solid #E6E4E4;
+    }
+    .fl-table tbody td {
+        display: block;
+        text-align: center;
+    }
+}
+</style>
 
 <body>
     <%- include("partials/_headerpanel") %>
@@ -44,9 +139,10 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="container-fluid mt-2">
-                                        <table class="table table-sm table-hover text-center fl-table tablesort w-100"
-                                            id="datatable">
-                                            <thead>
+                                        <div class="table-wrapper">
+                                        <table class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                            id="datatable"  >
+                                            <thead class="text-light" style="background-color: #59ab6e;">
                                                 <tr>
                                                     <th>Imagen</th>
                                                     <th>Código</th>
@@ -65,6 +161,7 @@
                                             <tbody>
                                             </tbody>
                                         </table>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -279,8 +376,8 @@
                             bLengthChange: false,
                             info: true,
                             paging: true, columns: [
-                                { data: "img" },
-                                { data: "codigo", defaultContent: "-" },
+                                { data: "img","data-label": "Imagen" },
+                                { data: "codigo","data-label": "Imagen", defaultContent: "-" },
                                 { data: "nombre", defaultContent: "-" },
                                 { data: "categoria", defaultContent: "-" },
                                 { data: "tag", defaultContent: "-" },
@@ -300,7 +397,7 @@
                                     targets: 0,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
-                                        return (data.img) ? `<button data-img="${data.img}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
+                                        return (data.img) ? `<button data-img="${data.img}" data-nombre="${data.nombre}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
                                     }
                                 },
                                 {
@@ -347,7 +444,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                     }
                                 }
                             ],
@@ -389,16 +486,58 @@
                         });
                     });
                     function delete_producto(button) {
-                        op = "delete_producto";
-                        id = button.getAttribute('data-id')
-                        $('#delete_producto').modal('show');
+                        Swal.fire({
+                            title: 'Eliminar producto',
+                            text: '¿Estás seguro de que deseas eiminar este producto?',
+                            icon: 'warning',
+                            showDenyButton: true,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            denyButtonText: `Eliminar`,
+                        }).then((result) => {
+                            if (result.isDenied) {
+                                fetch("delete_producto", {
+                                    method: 'POST',
+                                    body: JSON.stringify({ idproducto: button.getAttribute('data-id') }),
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(response => response.json()).then(data => {
+                                    if (data.message === "Success") {
+                                        Swal.fire({
+                                            toast: true,
+                                            position: 'top-end',
+                                            icon: 'success',
+                                            title: 'Eliminado exitosamente',
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                            timer: 3000
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            toast: true,
+                                            position: 'top-end',
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: data.message,
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                            timer: 3000
+                                        });
+                                    }
+                                })
+                                    .catch(error => {
+                                        console.error(error);
+                                    });
+                            }
+                        })
                     }
                     function view_img(button) {
-                        var img = button.getAttribute('data-img');
-                        var newWindow = window.open();
-                        newWindow.document.write('<html><body style="text-align: center;">');
-                        newWindow.document.write(`<img src="${img}" style=" width: 500px; height: 500px; object-fit: contain; object-position: bottom;" />`);
-                        newWindow.document.write('</body></html>');
+                        Swal.fire({
+                            title: button.getAttribute('data-nombre'),
+                            imageUrl: button.getAttribute('data-img'),
+                            imageAlt: 'A tall image'
+                        })
                     }
                     function update_producto(button) {
                         op = "update_producto";
@@ -461,26 +600,7 @@
                             }
                         }
                     }
-                    document.getElementById('delete').addEventListener('click', function (event) {
-                        fetch(op, {
-                            method: 'POST',
-                            body: JSON.stringify({ idproducto: id }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.message === "Success") {
-                                    alert("¡Producto eliminado correctamente!");
-                                } else {
-                                    alert("¡Error al guardar producto!");
-                                }
-                            })
-                            .catch(error => {
-                                console.error(error);
-                            });
-                    });
+
                     document.getElementById('image').addEventListener('change', function (event) {
                         var output = document.getElementById('img');
                         const fileInput = document.getElementById('image');
