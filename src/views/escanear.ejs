@@ -24,33 +24,67 @@
                 <section class="section">
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="card">
-                                <div class="card-header text-danger text-uppercase text-center">
-                                    <h1>Desconectado</h1>
+                            <div class="container-fluid mt-2">
+                                <div id="connected" class="row g-0" style="display: none;">
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                                                <div class="col">
+                                                    <div class="card text-center mb-3 shadow">
+                                                        <div class="card-body">
+                                                            <svg class="icon m-3" width="100" height="100"
+                                                                fill="#1f6f40">
+                                                                <use xlink:href="/icons/bootstrap-icons.svg#upc-scan" />
+                                                            </svg>
+                                                            <h5 class="card-title text-uppercase">Escanear
+                                                                producto</h5>
+                                                            <p class="card-text">Al escanear el producto,
+                                                                podremos recopilar la
+                                                                información necesaria y brindarte una
+                                                                experiencia personalizada.</p>
+                                                            <button onclick="escanear()" id="escanear"
+                                                                class="btn btn-primary text-uppercase">Empezar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="card text-center mb-3 shadow">
+                                                        <div class="card-body">
+                                                            <svg class="icon m-3" width="100" height="100"
+                                                                fill="#1f6f40">
+                                                                <use xlink:href="/icons/bootstrap-icons.svg#box-seam" />
+                                                            </svg>
+                                                            <h5 class="card-title text-uppercase">Asignar tag
+                                                            </h5>
+                                                            <p class="card-text">Al escanear el producto, te
+                                                                ofrecemos la posibilidad de
+                                                                editar la información del TAG del producto. Esto
+                                                                te permitirá asignar un
+                                                                producto según sea necesario.</p>
+                                                            <button class="btn btn-primary"
+                                                                onclick="asignar()">Empezar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="container-fluid mt-2">
-                                        <div id="disconnected" class="card text-center container">
+                                <div class="card" id="disconnected">
+                                    <div class="card-header text-danger text-uppercase text-center">
+                                        <h1>Desconectado</h1>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card text-center container-fluid">
+
                                             <img src="img/usb.gif" style="width: 35%;height: 30%;"
                                                 class="align-self-center" alt="...">
-                                            <div class="container">
-                                                <h2 class="card-title text-uppercase">No se ha encontrado ningún Sensor
-                                                    RFID</h2>
-                                                <p class="card-text">Para continuar con el proceso de registro de
-                                                    productos, tepedimos
-                                                    amablemente que conectes un sensor a tu PC. El sensor nos permitirá
-                                                    recopilar datos
-                                                    importantes del producto que deseas registrar, lo cual nos ayudará a
-                                                    brindarte una
-                                                    experiencia personalizada y completa. Agradecemos tu colaboración y
-                                                    estamos entusiasmados
-                                                    por poder asistirte en este proceso. Si necesitas alguna ayuda
-                                                    adicional durante la conexión
-                                                    del sensor, nuestro equipo de soporte estará encantado de brindarte
-                                                    la asistencia necesaria.
-                                                    ¡Gracias por elegir nuestro sistema de registro y por tu
-                                                    participación activa!</p> <button
-                                                    onClick="requestSerialPermission()" class="btn btn-primary"><i class="bi bi-usb-symbol"></i> Conectar</button>
+                                            <div class="container-fluid">
+                                                <h2 class="card-title text-uppercase">Para continuar con el proceso de
+                                                    escaneo de
+                                                    productos, conecte un sensor a tu PC.</h2>
+                                                <button onClick="requestSerialPermission()" class="btn btn-primary"><i
+                                                        class="bi bi-usb-symbol"></i> Conectar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -63,5 +97,296 @@
             </main>
             <%- include("partials/_fotterpanel") %>
 </body>
+<script>
+    let snd = new Audio("sound/beep.wav");
+    let port;
+    let reader = null;
+    async function requestSerialPermission() {
+        try {
+            port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 9600 });
+            if (port.getInfo().usbVendorId != 9025) {
+                await port.close();
+                return;
+            }
+            port.addEventListener('disconnect', handleDisconnect);
+            await setTimeout(() => {
+                document.getElementById("connected").style.display = "block";
+                document.getElementById("disconnected").style.display = "none";
+            }, 1000);
+        } catch (error) {
+            console.error('Error al solicitar permiso de acceso al puerto serie:', error);
+        }
+    }
+    function handleDisconnect(event) {
+        if (event.target === port) {
+            document.getElementById("connected").style.display = "none";
+            document.getElementById("disconnected").style.display = "block";
+            console.log('Desconectado del puerto serie.');
+        }
+    }
+    async function escanear() {
+        let tag;
+        Swal.fire({
+            title: '¡SELECCIONE UNA OPCIÓN!',
+            icon: 'info',
+            html: `<div class="container text-start p-3"><select id="opcion" class="form-select"><option>Entrada</option><option>Salida</option>/select></div>`,
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'SIGUIENTE',
+            confirmButtonColor: "#198754",
+            cancelButtonText: 'CANCELAR',
+            showConfirmButton: true,
+            focusConfirm: false,
+            width: '800px',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                read();
+            }
+        });
+    }
+    async function asignar() {
+        let tag;
+        Swal.fire({
+            title: '¡SELECCIONE UN PRODUCTO PARA SER ASIGNADO!',
+            icon: 'info',
+            html: `<div class="container-fluid text-start p-3"><select id="productos" class="form-select"><% if (productos) { %><% productos.forEach(row=> { %><option value="<%= row.tag %>"><%= row.nombre %></option><% }); %><% } %></select></div>`,
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'SIGUIENTE',
+            confirmButtonColor: "#198754",
+            cancelButtonText: 'CANCELAR',
+            showConfirmButton: true,
+            focusConfirm: false,
+            width: '800px',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                write($("#productos").val());
+            }
+        })
+    }
+    async function write(data) {
+        if (!port) {
+            console.error('No se ha establecido una conexión con el puerto serie.');
+            return;
+        }
+        await sendData("e");
+        await sendData("e");
+        Swal.fire({
+            title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
+            icon: 'info',
+            text: ' ',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+            focusConfirm: false,
+            width: '800px'
+        }).then(async (result) => {
+            if (reader) {
+                await reader.cancel();
+                reader.releaseLock();
+                reader = null;
+            }
+        });
+        let message = "";
+        try {
+            if (reader) {
+                await reader.cancel();
+                reader.releaseLock();
+                reader = null;
+            }
+            reader = await port.readable.getReader();
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    break;
+                }
+                const textDecoder = new TextDecoder();
+                const receivedData = textDecoder.decode(value);
+                message += receivedData;
+                if (receivedData.includes("\n")) {
+                    if (message.includes("Type First name, ending with #")) {
+                        await setTimeout(async () => {
+                            await sendData(data + "#");
+                        }, 1000);
+                    } else if (message.includes("PCD_Authenticate() failed: Timeout in communication.") || message.includes("PCD_Authenticate() failed:: Error in communication.")) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'bottom-end',
+                            icon: 'error',
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        await reader.cancel();
+                        await reader.releaseLock();
+                        reader = null;
+                        await port.close();
+                        document.getElementById("connected").style.display = "none";
+                        document.getElementById("disconnected").style.display = "block";
+                        console.log('Desconectado del puerto serie.');
+                    } else if (message.includes("MIFARE_Write() success:")) {
+                        snd.play();
+                        fetch('/buscarproductotag', {
+                            method: 'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ tag: data }),
+                        }).then(response => response.json()).then(async data => {
+                            snd.play();
+                            await sendData("null");
+                            await sendData("null");
+                            Swal.fire({
+                                title: '¡PRODUCTO ASIGNADO CORRECTAMENTE!',
+                                icon: 'success',
+                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p></div></div></div></div>`,
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                focusConfirm: false,
+                                width: '800px'
+                            }).then(async (result) => {
+                                if (reader) {
+                                    await reader.cancel();
+                                    reader.releaseLock();
+                                    reader = null;
+                                }
+                            });
+                        });
+                    }
+                    message = "";
+                }
+            }
+        } catch (error) {
+            console.error('Error al leer desde el puerto serie:', error);
+        }
+    }
+    async function read() {
+        Swal.fire({
+            title: '¡ESCANEA EL PRODUCTO PARA OBTENER MÁS DETALLES!',
+            icon: 'info',
+            text: ' ',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+            focusConfirm: false,
+            width: '800px'
+        }).then(async (result) => {
+            if (reader) {
+                await reader.cancel();
+                reader.releaseLock();
+                reader = null;
+            }
+        });;
+        if (!port) {
+            console.error('No se ha establecido una conexión con el puerto serie.');
+            return;
+        }
+        let message = "";
+        await sendData("l");
+        await sendData("l");
+        try {
+            if (reader) {
+                await reader.cancel();
+                reader.releaseLock();
+                reader = null;
+            }
+            reader = await port.readable.getReader();
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    break;
+                }
+                const textDecoder = new TextDecoder();
+                const receivedData = textDecoder.decode(value);
+                message += receivedData;
+                if (receivedData.includes("\n")) {
+                    if (message.includes("MIFARE_Read() failed: The CRC_A does not match.") || message.includes("MIFARE_Read() failed: Error in communication.") || message.includes("PCD_Authenticate() failed: Timeout in communication.")) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'bottom-end',
+                            icon: 'error',
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        await reader.cancel();
+                        await reader.releaseLock();
+                        reader = null;
+                        await port.close();
+                        document.getElementById("connected").style.display = "none";
+                        document.getElementById("disconnected").style.display = "block";
+                        console.log('Desconectado del puerto serie.');
+                        return;
+                    }
+                    fetch('/buscarproductotag', {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ tag: message.trim() }),
+                    }).then(response => response.json()).then(async data => {
+                        if (data.message) {
+                            snd.play();
+                            Swal.fire({
+                                title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
+                                icon: 'success',
+                                html: `<h3 class="text-uppercase"><span class="badge bg-secondary text-uppercase m-2">${data.message}</span></h3>`,
+                                showCloseButton: true,
+                                showCancelButton: true,
+                                showConfirmButton: true,
+                                confirmButtonText: 'SIGUIENTE',
+                                confirmButtonColor: "#198754",
+                                cancelButtonText: 'CANCELAR',
+                                showConfirmButton: true,
+                                width: '800px'
+                            }).then(async (result) => {
+                                if (reader) {
+                                    await reader.cancel();
+                                    reader.releaseLock();
+                                    reader = null;
+                                }
+                            });
+                        } else if (data.codigo) {
+                            snd.play();
+                            Swal.fire({
+                                title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
+                                icon: 'success',
+                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p><div class="row g-2"><div class="col-md-3"><div class="form-floating mb-3"><input type="number" class="form-control" id="floatingInput" placeholder="name@example.com" value=""><label for="floatingInput">Cantidad</label></div></div><div class="col-md-3"><div class="input-group mb-5"><span class="input-group-text">$</span><div class="form-floating mb-3"><input type="number" class="form-control" id="floatingInput" value="" readonly><label for="floatingInput">Total</label></div></div></div></div></div></div></div></div>`,
+                                showCloseButton: true,
+                                showCancelButton: true,
+                                showConfirmButton: true,
+                                confirmButtonText: 'SIGUIENTE',
+                                confirmButtonColor: "#198754",
+                                cancelButtonText: 'CANCELAR',
+                                showConfirmButton: true,
+                                width: '800px'
+                            }).then(async (result) => {
+                                if (reader) {
+                                    await reader.cancel();
+                                    reader.releaseLock();
+                                    reader = null;
+                                }
+                            });
+                            producto = data.codigo;
+                        }
+                    });
+                    message = "";
+                }
+            }
+        } catch (error) {
+            console.error('Error al leer desde el puerto serie:', error);
+        }
+    }
+
+    async function sendData(data) {
+        try {
+            let encoder = new TextEncoder();
+            const encodedData = encoder.encode(data);
+            const writer = port.writable.getWriter();
+            await writer.write(encodedData);
+            await writer.releaseLock();
+        } catch (error) {
+            console.error('Error al enviar datos al puerto serie:', error);
+        }
+    }
+</script>
 
 </html>

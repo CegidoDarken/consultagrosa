@@ -118,6 +118,20 @@ router.post("/obtener_inventario", async (req, res) => {
     }
   });
 });
+router.post("/obtener_inventario_total", async (req, res) => {
+  const sql = "SELECT count(id_producto) FROM railway.productos;";
+  connection.query(sql, (error, total) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (productos.length > 0) {
+        res.json({ data: total });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
 router.post("/obtener_usuarios", async (req, res) => {
   const sql = "SELECT * FROM usuarios INNER JOIN perfiles ON usuarios.perfil_id = perfiles.id_perfil LEFT JOIN ciudades ON usuarios.ciudad_id = ciudades.id_ciudad LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
   connection.query(sql, (error, result) => {
@@ -143,10 +157,10 @@ router.post('/carrito', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
+  const { codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
   if (img) {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
       if (error) {
         console.log(error);
         res.send({ message: error });
@@ -159,7 +173,7 @@ router.post('/update_producto', (req, res) => {
       }
     });
   } else {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
+    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
     connection.query(sql, [codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
       if (error) {
         console.log(error);
@@ -173,7 +187,22 @@ router.post('/update_producto', (req, res) => {
       }
     });
   }
-
+});
+router.post('/insertar_salida', (req, res) => {
+  const { idproducto, cantidad, total } = req.body;
+  const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";
+  connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
+    if (error) {
+      console.log(error);
+      res.send({ message: error });
+    } else {
+      if (results) {
+        res.send({ message: "Success" });
+      } else {
+        res.send({ message: "No found" });
+      }
+    }
+  });
 });
 
 router.post("/buscarproductotag", async (req, res) => {

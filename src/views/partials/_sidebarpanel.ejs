@@ -46,10 +46,17 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link " href="/usuarios">
-                <i class="bi bi-people"></i>
-                <span>Gestionar usuarios</span>
+            <a class="nav-link collapsed" data-bs-target="#seguridad" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-shield-lock"></i><span>Seguridad</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
+            <ul id="seguridad" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/usuarios">
+                        <i class="bi bi-people fs-6"></i>
+                        <span>Gestionar usuarios</span>
+                    </a>
+                </li>
+            </ul>
         </li>
     </ul>
 </aside>

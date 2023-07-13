@@ -26,6 +26,13 @@
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-header">
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#editModal"><i class="bi bi-plus"></i>Añadir
+                                            Producto</button>
+                                    </div>
+                                </div>
+                                <div class="card-header">
                                     <div class="input-group mb-3">
                                         <form class="form-floating">
                                             <input type="text" class="form-control" id="search" placeholder="Buscar"
@@ -80,7 +87,7 @@
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="" id="editimg" width="200">
+                                            <img src="" id="img" width="200">
                                             <div class="mb-3">
                                                 <input class="form-control form-control-sm" id="image" type="file"
                                                     accept="image/*">
@@ -90,27 +97,60 @@
                                             <div class="card-body">
                                                 <div class="row g-3">
                                                     <div class="col-12 text-start">
-                                                        <label for="editcodigo" class="form-label">Código</label>
-                                                        <input type="text" class="form-control" id="editcodigo"
+                                                        <label for="codigo" class="form-label">Código</label>
+                                                        <input type="text" class="form-control" id="codigo"
                                                             placeholder="Ingrese un código" value="" name="codigo"
                                                             required>
                                                     </div>
                                                     <div class=" col-12 text-start">
-                                                        <label for="editnombre" class="form-label">Nombre</label>
-                                                        <input type="text" class="form-control" id="editnombre"
+                                                        <label for="nombre" class="form-label">Nombre</label>
+                                                        <input type="text" class="form-control" id="nombre"
                                                             placeholder="Ingrese un nombre de producto" value=""
                                                             name="nombre" required>
                                                     </div>
-                                                    <div class=" col-12">
-                                                        <label for="edittag" class="form-label">Tag</label>
-                                                        <div class="input-group mb-3">
-                                                            <input type="text" class="form-control" id="edittag"
-                                                                placeholder="Ingrese un tag" value="" name="tag">
-                                                            <span class="input-group-text">#</span>
+                                                    <div class=" col-12 text-start">
+                                                        <label for="nombre" class="form-label">Medidas</label>
+                                                        <div class="row">
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="1l"
+                                                                    autocomplete="off" name="1l" value="1L">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="1l">1L</label>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="5l"
+                                                                    autocomplete="off" name="5l" value="5L">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="5l">5L</label>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="20l"
+                                                                    autocomplete="off" name="20l" value="20L">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="20l">20L</label>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="1kg"
+                                                                    autocomplete="off" name="1kg" value="1Kg">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="1kg">1Kg</label>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="5kg"
+                                                                    autocomplete="off" name="5kg" value="5Kg">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="5kg">5Kg</label>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <input type="checkbox" class="btn-check" id="25kg"
+                                                                    autocomplete="off" name="25kg" value="25Kg">
+                                                                <label class="btn btn-outline-primary btn-sm"
+                                                                    for="25kg">25Kg</label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label for="editcategoria" class="form-label">Categoria</label>
+                                                        <label for="categoria" class="form-label">Categoria</label>
                                                         <div class="form-floating">
                                                             <select name="categoria" class="form-select"
                                                                 id="editcategoria">
@@ -128,7 +168,7 @@
                                                     <div class="col-12">
                                                         <label for="floatingTextarea2"
                                                             class="form-label">Descripción</label>
-                                                        <textarea id="editdescripcion" class="form-control"
+                                                        <textarea id="descripcion" class="form-control"
                                                             placeholder="Descripción" name="descripcion"
                                                             style="max-height: 150px;min-height: 150px;"></textarea>
                                                     </div>
@@ -149,9 +189,10 @@
                                                     <div class="col-md-4 text-start">
                                                         <label for="descuento" class="form-label">Descuento</label>
                                                         <div class="input-group mb-3">
-                                                            <input type="number" class="form-control" name="descuento"
-                                                                id="descuento" placeholder="Ingrese un descuento"
-                                                                max="100" value="" onkeyup="changeinput(this)">
+                                                            <input type="number" class="form-control"
+                                                                name="descuento" id="descuento"
+                                                                placeholder="Ingrese un descuento" max="100" value=""
+                                                                onkeyup="changeinput(this)">
                                                             <span class="input-group-text">%</span>
                                                         </div>
                                                     </div>
@@ -212,6 +253,7 @@
             </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
+                    var id;
                     $(document).ready(function () {
                         var table = $('#datatable').DataTable({
                             ajax: {
@@ -227,7 +269,7 @@
                                 { data: "nombre", defaultContent: "-" },
                                 { data: "categoria", defaultContent: "-" },
                                 { data: "tag", defaultContent: "-" },
-                                { data: "medida", defaultContent: "-" },
+                                { data: "medidas", defaultContent: "-" },
                                 { data: "descuento", defaultContent: "-" },
                                 { data: "precio", defaultContent: "-" },
                                 { data: "preciodesc", defaultContent: "-" },
@@ -243,10 +285,19 @@
                                     targets: 0,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
-
-                                        imageHTML = `<img src="${data.img ?? 'img/no-image-icon.png'}" width="50">`;
-
+                                        imageHTML = `<img src="${data.img ?? 'img/no-image-icon.png'}"  style=" width: 50px; height: 50px; object-fit: contain; object-position: bottom;">`;
                                         return imageHTML;
+                                    }
+                                },
+                                {
+                                    targets: 4,
+                                    render: function (data, type, row, meta) {
+                                        var data = table.row(meta.row).data();
+                                        if (data.tag) {
+                                            return `<span class="badge rounded-pill text-bg-primary text-light">#${data.tag}</span>`;
+                                        } else {
+                                            return `<span class="badge rounded-pill text-bg-warning text-light">Asignar</span>`;
+                                        }
                                     }
                                 },
                                 {
@@ -282,7 +333,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
                                     }
                                 }
                             ],
@@ -315,7 +366,6 @@
                             }
                         });
                         $("#datatable_filter").hide();
-                        $('.js-example-basic-single').select2();
                         $('#search').keyup(function () {
                             table = $('.tablesort').DataTable();
                             table.search($(this).val()).draw();
@@ -325,14 +375,25 @@
                         });
                     });
                     function edit(button) {
+                        id = button.getAttribute('data-id')
                         var img = button.getAttribute('data-img') ?? "img/image-not-found.png";
                         var codigo = button.getAttribute('data-codigo');
                         var nombre = button.getAttribute('data-nombre');
                         var descripcion = button.getAttribute('data-descripcion');
-                        $('#editimg').attr('src', img);
-                        $("#editcodigo").val(codigo);
-                        $("#editnombre").val(nombre);
-                        $("#editdescripcion").val(descripcion);
+                        var cantidad = button.getAttribute('data-cantidad');
+                        var descuento = button.getAttribute('data-descuento');
+                        var precio = button.getAttribute('data-precio');
+                        var preciodesc = button.getAttribute('data-preciodesc');
+                        var total = button.getAttribute('data-total');
+                        $('#img').attr('src', img);
+                        $("#codigo").val(codigo);
+                        $("#nombre").val(nombre);
+                        $("#descripcion").val(descripcion);
+                        $("#cantidad").val(cantidad);
+                        $("#descuento").val(descuento);
+                        $("#precio").val(precio);
+                        $("#preciodesc").val(preciodesc);
+                        $("#total").val(total);
                         $('#editModal').modal('show');
                     }
                     function calculardesc() {
@@ -361,6 +422,67 @@
                                 input.value = 0;
                             }
                         }
+                    }
+                    document.getElementById('image').addEventListener('change', function (event) {
+                        var output = document.getElementById('img');
+                        const fileInput = document.getElementById('image');
+                        output.src = URL.createObjectURL(fileInput.files[0]);
+                        output.onload = function () {
+                            URL.revokeObjectURL(output.src);
+                        }
+                    });
+                    document.getElementById('formulario').addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        const fileInput = document.getElementById('image');
+                        const file = fileInput.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = function () {
+                                const base64Image = reader.result;
+                                const formData = new FormData(event.target);
+                                formData.append('img', base64Image);
+                                formData.append('idproducto', id);
+                                fetch('update_producto', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.message === "Success") {
+                                            alert("¡Producto actualizado correctamente!");
+                                        } else {
+                                            alert("¡Error al guardar producto!");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                    });
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            const formData = new FormData(event.target);
+                            formData.append('idproducto', id);
+                            fetch('update_producto', {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.message === "Success") {
+                                        alert("¡Producto actualizado correctamente!");
+                                    } else {
+                                        alert("¡Error al guardar producto!");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
+                        }
+                    });
+                    function changeinput(input) {
+                        limit(input);
+                        calculardesc();
+                        calculartotal();
                     }
                 </script>
 
