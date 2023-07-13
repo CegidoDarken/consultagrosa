@@ -316,20 +316,6 @@
                                     }
                                 },
                                 {
-                                    targets: 5,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        if ((data.medidas).includes('/')) {
-                                            var medidas = data.medidas.split('/');
-                                            var divs = medidas.map(function (medida) {
-                                                return '<div>' + medida + '</div>';
-                                            });
-                                            return divs.join('');
-                                        }
-                                        return data.medidas;
-                                    }
-                                },
-                                {
                                     targets: 6,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
