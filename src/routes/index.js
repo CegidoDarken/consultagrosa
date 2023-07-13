@@ -163,30 +163,46 @@ router.post('/update_producto', (req, res) => {
     connection.query(sql, [codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
       if (error) {
         console.log(error);
-        res.send({ message: error });
+        res.json({ message: error });
       } else {
         if (results) {
-          res.send({ message: "Success" });
+          res.json({ message: "Success" });
         } else {
-          res.send({ message: "No found" });
+          res.json({ message: "No found" });
         }
       }
     });
   } else {
     const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, medida, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
+    connection.query(sql, [codigo, categoria, nombre, descripcion, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
       if (error) {
         console.log(error);
-        res.send({ message: error });
+        res.json({ message: error });
       } else {
         if (results) {
-          res.send({ message: "Success" });
+          res.json({ message: "Success" });
         } else {
-          res.send({ message: "No found" });
+          res.json({ message: "No found" });
         }
       }
     });
   }
+});
+router.post('/eliminar_producto', (req, res) => {
+  const { idproducto, cantidad, total } = req.body;
+  const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";
+  connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
+    if (error) {
+      console.log(error);
+      res.send({ message: error });
+    } else {
+      if (results) {
+        res.send({ message: "Success" });
+      } else {
+        res.send({ message: "No found" });
+      }
+    }
+  });
 });
 router.post('/insertar_salida', (req, res) => {
   const { idproducto, cantidad, total } = req.body;
