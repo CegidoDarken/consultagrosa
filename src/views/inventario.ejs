@@ -27,9 +27,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-grid gap-2 d-md-block">
-                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#editModal"><i class="bi bi-plus"></i>Añadir
-                                            Producto</button>
+                                        <button class="btn btn-primary" type="button" onclick="nuevo(this)"><i class="bi bi-plus"></i>Añadir Producto</button>
                                     </div>
                                 </div>
                                 <div class="card-header">
@@ -79,7 +77,7 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="editModalLabel">Editar producto</h1>
+                            <h1 class="modal-title fs-5" id="titulo"></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -385,6 +383,8 @@
                         var precio = button.getAttribute('data-precio');
                         var preciodesc = button.getAttribute('data-preciodesc');
                         var total = button.getAttribute('data-total');
+                        $("#titulo").text("Editar Producto");
+                        $("#formulario")[0].reset();
                         $('#img').attr('src', img);
                         $("#codigo").val(codigo);
                         $("#nombre").val(nombre);
@@ -394,6 +394,12 @@
                         $("#precio").val(precio);
                         $("#preciodesc").val(preciodesc);
                         $("#total").val(total);
+                        $('#editModal').modal('show');
+                    }
+                    function nuevo(button) {
+                        id = button.getAttribute('data-id')
+                        $("#titulo").text("Nuevo Producto");
+                        $("#formulario")[0].reset();
                         $('#editModal').modal('show');
                     }
                     function calculardesc() {
