@@ -28,7 +28,7 @@
                                 <div id="connected" class="row g-0" style="display: none;">
                                     <div class="col">
                                         <div class="card-body">
-                                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2">
                                                 <div class="col">
                                                     <div class="card text-center mb-3 shadow">
                                                         <div class="card-body">
@@ -349,7 +349,7 @@
                             Swal.fire({
                                 title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
                                 icon: 'success',
-                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p><div class="row g-2"><div class="col-md-3"><div class="form-floating mb-3"><input type="number" class="form-control" id="floatingInput" placeholder="name@example.com" value=""><label for="floatingInput">Cantidad</label></div></div><div class="col-md-3"><div class="input-group mb-5"><span class="input-group-text">$</span><div class="form-floating mb-3"><input type="number" class="form-control" id="floatingInput" value="" readonly><label for="floatingInput">Total</label></div></div></div></div></div></div></div></div>`,
+                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body text-start"><p class="card-text text-uppercase">Nombre: ${data.nombre}</p><p class="card-text text-uppercase">Categoría: ${data.categoria}</p><p class="card-text text-uppercase">Medidas: ${data.medidas}</p><p class="card-text text-uppercase">Stock: ${data.cantidad} </p><p class="card-text text-uppercase">Precio: $${data.precio} </p><p class="card-text text-uppercase">Descuento: ${data.descuento}% </p><p class="card-text text-uppercase">Precio Desc: $${data.preciodesc} </p><p class="card-text text-uppercase">Total: $${data.total} </p></div></div></div></div>`,
                                 showCloseButton: true,
                                 showCancelButton: true,
                                 showConfirmButton: true,

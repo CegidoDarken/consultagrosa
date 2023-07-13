@@ -222,10 +222,11 @@ router.post('/insert_producto', (req, res) => {
   }
 });
 
-router.post('/eliminar_producto', (req, res) => {
-  const { idproducto, cantidad, total } = req.body;
-  const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";
-  connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
+router.post('/delete_producto', (req, res) => {
+  const idProducto = req.body.idproducto;
+  console.log(idProducto);
+  const sql = "DELETE FROM `productos` WHERE id_producto = ?";
+  connection.query(sql, [idProducto], (error, results) => {
     if (error) {
       console.log(error);
       res.send({ message: error });

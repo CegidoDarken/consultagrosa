@@ -216,7 +216,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            <div class="modal fade" id="delete_producto" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -227,7 +227,7 @@
                         <div class="modal-body">¿Estás seguro de que deseas eiminar este producto?</div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a class="btn btn-danger" href="">Eliminar</a>
+                            <button class="btn btn-danger" id="delete">Eliminar</button>
                         </div>
                     </div>
                 </div>
@@ -300,8 +300,7 @@
                                     targets: 0,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
-                                        imageHTML = `<img src="${data.img ?? 'img/no-image-icon.png'}"  style=" width: 50px; height: 50px; object-fit: contain; object-position: bottom;">`;
-                                        return imageHTML;
+                                        return (data.img) ? `<button data-img="${data.img}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
                                     }
                                 },
                                 {
@@ -348,7 +347,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></div>`;
                                     }
                                 }
                             ],
@@ -389,7 +388,19 @@
                             await table.ajax.reload()
                         });
                     });
-                    function edit(button) {
+                    function delete_producto(button) {
+                        op = "delete_producto";
+                        id = button.getAttribute('data-id')
+                        $('#delete_producto').modal('show');
+                    }
+                    function view_img(button) {
+                        var img = button.getAttribute('data-img');
+                        var newWindow = window.open();
+                        newWindow.document.write('<html><body style="text-align: center;">');
+                        newWindow.document.write(`<img src="${img}" style=" width: 500px; height: 500px; object-fit: contain; object-position: bottom;" />`);
+                        newWindow.document.write('</body></html>');
+                    }
+                    function update_producto(button) {
                         op = "update_producto";
                         $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
                         id = button.getAttribute('data-id')
@@ -415,6 +426,7 @@
                         $("#total").val(total);
                         $('#producto').modal('show');
                     }
+
                     function nuevo(button) {
                         op = "insert_producto";
                         $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
@@ -449,6 +461,26 @@
                             }
                         }
                     }
+                    document.getElementById('delete').addEventListener('click', function (event) {
+                        fetch(op, {
+                            method: 'POST',
+                            body: JSON.stringify({ idproducto: id }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.message === "Success") {
+                                    alert("¡Producto eliminado correctamente!");
+                                } else {
+                                    alert("¡Error al guardar producto!");
+                                }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            });
+                    });
                     document.getElementById('image').addEventListener('change', function (event) {
                         var output = document.getElementById('img');
                         const fileInput = document.getElementById('image');
