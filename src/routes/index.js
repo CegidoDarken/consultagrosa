@@ -188,6 +188,40 @@ router.post('/update_producto', (req, res) => {
     });
   }
 });
+
+router.post('/insert_producto', (req, res) => {
+  const { codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
+  if (img) {
+    const sql = "INSERT INTO `railway`.`productos`(`codigo`,`categoria_id`,`nombre`,`descripcion`,`medidas`,`precio`,`descuento`,`preciodesc`,`cantidad`,`total`,`img`)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img], (error, results) => {
+      if (error) {
+        console.log(error);
+        res.json({ message: error });
+      } else {
+        if (results) {
+          res.json({ message: "Success" });
+        } else {
+          res.json({ message: "No found" });
+        }
+      }
+    });
+  } else {
+    const sql = "INSERT INTO `railway`.`productos`(`codigo`,`categoria_id`,`nombre`,`descripcion`,`medidas`,`precio`,`descuento`,`preciodesc`,`cantidad`,`total`,`img`)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total], (error, results) => {
+      if (error) {
+        console.log(error);
+        res.json({ message: error });
+      } else {
+        if (results) {
+          res.json({ message: "Success" });
+        } else {
+          res.json({ message: "No found" });
+        }
+      }
+    });
+  }
+});
+
 router.post('/eliminar_producto', (req, res) => {
   const { idproducto, cantidad, total } = req.body;
   const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";

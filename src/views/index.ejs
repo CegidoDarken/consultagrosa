@@ -182,12 +182,14 @@
                                         </a>
                                         <a class="h3 text-decoration-none d-flex text-center">
                                             <p class="m-1 ms-0">Medidas:</p>
+                                            <% if(value.medidas){ %>
                                                 <% const medidasArray=value.medidas.split('/'); %>
                                                     <% medidasArray.forEach((medida, index)=> { %>
                                                         <span class="badge m-1" id="medida<%= index + 1 %>" style="background-color: #59ab6e;">
                                                             <%= medida %>
                                                         </span>
                                                         <% }); %>
+                                                        <% } %>
                                         </a>
                                         <p class="fw-bold mb-0">$<%= value.precio %>
                                         </p>

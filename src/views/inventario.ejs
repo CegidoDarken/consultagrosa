@@ -316,6 +316,20 @@
                                     }
                                 },
                                 {
+                                    targets: 5,
+                                    render: function (data, type, row, meta) {
+                                        var data = table.row(meta.row).data();
+                                        if ((data.medidas).includes('/')) {
+                                            var medidas = data.medidas.split('/');
+                                            var divs = medidas.map(function (medida) {
+                                                return '<div>' + medida + '</div>';
+                                            });
+                                            return divs.join('');
+                                        }
+                                        return data.medidas;
+                                    }
+                                },
+                                {
                                     targets: 6,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
@@ -391,6 +405,7 @@
                     });
                     function edit(button) {
                         op = "update_producto";
+                        $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
                         id = button.getAttribute('data-id')
                         var img = button.getAttribute('data-img');
                         var codigo = button.getAttribute('data-codigo');
@@ -416,6 +431,7 @@
                     }
                     function nuevo(button) {
                         op = "insert_producto";
+                        $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
                         $("#titulo").text("Nuevo Producto");
                         $("#formulario")[0].reset();
                         $('#producto').modal('show');
