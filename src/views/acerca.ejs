@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Acerca de nosotros</title>
+</head>
+
+<body>
+    <%- include("partials/_headerindex") %>
+        <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="w-100 pt-1 mb-5 text-right">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="get" class="modal-content modal-body border-0 p-0">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                        <button type="submit" class="input-group-text bg-success text-light">
+                            <i class="fa fa-fw fa-search text-white"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <section class="bg-success py-5" style=" background-image: linear-gradient(rgba(46, 87, 56, 0.65), rgba(46, 87, 56, 0.65)), url('/img/agricultura.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;">
+            <div class="container">
+                <div class="row align-items-center py-5">
+                    <div class="col-md-8 text-white">
+                        <h1>QUIENES SOMOS</h1>
+                        <p>
+                            Una empresa diferenciada en el sector agricola, consientes de enfrentar un
+                            campo Cada vez más competitivo y posicionado por importantes empresas
+                            Formuladoras y Distribuidoras locales e internacionales, con la firme
+                            convicción de que nuestros procesos son cada vez de mayor importancia.
+                            vamos hacia adelante pensando en elevar nuestro compromiso con nuestros
+                            Clientes y Medio Ambiente.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/img/logo.png" width="150">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container py-5">
+            <div class="row text-center pt-5 pb-3">
+                <div class="col-lg-6 m-auto">
+                    <h1 class="h1">Nuestros Servicios</h1>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-1-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Consultoria técnica en control de Sigatoka</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-2-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Uso y manejo de plaguicidas</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-3-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Como mejorar la producción</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <%- include("partials/_fotterindex") %>
+</body>
+
+</html>

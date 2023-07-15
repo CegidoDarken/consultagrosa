@@ -2,104 +2,17 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/templatemo.min.css">
-    <link rel="stylesheet" href="/css/custom.css">
-    <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <title>Consultagro S.A</title>
 </head>
 
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light shadow">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-
-            <a class="navbar-brand text-success logo align-self-start text-uppercase" href="">
-                Consultagro S.A
-            </a>
-
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between"
-                id="templatemo_main_nav">
-                <div class="flex-fill">
-                    <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href=""><i class="bi bi-question-circle-fill"></i> Acerca de
-                                nosotros</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="/" style="color: #59ab6e;"><i class="bi bi-bag-fill"></i>
-                                Tienda</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href=""><i class="bi bi-telephone-fill"></i> Contactanos</a>
-                        </li>
-                    </ul>
-                </div>
-                <ul class="navbar-nav">
-                    <% if (credentials) { %>
-                        <li class="nav-item ">
-                            <a href="" class="nav-link dropdown-toggle" data-bs-toggle="modal" data-bs-target="#Cart">
-                                <svg class="icon" width="20" height="20" fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#cart" />
-                                </svg> Carrito
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
-                                    <svg class="icon" width="20" height="20" fill="currentColor">
-                                        <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
-                                    </svg>
-                                    <%= credentials.nombre %>
-                                </a>
-                                <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
-                                    <li><a class="dropdown-item" href="#">
-                                            <svg class="icon" width="20" height="20" fill="currentColor">
-                                                <use xlink:href="/icons/bootstrap-icons.svg#gear" />
-                                            </svg> Configuración</a></li>
-                                    <li>
-                                        <a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> Perfil
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="" data-bs-toggle="modal"
-                                            data-bs-target="#logoutModal">
-                                            <svg class="icon" width="20" height="20" fill="currentColor">
-                                                <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
-                                            </svg> Cerrar sesión
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <% } else { %>
-                            <li class="nav-item">
-                                <button class="nav-link" onclick="login()"><i class="bi bi-person-fill"></i> Iniciar
-                                    sesión</>
-                            </li>
-                            <% } %>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+    <%- include("partials/_headerindex") %>
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-3">
                 <h2 class="h2 pb-4"><i class="bi bi-ui-checks-grid"></i> Categorias</h2>
                 <div class="row">
-                    <div class="dropdown col-md-2">
+                    <div class="dropdown dropend col-md-2">
                         <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Tipos
@@ -109,7 +22,7 @@
                             <li><a class="dropdown-item" href="#">Fungicidas</a></li>
                         </ul>
                     </div>
-                    <div class="dropdown">
+                    <div class="dropdown dropend">
                         <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Medidas
@@ -185,11 +98,12 @@
                                             <% if(value.medidas){ %>
                                                 <% const medidasArray=value.medidas.split('/'); %>
                                                     <% medidasArray.forEach((medida, index)=> { %>
-                                                        <span class="badge m-1" id="medida<%= index + 1 %>" style="background-color: #59ab6e;">
+                                                        <span class="badge m-1" id="medida<%= index + 1 %>"
+                                                            style="background-color: #59ab6e;">
                                                             <%= medida %>
                                                         </span>
                                                         <% }); %>
-                                                        <% } %>
+                                                            <% } %>
                                         </a>
                                         <p class="fw-bold mb-0">$<%= value.precio %>
                                         </p>
@@ -208,79 +122,7 @@
             </ul>
         </nav>
     </div>
-
-    <footer class="bg-dark" id="tempaltemo_footer">
-        <div class="container">
-            <div class="row">
-
-                <div class="col-md-4 pt-5">
-                    <h2 class="h2 text-success border-bottom pb-3 border-light logo text-uppercase">Consultagro S.A</h2>
-                    <ul class="list-unstyled text-light footer-link-list">
-                        <li>
-                            <i class="fas fa-map-marker-alt fa-fw"></i>
-                            Avenida Juan X Marcos & Olmedo, Babahoyo
-                        </li>
-                        <li>
-                            <i class="fa fa-phone fa-fw"></i>
-                            <a class="text-decoration-none" href="tel:05-2570884">05-2570884</a>
-                        </li>
-                        <li>
-                            <i class="fa fa-envelope fa-fw"></i>
-                            <a class="text-decoration-none"
-                                href="mailto:consultagro.cia@gmail.com">consultagro.cia@gmail.com</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="col-md-4 pt-5">
-                    <h2 class="h2 text-light border-bottom pb-3 border-light">Productos</h2>
-                    <ul class="list-unstyled text-light footer-link-list">
-                        <li><a class="text-decoration-none" href="#">Fungicidas</a></li>
-                        <li><a class="text-decoration-none" href="#">Nutrientes</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-md-4 pt-5">
-                    <h2 class="h2 text-light border-bottom pb-3 border-light">Información</h2>
-                    <ul class="list-unstyled text-light footer-link-list">
-                        <li><a class="text-decoration-none" href="#">Acerca de Nosotros</a></li>
-                        <li><a class="text-decoration-none" href="#">Contactanos</a></li>
-                    </ul>
-                </div>
-
-            </div>
-
-            <div class="row text-light">
-                <div class="col-12 mb-3">
-                    <div class="w-100 my-3 border-top border-light"></div>
-                </div>
-                <div class="col-auto me-auto">
-                    <ul class="list-inline text-left footer-icons">
-                        <li class="list-inline-item border border-light rounded-circle text-center">
-                            <a class="text-light text-decoration-none" target="_blank" href="http://facebook.com/"><i
-                                    class="fab fa-facebook-f fa-lg fa-fw"></i></a>
-                        </li>
-                        <li class="list-inline-item border border-light rounded-circle text-center">
-                            <a class="text-light text-decoration-none" target="_blank"
-                                href="https://www.instagram.com/"><i class="fab fa-instagram fa-lg fa-fw"></i></a>
-                        </li>
-                        <li class="list-inline-item border border-light rounded-circle text-center">
-                            <a class="text-light text-decoration-none" target="_blank" href="https://twitter.com/"><i
-                                    class="fab fa-twitter fa-lg fa-fw"></i></a>
-                        </li>
-                        <li class="list-inline-item border border-light rounded-circle text-center">
-                            <a class="text-light text-decoration-none" target="_blank"
-                                href="https://www.linkedin.com/"><i class="fab fa-linkedin fa-lg fa-fw"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/templatemo.min.js"></script>
-    <script src="/js/custom.js"></script>
+    <%- include("partials/_fotterindex") %>
     <script>
 
         $('#search').on('input', filterRows);

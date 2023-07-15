@@ -53,6 +53,14 @@ router.get("/usuarios", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("usuarios", { credentials });
 });
+router.get("/contactanos", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  res.render("contactanos", { credentials });
+});
+router.get("/acerca", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  res.render("acerca", { credentials });
+});
 router.get("/test", async (req, res) => {
   res.render("test");
 });
@@ -62,7 +70,7 @@ router.get("/analisis", async (req, res) => {
 });
 router.get("/escanear", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
+  const sql = "SELECT * FROM productos,categorias, rfid_tags WHERE productos.categoria_id = categorias.id_categoria AND productos.tag_id = rfid_tags.id_tag AND tag != ''";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -100,7 +108,7 @@ router.get("/inventario", async (req, res) => {
   });
 });
 router.post("/obtener_inventario", async (req, res) => {
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria ORDER BY nombre ASC";
+  const sql = "SELECT * FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria LEFT JOIN rfid_tags ON productos.tag_id = rfid_tags.id_tag ORDER BY nombre ASC";
   connection.query(sql, (error, productos) => {
     if (error) {
       res.json({ data: error.message });
@@ -112,6 +120,48 @@ router.post("/obtener_inventario", async (req, res) => {
       });
       if (productos.length > 0) {
         res.json({ data: productos });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+router.post("/obtener_tags", async (req, res) => {
+  const sql = "SELECT * FROM rfid_tags;";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+router.post("/asignar_producto", async (req, res) => {
+  const { tag, idproducto } = req.body;
+  console.log(tag, idproducto);
+  const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const sql = "INSERT INTO `rfid_tags` (`tag`, `fecha_registro`, `estado`) VALUES(?, ?, ?)";
+  connection.query(sql, [tag, date, 1], (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+      console.error(error);
+    } else {
+      if (result.affectedRows > 0) {
+        const sql = "UPDATE `railway`.`productos` SET `tag_id` = ? WHERE `id_producto` = ?;";
+        connection.query(sql, [result.insertId, idproducto], (error, results) => {
+          if (error) {
+            console.error(error);
+            res.json({ message: error });
+          } else {
+            if (results) {
+              res.json({ message: "Success" });
+            }
+          }
+        });
       } else {
         res.json({ data: null });
       }
@@ -190,7 +240,7 @@ router.post('/update_producto', (req, res) => {
 });
 
 router.post('/insert_producto', (req, res) => {
-  const { codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
+  const { codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img } = req.body;
   if (img) {
     const sql = "INSERT INTO `railway`.`productos`(`codigo`,`categoria_id`,`nombre`,`descripcion`,`medidas`,`precio`,`descuento`,`preciodesc`,`cantidad`,`total`,`img`)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img], (error, results) => {
@@ -259,7 +309,7 @@ router.post('/insertar_salida', (req, res) => {
 router.post("/buscarproductotag", async (req, res) => {
   const { tag } = req.body;
   console.log(tag);
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND tag = ?";
+  const sql = "SELECT * FROM productos,categorias, rfid_tags WHERE productos.categoria_id = categorias.id_categoria AND productos.tag_id = rfid_tags.id_tag AND tag = ?";
   connection.query(sql, [tag], (error, results) => {
     if (error) {
       res.send({ message: error });

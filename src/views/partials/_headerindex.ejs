@@ -10,64 +10,42 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/socket.io.min.js"></script>
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="/js/chart.min.js"></script>
-    <script src="/js/datatables.min.js"></script>
-    <script src="/js/sweetalert2.min.js"></script>
-    <script src="/js/select2.min.js"></script>
-    <link rel="stylesheet" href="/css/sweetalert2.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/datatables.min.css">
-    <link rel="stylesheet" href="css/select2.min.css">
-    <link rel="stylesheet" href="css/select2-bootstrap-5-theme.min.css">
+    <link rel="stylesheet" href="/css/templatemo.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+    <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 </head>
-<header style="margin-bottom: 100px;">
-    <nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary">
-        <a class="navbar-brand text-success" href="/"><img data-src="/images/logo.png" alt="Logo" width="50px"> CONSULTAGRO
-            S.A</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-light shadow">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+        <a class="navbar-brand text-success logo align-self-start text-uppercase" href="">
+            <img src="/img/logo.png" width="50">  Consultagro S.A
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse p-1" id="navbarSupportedContent">
-            <form class="d-flex m-0" role="search">
-                <div class="input-group pe-2">
-                    <input class="form-control" type="search" placeholder="Buscar Producto" id="search">
-                    <button class="btn btn-primary" type="submit">
-                        <svg class="icon" width="20" height="20" fill="currentColor">
-                            <use xlink:href="/icons/bootstrap-icons.svg#search" />
-                        </svg>
-                    </button>
-                </div>
-            </form>
+
+        <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between"
+            id="templatemo_main_nav">
+            <div class="flex-fill">
+                <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/acerca"><i class="bi bi-question-circle-fill"></i> Acerca de
+                            nosotros</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/"><i class="bi bi-bag-fill"></i>
+                            Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contactanos"><i class="bi bi-telephone-fill"></i> Contactanos</a>
+                    </li>
+                </ul>
+            </div>
             <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Categorías
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item filter-button" data-filter="Nutriente" href="#">Nutriente</a></li>
-                        <li><a class="dropdown-item filter-button" data-filter="Fungicida" href="#">Fungicida</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Medidas
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item filter-button" data-filter="1L" href="#">1 Litro</a></li>
-                        <li><a class="dropdown-item filter-button" data-filter="5L" href="#">5 Litos</a></li>
-                        <li><a class="dropdown-item filter-button" data-filter="25L" href="#">25 Litros</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item filter-button" data-filter="1Kg" href="#">1 Kg</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto pe-3">
                 <% if (credentials) { %>
                     <li class="nav-item ">
                         <a href="" class="nav-link dropdown-toggle" data-bs-toggle="modal" data-bs-target="#Cart">
@@ -90,10 +68,7 @@
                                             <use xlink:href="/icons/bootstrap-icons.svg#gear" />
                                         </svg> Configuración</a></li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#person-vcard" />
-                                        </svg> Perfil
+                                    <a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> Perfil
                                     </a>
                                 </li>
                                 <li>
@@ -112,34 +87,12 @@
                     </li>
                     <% } else { %>
                         <li class="nav-item">
-                            <button class="nav-link" onclick="login()"><svg class="icon" width="20" height="20"
-                                    fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#person" />
-                                </svg> Iniciar sesión</>
+                            <button class="nav-link" data-bs-toggle="modal" data-bs-target="#login"><i
+                                    class="bi bi-person-fill"></i> Iniciar
+                                sesión</>
                         </li>
                         <% } %>
             </ul>
         </div>
-    </nav>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            navbar = document.querySelector('.navbar');
-            if (navbar) {
-                var last_scroll_top = 0;
-                const div = document.getElementById('content');
-                div.addEventListener('scroll', function () {
-                    let scroll_top = window.scrollY;
-                    if (scroll_top < last_scroll_top) {
-                        $('.navbar-collapse').collapse('hide');
-                        $('.dropdown-menu').collapse('hide');
-                    }
-                    else {
-                        $('.navbar-collapse').collapse('hide');
-                        $('.dropdown-menu').collapse('hide');
-                    }
-                    last_scroll_top = scroll_top;
-                });
-            }
-        });
-    </script>
-</header>
+    </div>
+</nav>

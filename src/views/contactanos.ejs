@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Contactanos</title>
+</head>
+
+<body>
+    <%- include("partials/_headerindex") %>
+        <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="w-100 pt-1 mb-5 text-right">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="get" class="modal-content modal-body border-0 p-0">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                        <button type="submit" class="input-group-text bg-success text-light">
+                            <i class="fa fa-fw fa-search text-white"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="container-fluid bg-light py-5">
+            <div class="col-md-6 m-auto text-center">
+                <h1 class="h1">Contactanos</h1>
+                <p>
+                    Puedes encontrarnos en nuestra tienda local o contactarnos por escrito para poder atender tus inquietudes. Estaremos encantados de ayudarte.
+                </p>
+            </div>
+        </div>
+
+        <div id="mapid" style="width: 100%; height: 500px;">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.8430751407122!2d-79.53766228848846!3d-1.8029741364035263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902d2820f44a8ff5%3A0x4ca18bc23f71a470!2sAvenida%20Juan%20X%20Marcos%20%26%20Olmedo%2C%20Babahoyo!5e0!3m2!1ses-419!2sec!4v1689453114118!5m2!1ses-419!2sec" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+
+        <div class="container py-5">
+            <div class="row py-5">
+                <form class="col-md-9 m-auto" method="post" role="form">
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-3">
+                            <input type="text" class="form-control mt-1" id="name" name="name" placeholder="Nombre">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <input type="email" class="form-control mt-1" id="email" name="email" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control mt-1" id="subject" name="subject" placeholder="Asunto">
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control mt-1" id="message" name="message" placeholder="Mensaje"
+                            rows="8"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col text-end mt-2">
+                            <button type="submit" class="btn btn-success btn-lg px-3">Enviar Mensaje</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <%- include("partials/_fotterindex") %>
+</body>
+
+</html>
