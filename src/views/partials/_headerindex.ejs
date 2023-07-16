@@ -14,12 +14,13 @@
     <link rel="stylesheet" href="/css/templatemo.min.css">
     <link rel="stylesheet" href="/css/custom.css">
     <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/sweetalert2.min.css">
 </head>
 <nav class="navbar navbar-expand-lg navbar-light shadow">
     <div class="container-fluid d-flex justify-content-between align-items-center">
 
         <a class="navbar-brand text-success logo align-self-start text-uppercase" href="">
-            <img src="/img/logo.png" width="50">  Consultagro S.A
+            <img src="/img/logo.png" width="50"> Consultagro S.A
         </a>
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
@@ -48,27 +49,24 @@
             <ul class="navbar-nav">
                 <% if (credentials) { %>
                     <li class="nav-item ">
-                        <a href="" class="nav-link dropdown-toggle" data-bs-toggle="modal" data-bs-target="#Cart">
-                            <svg class="icon" width="20" height="20" fill="currentColor">
-                                <use xlink:href="/icons/bootstrap-icons.svg#cart" />
-                            </svg> Carrito
+                        <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
+                            <i class="bi bi-cart-fill"></i>
                         </a>
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
                             <a href="" class="nav-link dropdown-toggle" id="dropdown" data-bs-toggle="dropdown">
-                                <svg class="icon" width="20" height="20" fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#person-circle" />
-                                </svg>
+                                <i class="bi bi-person-circle"></i>
                                 <%= credentials.nombre %>
                             </a>
                             <ul class="dropdown-menu text-small m-1 bg-body-tertiary" aria-labelledby="dropdown">
-                                <li><a class="dropdown-item" href="#">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#gear" />
-                                        </svg> Configuración</a></li>
                                 <li>
-                                    <a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> Perfil
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-gear"></i> Configuración</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-person"></i> Mi Perfil
                                     </a>
                                 </li>
                                 <li>
@@ -76,10 +74,8 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="" data-bs-toggle="modal"
-                                        data-bs-target="#logoutModal">
-                                        <svg class="icon" width="20" height="20" fill="currentColor">
-                                            <use xlink:href="/icons/bootstrap-icons.svg#box-arrow-right" />
-                                        </svg> Cerrar sesión
+                                        data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Cerrar
+                                        sesión
                                     </a>
                                 </li>
                             </ul>
@@ -96,3 +92,234 @@
         </div>
     </div>
 </nav>
+<div class="modal fade" id="login" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-0 border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                            aria-selected="true">Iniciar Sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
+                            aria-selected="false">Registrate</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                        aria-labelledby="pills-home-tab" tabindex="0">
+                        <div class="card border-0">
+                            <div class="card-body">
+                                <form id="login">
+                                    <label class="form-label" style="color: #59ab6e;" for="usuario"><i
+                                            class="bi bi-person"></i> Usuario</label>
+                                    <input type="text" class="form-control mb-4" id="usuario"
+                                        placeholder="Ingrese su nombre de usuario" required>
+                                    <label class="form-label" style="color: #59ab6e;" for="password"><i
+                                            class="bi bi-key"></i> Contaseña</label>
+                                    <input type="password" class="form-control mb-4" id="password"
+                                        placeholder="Ingrese su contraseña" required>
+                                    <div class="d-grid mx-auto"><button class="btn btn-primary" type="submit">Iniciar
+                                            Sesión</button>
+                                    </div>
+                                </form>
+                            </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
+                        tabindex="0">
+                        <form id="registrar">
+                            <label class="form-label" style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i>
+                                Nombre</label>
+                            <input type="text" class="form-control mb-4" id="nombre"
+                                placeholder="Ingrese su nombre completo" required>
+                            <label class="form-label" style="color: #59ab6e;" for="usuario_nuevo"><i
+                                    class="bi bi-person"></i>
+                                Usuario</label>
+                            <input type="text" class="form-control mb-4" id="usuario_nuevo"
+                                placeholder="Ingrese su nombre de usuario" required>
+                            <label class="form-label" style="color: #59ab6e;" for="email"><i class="bi bi-envelope"></i>
+                                Email</label>
+                            <input type="email" class="form-control mb-4" id="email" placeholder="Ingrese su email"
+                                required>
+                            <label class="form-label" style="color: #59ab6e;" for="provincias"><i
+                                    class="bi bi-signpost-2"></i>
+                                Provincia</label>
+                            <select class="form-select mb-4" id="provincias" required>
+                            </select>
+                            <label class="form-label" style="color: #59ab6e;" for="ciudades"><i
+                                    class="bi bi-signpost-2"></i>
+                                Ciudad</label>
+                            <select class="form-select mb-4" id="ciudades" required>
+                            </select>
+                            <label class="form-label" style="color: #59ab6e;" for="direccion"><i
+                                    class="bi bi-signpost-2"></i>
+                                Dirección</label>
+                            <input type="text" class="form-control mb-4" id="direccion"
+                                placeholder="Ingrese su dirección" required>
+                            <label class="form-label" style="color: #59ab6e;" for="password_nuevo"><i
+                                    class="bi bi-key"></i>
+                                Contaseña</label>
+                            <input type="password" class="form-control mb-4" id="password-nuevo"
+                                placeholder="Ingrese su contraseña" required>
+                            <label class="form-label" style="color: #59ab6e;" for="password_confirm"><i
+                                    class="bi bi-key"></i>
+                                Repita su contaseña</label>
+                            <input type="password" class="form-control mb-4" id="password-confirm"
+                                placeholder="Ingrese su contraseña" required>
+                            <div class="d-grid mx-auto"><button class="btn btn-primary"
+                                    type="submit">Registrarme</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cerrar sesión</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">¿Estás seguro de que deseas cerrar sesión?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a class="btn btn-danger" href="/logoutcliente">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var provinciasSelect = document.getElementById("provincias");
+
+    fetch("/obtener_provincias", {
+        method: "POST"
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            if (data.data !== null) {
+                data.data.forEach(function (provincia) {
+                    var option = document.createElement("option");
+                    option.value = provincia.id_provincia;
+                    option.text = provincia.provincia;
+                    provinciasSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(function (error) {
+            console.error("Error:", error);
+        });
+    var ciudadesSelect = document.getElementById("ciudades");
+    provinciasSelect.addEventListener("change", function () {
+        var provinciaId = this.value;
+        ciudadesSelect.innerHTML = "";
+        fetch("/obtener_ciudades", {
+            method: "POST",
+            body: JSON.stringify({ provinciaId: provinciaId }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                if (data.data !== null) {
+                    data.data.forEach(function (ciudad) {
+                        var option = document.createElement("option");
+                        option.value = ciudad.id_ciudad;
+                        option.text = ciudad.ciudad;
+                        ciudadesSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    });
+    document.getElementById("login").addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var usuario = document.getElementById('usuario').value;
+        var password = document.getElementById('password').value;
+        var formData = new FormData();
+        formData.append('usuario', usuario);
+        formData.append('password', password);
+
+        fetch('/validar_cliente', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+            .then(element => {
+                console.log(element);
+                if (element.message.includes("Wrong")) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: 'Usuario y/o contraseña incorrectos',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                } else if (element.message.includes("Pass")) {
+                    location.reload()
+                }
+            });
+    });
+
+    document.getElementById("registrar").addEventListener('submit', function (event) {
+        event.preventDefault();
+        var password = document.getElementById('password-nuevo').value;
+        var confirmPassword = document.getElementById('password-confirm').value;
+
+        if (password !== confirmPassword) {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'error',
+                title: 'Las contraseñas no coinciden',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+            return; // Detener la ejecución si las contraseñas no coinciden
+        }
+        var formData = new FormData();
+        formData.append('usuario', usuario);
+        formData.append('password', password);
+
+        fetch('/validar_cliente', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+            .then(element => {
+                console.log(element);
+                if (element.message.includes("Wrong")) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: 'Usuario y/o contraseña incorrectos',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                } else if (element.message.includes("Pass")) {
+                    location.reload()
+                }
+            });
+    });
+</script>

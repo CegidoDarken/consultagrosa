@@ -54,11 +54,11 @@ router.get("/usuarios", async (req, res) => {
   res.render("usuarios", { credentials });
 });
 router.get("/contactanos", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials.cliente;
   res.render("contactanos", { credentials });
 });
 router.get("/acerca", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials.cliente;
   res.render("acerca", { credentials });
 });
 router.get("/test", async (req, res) => {
@@ -87,10 +87,6 @@ router.get("/panel", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("panel", { credentials });
 });
-router.get("/kardex", async (req, res) => {
-  credentials = req.session.credentials.administrador;
-  res.render("kardex", { credentials });
-});
 
 router.get("/inventario", async (req, res) => {
   credentials = req.session.credentials.administrador;
@@ -103,6 +99,21 @@ router.get("/inventario", async (req, res) => {
         res.render("inventario", { credentials, categorias });
       } else {
         res.render("inventario", { credentials, categorias: null });
+      }
+    }
+  });
+});
+router.get("/kardex", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  const sql = "SELECT * FROM productos ORDER BY nombre ASC";
+  connection.query(sql, (error, productos) => {
+    if (error) {
+      res.render("kardex", { credentials, productos: error.message });
+    } else {
+      if (productos.length > 0) {
+        res.render("kardex", { credentials, productos });
+      } else {
+        res.render("kardex", { credentials, productos: null });
       }
     }
   });
@@ -197,6 +208,62 @@ router.post("/obtener_usuarios", async (req, res) => {
   });
 });
 
+router.post("/obtener_provincias", async (req, res) => {
+  const sql = "SELECT * FROM provincias";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+
+router.post("/obtener_kardex", async (req, res) => {
+  const id_producto = req.body.id_producto;
+  const sql = "SELECT * FROM kardex WHERE producto_id = ?";
+  connection.query(sql, [id_producto], (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.json({ data: result });
+    }
+  });
+});
+router.post("/obtener_ciudades", async (req, res) => {
+  const provinciaId = req.body.provinciaId;
+
+  const sql = "SELECT * FROM ciudades WHERE provincia_id = ?";
+  connection.query(sql, [provinciaId], (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+router.post("/obtener_productos", async (req, res) => {
+  const sql = "SELECT * FROM productos";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
 router.post('/carrito', (req, res) => {
   const { id } = req.body;
   const carrito = cache.get('carrito') || [];
@@ -361,19 +428,20 @@ router.post("/productos", async (req, res) => {
 });
 
 
-router.get("/logoutclient", async (req, res) => {
+router.get("/logoutcliente", async (req, res) => {
   delete req.session.credentials.cliente;
-  res.redirect("/admin");
+  res.redirect("back");
 });
 
-router.get("/logoutadmin", async (req, res) => {
+router.get("/logoutadministrador", async (req, res) => {
   delete req.session.credentials.administrador;
   res.redirect("/admin");
 });
-router.post("/authclient/:username/:password", async (req, res) => {
+router.post("/validar_cliente", async (req, res) => {
   console.log("Authentication".yellow);
+  const { usuario, password } = req.body
   const query = 'SELECT * FROM usuarios, perfiles WHERE usuario = ? AND usuarios.perfil_id = perfiles.id_perfil AND perfil_id = 2';
-  connection.query(query, [req.params.username], (error, results) => {
+  connection.query(query, [usuario], (error, results) => {
     if (error) {
       res.send(error.message);
       callback(error, null);
@@ -385,7 +453,7 @@ router.post("/authclient/:username/:password", async (req, res) => {
       return;
     } else {
       const usuario = results[0];
-      bcrypt.compare(req.params.password, usuario.contrasena, (err, match) => {
+      bcrypt.compare(password, usuario.contrasena, (err, match) => {
         if (err) {
           console.error('Error:', err.message);
           res.send({ message: err.message });
