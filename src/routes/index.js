@@ -85,9 +85,44 @@ router.get("/escanear", async (req, res) => {
 });
 router.get("/panel", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  res.render("panel", { credentials });
+  num_productos = await obtener_num_poductos();
+  num_clientes = await obtener_num_clientes();
+  console.log(num_productos);
+  res.render("panel", { credentials, num_productos, num_clientes });
 });
 
+async function obtener_num_poductos() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT count(id_producto) AS num_productos FROM productos;";
+    connection.query(sql, (error, productos) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (productos.length > 0) {
+          resolve(productos[0]["num_productos"]);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+async function obtener_num_clientes() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT count(id_usuario) AS num_clientes FROM usuarios where usuarios.perfil_id = 2;";
+    connection.query(sql, (error, productos) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (productos.length > 0) {
+          resolve(productos[0]["num_clientes"]);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 router.get("/inventario", async (req, res) => {
   credentials = req.session.credentials.administrador;
   const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
@@ -179,6 +214,79 @@ router.post("/asignar_producto", async (req, res) => {
     }
   });
 });
+router.post('/registrar_cliente', (req, res) => {
+  const nombre = req.body.nombre;
+  const usuario = req.body.usuario;
+  const identificacion = req.body.identificacion;
+  const telefono = req.body.telefono;
+  const email = req.body.email;
+  const id_ciudad = req.body.id_ciudad;
+  const direccion = req.body.direccion;
+  const password = req.body.password;
+  const passwordConfirm = req.body['password-confirm'];
+
+  if (password !== passwordConfirm) {
+    return res.status(400).json({ error: 'Las contraseñas no coinciden' });
+  }
+  const query = 'SELECT * FROM usuarios WHERE usuario = ?';
+  connection.query(query, [usuario], (err, results) => {
+    if (err) {
+      console.error('Error al consultar en la base de datos:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'El usuario ya está registrado' });
+    }
+  });
+  res.status(200).json({ message: 'Registro exitoso' });
+});
+
+function validar(identificacion) {
+  var number = identificacion;
+  var dto = number.length;
+  var valor;
+  var acu = 0;
+  if (number == "") {
+    alert('No has ingresado ningún dato, porfavor ingresar los datos correspondientes.');
+  }
+  else {
+    for (var i = 0; i < dto; i++) {
+      valor = number.substring(i, i + 1);
+      if (valor == 0 || valor == 1 || valor == 2 || valor == 3 || valor == 4 || valor == 5 || valor == 6 || valor == 7 || valor == 8 || valor == 9) {
+        acu = acu + 1;
+      }
+    }
+    if (acu == dto) {
+      while (number.substring(10, 13) != "001") {
+        alert('Los tres últimos dígitos no tienen el código del RUC 001.');
+        return;
+      }
+      while (number.substring(0, 2) > 24) {
+        alert('Los dos primeros dígitos no pueden ser mayores a 24.');
+        return;
+      }
+      alert('El RUC está escrito correctamente');
+      alert('Se procederá a analizar el respectivo RUC.');
+      var porcion1 = number.substring(2, 3);
+      if (porcion1 < 6) {
+        alert('El tercer dígito es menor a 6, por lo \ntanto el usuario es una persona natural.\n');
+      }
+      else {
+        if (porcion1 == 6) {
+          alert('El tercer dígito es igual a 6, por lo \ntanto el usuario es una entidad pública.\n');
+        }
+        else {
+          if (porcion1 == 9) {
+            alert('El tercer dígito es igual a 9, por lo \ntanto el usuario es una sociedad privada.\n');
+          }
+        }
+      }
+    }
+    else {
+      alert("ERROR: Por favor no ingrese texto");
+    }
+  }
+}
 router.post("/obtener_inventario_total", async (req, res) => {
   const sql = "SELECT count(id_producto) FROM railway.productos;";
   connection.query(sql, (error, total) => {
@@ -451,6 +559,7 @@ router.get("/logoutadministrador", async (req, res) => {
   delete req.session.credentials.administrador;
   res.redirect("/admin");
 });
+
 router.post("/validar_cliente", async (req, res) => {
   console.log("Authentication".yellow);
   const { usuario, password } = req.body
@@ -463,26 +572,19 @@ router.post("/validar_cliente", async (req, res) => {
     }
     if (results[0] == null) {
       console.log("User not found".red);
-      res.send({ message: "Wrong" });
+      res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
       return;
     } else {
       const usuario = results[0];
       bcrypt.compare(password, usuario.contrasena, (err, match) => {
-        if (err) {
-          console.error('Error:', err.message);
-          res.send({ message: err.message });
-          return;
-        }
         if (match) {
           req.session.credentials = {
             cliente: usuario,
             administrador: req.session.credentials.administrador
           };
-          console.log("Correct user".green);
-          res.send({ message: "Pass" });
+          res.send({ message: "Usuario Correcto" });
         } else {
-          console.log("Password does not match ".red);
-          res.send({ message: "Wrong" });
+          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
         }
       });
     }

@@ -116,68 +116,87 @@
                         aria-labelledby="pills-home-tab" tabindex="0">
                         <div class="card border-0">
                             <div class="card-body">
-                                <form id="login">
-                                    <label class="form-label" style="color: #59ab6e;" for="usuario"><i
-                                            class="bi bi-person"></i> Usuario</label>
-                                    <input type="text" class="form-control mb-4" id="usuario"
-                                        placeholder="Ingrese su nombre de usuario" required>
-                                    <label class="form-label" style="color: #59ab6e;" for="password"><i
-                                            class="bi bi-key"></i> Contaseña</label>
-                                    <input type="password" class="form-control mb-4" id="password"
-                                        placeholder="Ingrese su contraseña" required>
+                                <form id="loginForm">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="usuario" placeholder=" " required>
+                                        <label style="color: #59ab6e;" for="usuario"><i class="bi bi-person"></i>
+                                            Usuario</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control" id="password" placeholder=" "
+                                            required>
+                                        <label style="color: #59ab6e;" for="password"><i class="bi bi-key"></i>
+                                            Contraseña</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3 ms-2">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="flexSwitchCheckChecked" onchange="showpasswordLogin()">
+                                        <label class="form-check-label" for="flexSwitchCheckChecked">Mostrar
+                                            contraseña</label>
+                                    </div>
                                     <div class="d-grid mx-auto"><button class="btn btn-primary" type="submit">Iniciar
                                             Sesión</button>
                                     </div>
                                 </form>
                             </div>
-                            </section>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
                         tabindex="0">
-                        <form id="registrar">
-                            <label class="form-label" style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i>
-                                Nombre</label>
-                            <input type="text" class="form-control mb-4" id="nombre"
-                                placeholder="Ingrese su nombre completo" required>
-                            <label class="form-label" style="color: #59ab6e;" for="usuario_nuevo"><i
-                                    class="bi bi-person"></i>
-                                Usuario</label>
-                            <input type="text" class="form-control mb-4" id="usuario_nuevo"
-                                placeholder="Ingrese su nombre de usuario" required>
-                            <label class="form-label" style="color: #59ab6e;" for="email"><i class="bi bi-envelope"></i>
-                                Email</label>
-                            <input type="email" class="form-control mb-4" id="email" placeholder="Ingrese su email"
-                                required>
-                            <label class="form-label" style="color: #59ab6e;" for="provincias"><i
-                                    class="bi bi-signpost-2"></i>
-                                Provincia</label>
-                            <select class="form-select mb-4" id="provincias" required>
-                            </select>
-                            <label class="form-label" style="color: #59ab6e;" for="ciudades"><i
-                                    class="bi bi-signpost-2"></i>
-                                Ciudad</label>
-                            <select class="form-select mb-4" id="ciudades" required>
-                            </select>
-                            <label class="form-label" style="color: #59ab6e;" for="direccion"><i
-                                    class="bi bi-signpost-2"></i>
-                                Dirección</label>
-                            <input type="text" class="form-control mb-4" id="direccion"
-                                placeholder="Ingrese su dirección" required>
-                            <label class="form-label" style="color: #59ab6e;" for="password_nuevo"><i
-                                    class="bi bi-key"></i>
-                                Contaseña</label>
-                            <input type="password" class="form-control mb-4" id="password-nuevo"
-                                placeholder="Ingrese su contraseña" required>
-                            <label class="form-label" style="color: #59ab6e;" for="password_confirm"><i
-                                    class="bi bi-key"></i>
-                                Repita su contaseña</label>
-                            <input type="password" class="form-control mb-4" id="password-confirm"
-                                placeholder="Ingrese su contraseña" required>
-                            <div class="d-grid mx-auto"><button class="btn btn-primary"
-                                    type="submit">Registrarme</button>
+                        <form id="registrarForm">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="nombre" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="usuario-nuevo" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="usuario-nuevo"><i class="bi bi-person"></i>
+                                    Usuario</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="identificacion" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="identificacion"><i class="bi bi-person-vcard"></i>
+                                    Cédula/RUC</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="telefono" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="telefono"><i class="bi bi-telephone"></i>
+                                    Teléfono</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="email" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="email"><i class="bi bi-envelope"></i> Email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="provincias" required></select>
+                                <label style="color: #59ab6e;" for="provincias">Seleccione una provincia</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="ciudades" required></select>
+                                <label style="color: #59ab6e;" for="ciudades">Seleccione una ciudad</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="direccion" placeholder=" " required>
+                                <label style="color: #59ab6e;" for="direccion"><i class="bi bi-signpost-2"></i>
+                                    Dirección</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="password-nuevo" placeholder=" "
+                                    required>
+                                <label style="color: #59ab6e;" for="password-nuevo"><i class="bi bi-key"></i>
+                                    Contraseña</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="password-confirm" placeholder=" "
+                                    required>
+                                <label style="color: #59ab6e;" for="password-confirm"><i class="bi bi-key"></i> Repita
+                                    su contraseña</label>
+                            </div>
+                            <div class="d-grid mx-auto">
+                                <button class="btn btn-primary" type="submit">Registrarme</button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -200,6 +219,15 @@
     </div>
 </div>
 <script>
+    function showpasswordLogin() {
+        var icon = document.getElementById('icon-use');
+        var password = document.getElementById("password");
+        if (password.type === "password") {
+            password.type = "text";
+        } else {
+            password.type = "password";
+        }
+    }
     var provinciasSelect = document.getElementById("provincias");
 
     fetch("/obtener_provincias", {
@@ -249,77 +277,66 @@
                 console.error("Error:", error);
             });
     });
-    document.getElementById("login").addEventListener('submit', function (event) {
+    document.getElementById("loginForm").addEventListener('submit', function (event) {
         event.preventDefault();
-
-        var usuario = document.getElementById('usuario').value;
-        var password = document.getElementById('password').value;
         var formData = new FormData();
-        formData.append('usuario', usuario);
-        formData.append('password', password);
-
+        formData.append('usuario', document.getElementById('usuario').value);
+        formData.append('password', document.getElementById('password').value);
         fetch('/validar_cliente', {
             method: 'POST',
             body: formData
         }).then(res => res.json())
             .then(element => {
-                console.log(element);
-                if (element.message.includes("Wrong")) {
+                if (element.message) {
+                    location.reload()
+                } else  {
                     Swal.fire({
                         toast: true,
                         position: 'bottom-end',
                         icon: 'error',
-                        title: 'Usuario y/o contraseña incorrectos',
+                        title: element.error,
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 3000
                     });
-                } else if (element.message.includes("Pass")) {
-                    location.reload()
+
                 }
             });
     });
 
-    document.getElementById("registrar").addEventListener('submit', function (event) {
+    document.getElementById("registrarForm").addEventListener('submit', function (event) {
         event.preventDefault();
-        var password = document.getElementById('password-nuevo').value;
-        var confirmPassword = document.getElementById('password-confirm').value;
-
-        if (password !== confirmPassword) {
-            Swal.fire({
-                toast: true,
-                position: 'bottom-end',
-                icon: 'error',
-                title: 'Las contraseñas no coinciden',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000
-            });
-            return; // Detener la ejecución si las contraseñas no coinciden
-        }
+        event.preventDefault();
         var formData = new FormData();
-        formData.append('usuario', usuario);
-        formData.append('password', password);
-
-        fetch('/validar_cliente', {
+        formData.append('nombre', document.getElementById('nombre').value);
+        formData.append('usuario', document.getElementById('usuario-nuevo').value);
+        formData.append('identificacion', document.getElementById('identificacion').value);
+        formData.append('telefono', document.getElementById('telefono').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('id_ciudad', document.getElementById('ciudades').value);
+        formData.append('direccion', document.getElementById('direccion').value);
+        formData.append('password', document.getElementById('password-nuevo').value);
+        formData.append('password-confirm', document.getElementById('password-confirm').value);
+        fetch('/registrar_cliente', {
             method: 'POST',
             body: formData
         }).then(res => res.json())
             .then(element => {
                 console.log(element);
-                if (element.message.includes("Wrong")) {
+                if (element.message) {
+                    location.reload()
+                } else {
                     Swal.fire({
                         toast: true,
                         position: 'bottom-end',
                         icon: 'error',
-                        title: 'Usuario y/o contraseña incorrectos',
+                        title: element.error,
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 3000
                     });
-                } else if (element.message.includes("Pass")) {
-                    location.reload()
                 }
             });
     });
+
 </script>

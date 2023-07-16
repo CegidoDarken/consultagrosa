@@ -4,6 +4,7 @@
 <head>
     <title>Inventario</title>
 </head>
+
 <body>
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
@@ -86,62 +87,65 @@
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="img/no-image-icon.png" id="img" width="200">
+                                            <img src="img/no-image-icon.png" id="img" style=" width: 100%;
+                                            height: 300px;
+                                            object-fit: contain;
+                                            object-position: center;">
                                             <div class="mb-3">
                                                 <input class="form-control form-control-sm" id="image" type="file"
                                                     accept="image/*">
+                                            </div>
+                                            <div class=" col-12">
+                                                <div class="container-fluid mb-2">
+                                                    <input type="checkbox" class="btn-check" id="1l" autocomplete="off"
+                                                        name="1l" value="1L">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="1l">1L</label>
+                                                    <input type="checkbox" class="btn-check" id="5l" autocomplete="off"
+                                                        name="5l" value="5L">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="5l">5L</label>
+                                                    <input type="checkbox" class="btn-check" id="20l" autocomplete="off"
+                                                        name="20l" value="20L">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="20l">20L</label>
+                                                    <input type="checkbox" class="btn-check" id="1kg" autocomplete="off"
+                                                        name="1kg" value="1Kg">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="1kg">1Kg</label>
+                                                    <input type="checkbox" class="btn-check" id="5kg" autocomplete="off"
+                                                        name="5kg" value="5Kg">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="5kg">5Kg</label>
+                                                    <input type="checkbox" class="btn-check" id="25kg"
+                                                        autocomplete="off" name="25kg" value="25Kg">
+                                                    <label class="btn btn-outline-primary btn-sm mb-1"
+                                                        for="25kg">25Kg</label>
+                                                    <input type="hidden" name="medidas" id="medidas" value="">
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-8">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-12 text-start">
-                                                        <label for="codigo" class="form-label">Código</label>
-                                                        <input type="text" class="form-control" id="codigo"
-                                                            placeholder="Ingrese un código" value="" name="codigo"
-                                                            required>
+                                                    <div class="col-12">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="codigo"
+                                                                placeholder="Ingrese un código" required>
+                                                            <label for="codigo">Código</label>
+                                                        </div>
                                                     </div>
                                                     <div class=" col-12 text-start">
-                                                        <label for="nombre" class="form-label">Nombre</label>
-                                                        <input type="text" class="form-control" id="nombre"
-                                                            placeholder="Ingrese un nombre de producto" value=""
-                                                            name="nombre" required>
-                                                    </div>
-                                                    <div class=" col-12 text-start">
-                                                        <label for="nombre" class="form-label">Medidas</label>
-                                                        <div class="container-fluid mb-2">
-                                                            <input type="checkbox" class="btn-check" id="1l"
-                                                                autocomplete="off" name="1l" value="1L">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="1l">1L</label>
-                                                            <input type="checkbox" class="btn-check" id="5l"
-                                                                autocomplete="off" name="5l" value="5L">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="5l">5L</label>
-                                                            <input type="checkbox" class="btn-check" id="20l"
-                                                                autocomplete="off" name="20l" value="20L">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="20l">20L</label>
-                                                            <input type="checkbox" class="btn-check" id="1kg"
-                                                                autocomplete="off" name="1kg" value="1Kg">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="1kg">1Kg</label>
-                                                            <input type="checkbox" class="btn-check" id="5kg"
-                                                                autocomplete="off" name="5kg" value="5Kg">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="5kg">5Kg</label>
-                                                            <input type="checkbox" class="btn-check" id="25kg"
-                                                                autocomplete="off" name="25kg" value="25Kg">
-                                                            <label class="btn btn-outline-primary btn-sm mb-1"
-                                                                for="25kg">25Kg</label>
-                                                            <input type="hidden" name="medidas" id="medidas" value="">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="nombre"
+                                                                placeholder="Ingrese un nombre de producto">
+                                                            <label for="nombre">Nombre</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label for="categoria" class="form-label">Categoria</label>
-                                                        <div class="form-floating">
+                                                        <div class="form-floating mb-3">
                                                             <select name="categoria" class="form-select"
-                                                                id="editcategoria">
+                                                                id="categoria" required>
                                                                 <% if (categorias) { %>
                                                                     <% categorias.forEach(row=> { %><option
                                                                             value="<%= row.id_categoria %>" }>
@@ -154,51 +158,29 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label for="floatingTextarea2"
-                                                            class="form-label">Descripción</label>
-                                                        <textarea id="descripcion" class="form-control"
+                                                        <textarea id="descripcion" class="form-control mb-3"
                                                             placeholder="Descripción" name="descripcion"
                                                             style="max-height: 150px;min-height: 150px;"></textarea>
                                                     </div>
-                                                    <div class=" col-md-4 text-start">
-                                                        <label for="cantidad" class="form-label">Cantidad</label>
-                                                        <input type="number" class="form-control" name="cantidad"
-                                                            id="cantidad" placeholder="Ingrese una cantidad" value=""
-                                                            onkeyup="changeinput(this)" required>
-                                                    </div>
-                                                    <div class="col-md-4 text-start">
-                                                        <label for="descuento" class="form-label">Descuento</label>
-                                                        <div class="input-group mb-3">
-                                                            <input type="number" class="form-control" name="descuento"
-                                                                id="descuento" placeholder="Ingrese un descuento"
-                                                                max="100" value="" onkeyup="changeinput(this)">
-                                                            <span class="input-group-text">%</span>
+                                                    <div class=" col-md-6 text-start">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="cantidad"
+                                                                placeholder="Ingrese una cantidad" oninput="calculartotal()" required>
+                                                            <label for="cantidad">Cantidad</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4 text-start">
-                                                        <label for="precio" class="form-label">Precio</label>
-                                                        <div class="input-group mb-3">
-                                                            <input type="text" class="form-control" name="precio"
-                                                                id="precio" placeholder="Precio" value=""
-                                                                onkeyup="changeinput(this)">
-                                                            <span class="input-group-text">$</span>
+                                                    <div class="col-md-6 text-start">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="precio"
+                                                                placeholder="Ingrese un precio" oninput="calculartotal()" required>
+                                                            <label for="precio">Precio</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4 text-start">
-                                                        <label for="preciodesc" class="form-label">Precio
-                                                            Desc</label>
-                                                        <div class="input-group mb-3">
-                                                            <input type="text" class="form-control disabled"
-                                                                name="preciodesc" id="preciodesc" value="" readonly>
-                                                            <span class="input-group-text">$</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 text-start">
-                                                        <label for="total" class="form-label">Total</label>
-                                                        <div class="input-group mb-3">
-                                                            <input type="text" class="form-control disabled"
-                                                                name="total" id="total" value="" readonly><span
-                                                                class="input-group-text">$</span>
+                                                    <div class="col-md-12 text-start">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="total"
+                                                                placeholder="Total" readonly>
+                                                            <label for="total">Total</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -421,11 +403,6 @@
                         var total = button.getAttribute('data-total');
                         var medidas = button.getAttribute('data-medidas');
                         var medidasArray = medidas.split('/');
-                        medidasArray.forEach(function (medida) {
-                            if (medida === "1L") {
-                                $('input[name="1l"]').prop('checked', true);
-                            }
-                        });
                         $("#titulo").text("Editar Producto");
                         $("#formulario")[0].reset();
                         $('#img').attr('src', img);
@@ -433,9 +410,7 @@
                         $("#nombre").val(nombre);
                         $("#descripcion").val(descripcion);
                         $("#cantidad").val(cantidad);
-                        $("#descuento").val(descuento);
                         $("#precio").val(precio);
-                        $("#preciodesc").val(preciodesc);
                         $("#total").val(total);
                         $('#producto').modal('show');
                     }
@@ -455,7 +430,6 @@
                             var caracteres = "0123456789";
                             var longitud = 10;
                             var tag;
-
                             do {
                                 tag = generarTagAleatorio(caracteres, longitud);
                             } while (!esTagUnico(tag));
@@ -629,11 +603,6 @@
                             console.error(error);
                         });
                     });
-                    function changeinput(input) {
-                        limit(input);
-                        calculardesc();
-                        calculartotal();
-                    }
                 </script>
 
 </body>

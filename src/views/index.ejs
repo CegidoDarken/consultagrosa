@@ -7,272 +7,186 @@
 
 <body>
     <%- include("partials/_headerindex") %>
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-3">
-                <h2 class="h2 pb-4"><i class="bi bi-ui-checks-grid"></i> Categorias</h2>
-                <div class="row">
-                    <div class="dropdown dropend col-md-2">
-                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Tipos
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Nutrientes</a></li>
-                            <li><a class="dropdown-item" href="#">Fungicidas</a></li>
-                        </ul>
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-3">
+                    <h2 class="h2 pb-4"><i class="bi bi-ui-checks-grid"></i> Categorias</h2>
+                    <div class="row">
+                        <div class="dropdown dropend col-md-2">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Tipos
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-item filter-button"
+                                    data-filter="all">Todos</button></li>
+                                <li><button class="dropdown-item filter-button"
+                                        data-filter="Nutriente">Nutrientes</button></li>
+                                <li><button class="dropdown-item filter-button"
+                                        data-filter="Fungicida">Fungicidas</button></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown dropend">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Medidas
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Litros</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Kilogramos</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="dropdown dropend">
-                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Medidas
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Litros</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Kilogramos</a></li>
-                        </ul>
-                    </div>
+
                 </div>
 
-            </div>
-
-            <div class="col-lg-9">
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-inline shop-top-menu pb-3 pt-1">
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#"
-                                    style="color: #59ab6e !important;">Todos</a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#">Más vendidos</a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none" href="#">Ofertas</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 pb-4">
-                        <div class="d-flex">
-                            <div class="input-group mb-3">
-                                <input type="search" class="form-control" placeholder="Buscar" id="search">
-                                <span class="input-group-text" id="inputGroup-sizing-default">
-                                    <i class="bi bi-search"></i>
-                                </span>
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-inline shop-top-menu pb-3 pt-1">
+                                <li class="list-inline-item">
+                                    <a class="h3 text-dark text-decoration-none mr-3" href="#"
+                                        style="color: #59ab6e !important;">Todos</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="h3 text-dark text-decoration-none mr-3" href="#">Más vendidos</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="h3 text-dark text-decoration-none" href="#">Ofertas</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 pb-4">
+                            <div class="d-flex">
+                                <div class="input-group mb-3">
+                                    <input type="search" class="form-control" placeholder="Buscar" id="search">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row" id="list">
-                    <% if (results) { %>
-                        <% results.forEach(value=> { %>
-                            <div class="col-md-4 content">
-                                <div class="card mb-4 product-wap rounded-3 shadow border-0">
-                                    <div class="card rounded-3 border-0">
-                                        <img class="card-img rounded-3 img-fluid border-0"
-                                            data-src="<%= value.img? value.img : '/img/no-image-icon.png' %>" style=" width: 100%;
+                    <div class="row" style="overflow-y: scroll;height: 600px;">
+                        <% if (results) { %>
+                            <% results.forEach(value=> { %>
+                                <div class="col-md-4 content filter <%= value.categoria %>">
+                                    <div class="card mb-4 product-wap rounded-3 shadow border-0">
+                                        <div class="card rounded-3 border-0">
+                                            <img class="card-img rounded-3 img-fluid border-0"
+                                                data-src="<%= value.img? value.img : '/img/no-image-icon.png' %>" style=" width: 100%;
                                             height: 300px;
                                             object-fit: contain;
                                             object-position: bottom;">
-                                        <div
-                                            class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                            <ul class="list-unstyled">
-                                                <li><a class="btn btn-success text-white" href=""><i
-                                                            class="bi bi-cart-plus-fill"></i></a></li>
-                                                <li><a class="btn btn-success text-white mt-2" href=""><i
-                                                            class="bi bi-eye-fill"></i></a></li>
-                                            </ul>
+                                            <div
+                                                class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                                <ul class="list-unstyled">
+                                                    <li><a class="btn btn-success text-white" href=""><i
+                                                                class="bi bi-cart-plus-fill"></i></a></li>
+                                                    <li><a class="btn btn-success text-white mt-2" href=""><i
+                                                                class="bi bi-eye-fill"></i></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <a class="h3 text-decoration-none" id="nombre">
+                                                <%= value.nombre %> <span class="badge"
+                                                        style="background-color: #59ab6e;">
+                                                        <%= value.categoria %>
+                                                    </span>
+                                            </a>
+                                            <a class="h3 text-decoration-none d-flex text-center">
+                                                <p class="m-1 ms-0">Medidas:</p>
+                                                <% if(value.medidas){ %>
+                                                    <% const medidasArray=value.medidas.split('/'); %>
+                                                        <% medidasArray.forEach((medida, index)=> { %>
+                                                            <span class="badge m-1" id="medida<%= index + 1 %>"
+                                                                style="background-color: #59ab6e;">
+                                                                <%= medida %>
+                                                            </span>
+                                                            <% }); %>
+                                                                <% } %>
+                                            </a>
+                                            <p class="fw-bold mb-0">$<%= value.precio %>
+                                            </p>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        <a class="h3 text-decoration-none" id="nombre">
-                                            <%= value.nombre %> <span class="badge" style="background-color: #59ab6e;">
-                                                    <%= value.categoria %>
-                                                </span>
-                                        </a>
-                                        <a class="h3 text-decoration-none d-flex text-center">
-                                            <p class="m-1 ms-0">Medidas:</p>
-                                            <% if(value.medidas){ %>
-                                                <% const medidasArray=value.medidas.split('/'); %>
-                                                    <% medidasArray.forEach((medida, index)=> { %>
-                                                        <span class="badge m-1" id="medida<%= index + 1 %>"
-                                                            style="background-color: #59ab6e;">
-                                                            <%= medida %>
-                                                        </span>
-                                                        <% }); %>
-                                                            <% } %>
-                                        </a>
-                                        <p class="fw-bold mb-0">$<%= value.precio %>
-                                        </p>
-                                    </div>
                                 </div>
-                            </div>
-                            <% }); %>
-                                <% }; %>
-                                    <div id="noResultsMessage" style="display: none;">No se han encontrado resultados.
-                                    </div>
+                                <% }); %>
+                                    <% }; %>
+                                        <div id="noResultsMessage" style="display: none;">No se han encontrado
+                                            resultados.
+                                        </div>
+                    </div>
                 </div>
             </div>
+            <nav>
+                <ul class="pagination justify-content-center pagination-sm">
+                </ul>
+            </nav>
         </div>
-        <nav>
-            <ul class="pagination justify-content-center pagination-sm">
-            </ul>
-        </nav>
-    </div>
-    <%- include("partials/_fotterindex") %>
-    <script>
+        <%- include("partials/_fotterindex") %>
+            <script>
 
-        $('#search').on('input', filterRows);
-        if ("IntersectionObserver" in window) {
-            const images = document.querySelectorAll("img");
-            let observer = new IntersectionObserver(
-                (entries, observer) => {
-                    entries.forEach((entry) => {
-                        if (!entry.isIntersecting) return;
-                        const image = entry.target;
-                        const newURL = image.getAttribute("data-src");
-                        image.src = newURL;
-                        observer.unobserve(image);
-                    });
-                },
-                {
-                    threshold: [0.2]
-                }
-            );
-
-            images.forEach((image) => {
-                observer.observe(image);
-            });
-        }
-
-        function getPageList(totalPages, page, maxLength) {
-            if (maxLength < 5) throw "maxLength must be at least 5";
-
-            function range(start, end) {
-                return Array.from(Array(end - start + 1), (_, i) => i + start);
-            }
-
-            var sideWidth = maxLength < 9 ? 1 : 2;
-            var leftWidth = (maxLength - sideWidth * 2 - 3) >> 1;
-            var rightWidth = (maxLength - sideWidth * 2 - 2) >> 1;
-            if (totalPages <= maxLength) {
-                return range(1, totalPages);
-            }
-            if (page <= maxLength - sideWidth - 1 - rightWidth) {
-                return range(1, maxLength - sideWidth - 1)
-                    .concat([0])
-                    .concat(range(totalPages - sideWidth + 1, totalPages));
-            }
-            if (page >= totalPages - sideWidth - 1 - rightWidth) {
-                return range(1, sideWidth)
-                    .concat([0])
-                    .concat(
-                        range(totalPages - sideWidth - 1 - rightWidth - leftWidth, totalPages)
+                $('#search').on('input', filterRows);
+                if ("IntersectionObserver" in window) {
+                    const images = document.querySelectorAll("img");
+                    let observer = new IntersectionObserver(
+                        (entries, observer) => {
+                            entries.forEach((entry) => {
+                                if (!entry.isIntersecting) return;
+                                const image = entry.target;
+                                const newURL = image.getAttribute("data-src");
+                                image.src = newURL;
+                                observer.unobserve(image);
+                            });
+                        },
+                        {
+                            threshold: [0.2]
+                        }
                     );
-            }
-            // Breaks on both sides
-            return range(1, sideWidth)
-                .concat([0])
-                .concat(range(page - leftWidth, page + rightWidth))
-                .concat([0])
-                .concat(range(totalPages - sideWidth + 1, totalPages));
-        }
 
-        var numberOfItems = $("#list .content").length;
-        var limitPerPage = 12;
-        var totalPages = Math.ceil(numberOfItems / limitPerPage);
-        var paginationSize = 7;
-        var currentPage;
+                    images.forEach((image) => {
+                        observer.observe(image);
+                    });
+                }
+                function filterRows() {
+                    let query = $.trim($('#search').val().toUpperCase());
+                    let found = false;
+                    $('div.content').each(async function () {
+                        let nombre = $(this).closest('.content').find('#nombre').text().trim().toUpperCase();
+                        if (nombre.indexOf(query) !== -1) {
+                            $(this).closest('div.content').fadeIn();
+                            found = true;
+                        } else {
+                            $(this).closest('div.content').fadeOut();
+                        }
+                    });
 
-        function showPage(whichPage) {
-            if (whichPage < 1 || whichPage > totalPages) return false;
-            currentPage = whichPage;
-            $("#list .content")
-                .hide()
-                .slice((currentPage - 1) * limitPerPage, currentPage * limitPerPage)
-                .show();
-            $(".pagination li").slice(1, -1).remove();
-            getPageList(totalPages, currentPage, paginationSize).forEach(item => {
-                $("<li>")
-                    .addClass(
-                        "page-item " +
-                        (item ? "current-page " : "") +
-                        (item === currentPage ? "active " : "")
-                    )
-                    .append(
-                        $("<a>")
-                            .addClass("page-link")
-                            .attr({
-                                href: "javascript:void(0)"
-                            })
-                            .text(item || "...")
-                    )
-                    .insertBefore("#next-page");
-            });
-            return true;
-        }
-        $(".pagination").append(
-            $("<li>").addClass("page-item").attr({ id: "previous-page" }).append(
-                $("<a>")
-                    .addClass("page-link")
-                    .attr({
-                        href: "javascript:void(0)"
-                    })
-                    .text("Anterior")
-            ),
-            $("<li>").addClass("page-item").attr({ id: "next-page" }).append(
-                $("<a>")
-                    .addClass("page-link")
-                    .attr({
-                        href: "javascript:void(0)"
-                    })
-                    .text("Siguiente")
-            )
-        );
-        $("#list").show();
-        showPage(1);
-        $(document).on("click", ".pagination li.current-page:not(.active)", function () {
-            return showPage(+$(this).text());
-        });
-        $("#next-page").on("click", function () {
-            return showPage(currentPage + 1);
-        });
-
-        $("#previous-page").on("click", function () {
-            return showPage(currentPage - 1);
-        });
-        $(".pagination").on("click", function () {
-            $("html,body").animate({ scrollTop: 0 }, 0);
-        });
-        function filterRows() {
-            let query = $.trim($('#search').val().toUpperCase());
-            if (query.length === 0) {
-                setTimeout(() => {
-                    showPage(currentPage);
-                }, 1000);
-            } else {
-                let found = false;
-                $('div.content').each(async function () {
-                    let nombre = $(this).closest('.content').find('#nombre').text().trim().toUpperCase();
-                    if (nombre.indexOf(query) !== -1) {
-                        $(this).closest('div.content').fadeIn();
-                        found = true;
+                    if (!found) {
+                        $('#noResultsMessage').fadeIn();
                     } else {
-                        $(this).closest('div.content').fadeOut();
+                        $('#noResultsMessage').fadeOut();
+                    }
+                }
+                $(".filter-button").click(function () {
+                    let found = false;
+                    var value = $(this).attr('data-filter');
+                    if (value == "all") {
+                        $('.filter').fadeIn();
+                    }else {
+                        $(".filter").not('.' + value).fadeOut();
+                        $('.filter').filter('.' + value).fadeIn();
                     }
                 });
 
-                if (!found) {
-                    $('#noResultsMessage').fadeIn();
-                } else {
-                    $('#noResultsMessage').fadeOut();
+                if ($(".filter-button").removeClass("active")) {
+                    $(this).removeClass("active");
                 }
-            }
-        }
-    </script>
+            </script>
 </body>
 
 </html>
