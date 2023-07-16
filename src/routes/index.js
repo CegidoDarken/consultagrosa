@@ -250,6 +250,20 @@ router.post("/obtener_ciudades", async (req, res) => {
     }
   });
 });
+router.post("/obtener_perfiles", async (req, res) => {
+  const sql = "SELECT * FROM perfiles";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
 router.post("/obtener_productos", async (req, res) => {
   const sql = "SELECT * FROM productos";
   connection.query(sql, (error, result) => {

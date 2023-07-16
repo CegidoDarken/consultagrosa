@@ -4,118 +4,6 @@
 <head>
     <title>Inventario</title>
 </head>
-<style>
-    .fl-table {
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: normal;
-        border: none;
-        border-collapse: collapse;
-        width: 100%;
-        max-width: 100%;
-        white-space: nowrap;
-        background-color: white;
-    }
-
-    .fl-table td,
-    .fl-table th {
-        text-align: center;
-        padding: 8px;
-    }
-
-    .fl-table td {
-        border-right: 1px solid #f8f8f8;
-        font-size: 12px;
-    }
-
-
-    .fl-table tr:nth-child(even) {
-        background: #F8F8F8;
-    }
-
-    /* Responsive */
-
-    @media (max-width: 1010px) {
-        .fl-table {
-            display: block;
-            width: 100%;
-        }
-
-        .table-wrapper:before {
-            content: "Scroll horizontally >";
-            display: block;
-            text-align: right;
-            font-size: 11px;
-            color: white;
-            padding: 0 0 10px;
-        }
-
-        .fl-table thead,
-        .fl-table tbody,
-        .fl-table thead th {
-            display: block;
-        }
-
-        .fl-table thead th:last-child {
-            border-bottom: none;
-        }
-
-        .fl-table thead {
-            float: left;
-        }
-
-        .fl-table tbody {
-            width: auto;
-            position: relative;
-            overflow-x: auto;
-        }
-
-        .fl-table td,
-        .fl-table th {
-            padding: 20px .625em .625em .625em;
-            height: 60px;
-            vertical-align: middle;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-y: auto;
-            width: 120px;
-            font-size: 13px;
-            text-overflow: ellipsis;
-        }
-
-        .fl-table thead th {
-            text-align: left;
-            border-bottom: 1px solid #f7f7f9;
-        }
-
-        .fl-table tbody tr {
-            display: table-cell;
-        }
-
-        .fl-table tbody tr:nth-child(odd) {
-            background: none;
-        }
-
-        .fl-table tr:nth-child(even) {
-            background: transparent;
-        }
-
-        .fl-table tr td:nth-child(odd) {
-            background: #F8F8F8;
-            border-right: 1px solid #E6E4E4;
-        }
-
-        .fl-table tr td:nth-child(even) {
-            border-right: 1px solid #E6E4E4;
-        }
-
-        .fl-table tbody td {
-            display: block;
-            text-align: center;
-        }
-    }
-</style>
-
 <body>
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
@@ -157,7 +45,7 @@
                                     <div class="container-fluid mt-2">
                                         <div class="table-wrapper">
                                             <table
-                                                class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                                class="fl-table table table-sm table-hover text-center tablesort w-100"
                                                 id="datatable">
                                                 <thead class="text-light" style="background-color: #59ab6e;">
                                                     <tr>
@@ -167,9 +55,7 @@
                                                         <th>Categoría</th>
                                                         <th>Tag</th>
                                                         <th>Medidas</th>
-                                                        <th>Descuento</th>
                                                         <th>Precio</th>
-                                                        <th>Precio desc</th>
                                                         <th>Cantidad</th>
                                                         <th>Total</th>
                                                         <th>Acciones</th>
@@ -422,9 +308,7 @@
                                 { data: "categoria", defaultContent: "-" },
                                 { data: "tag", defaultContent: "-" },
                                 { data: "medidas", defaultContent: "-" },
-                                { data: "descuento", defaultContent: "-" },
                                 { data: "precio", defaultContent: "-" },
-                                { data: "preciodesc", defaultContent: "-" },
                                 { data: "cantidad", defaultContent: "-" },
                                 { data: "total", defaultContent: "-" }
                             ],
@@ -455,13 +339,6 @@
                                     targets: 6,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
-                                        return data.descuento + "%";
-                                    }
-                                },
-                                {
-                                    targets: 7,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
                                         return "$" + data.precio;
                                     }
                                 },
@@ -469,22 +346,15 @@
                                     targets: 8,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
-                                        return "$" + data.preciodesc;
-                                    }
-                                },
-                                {
-                                    targets: 10,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
                                         return "$" + data.total;
                                     }
                                 },
                                 {
-                                    targets: 11,
+                                    targets: 9,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                     }
                                 }
                             ],
@@ -549,6 +419,13 @@
                         var precio = button.getAttribute('data-precio');
                         var preciodesc = button.getAttribute('data-preciodesc');
                         var total = button.getAttribute('data-total');
+                        var medidas = button.getAttribute('data-medidas');
+                        var medidasArray = medidas.split('/');
+                        medidasArray.forEach(function (medida) {
+                            if (medida === "1L") {
+                                $('input[name="1l"]').prop('checked', true);
+                            }
+                        });
                         $("#titulo").text("Editar Producto");
                         $("#formulario")[0].reset();
                         $('#img').attr('src', img);
