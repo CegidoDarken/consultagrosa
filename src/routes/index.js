@@ -8,6 +8,7 @@ const fs = require('fs-extra');
 const mime = require('mime-types');
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
+require('datatables.net-bs5');
 let io;
 function configureSocket(server) {
   io = new Server(server);
@@ -56,6 +57,12 @@ router.get("/usuarios", async (req, res) => {
 router.get("/contactanos", async (req, res) => {
   credentials = req.session.credentials.cliente;
   res.render("contactanos", { credentials });
+});
+router.get("/detalleproducto", async (req, res) => {
+  credentials = req.session.credentials.cliente;
+  const productId = req.query.producto;
+  console.log(productId);
+  res.render("detalleproducto", { credentials });
 });
 router.get("/acerca", async (req, res) => {
   credentials = req.session.credentials.cliente;
@@ -559,6 +566,18 @@ router.get("/logoutadministrador", async (req, res) => {
   delete req.session.credentials.administrador;
   res.redirect("/admin");
 });
+router.get('/carrito', (req, res) => {
+  // Realiza la consulta a la base de datos para obtener los datos del carrito
+  connection.query('SELECT * FROM carrito', (err, results) => {
+    if (err) {
+      console.error('Error al obtener los datos del carrito:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+    console.log(results);
+    // Devuelve los datos del carrito como respuesta JSON
+    res.json(results);
+  });
+});
 
 router.post("/validar_cliente", async (req, res) => {
   console.log("Authentication".yellow);
@@ -591,10 +610,11 @@ router.post("/validar_cliente", async (req, res) => {
   });
 });
 
-router.post("/authadmin/:username/:password", async (req, res) => {
+router.post("/validar_administrador", async (req, res) => {
   console.log("Authentication".yellow);
+  const { usuario, contrasena } = req.body
   const query = 'SELECT * FROM usuarios, perfiles WHERE usuario = ? AND usuarios.perfil_id = perfiles.id_perfil AND perfil_id = 1';
-  connection.query(query, [req.params.username], (error, results) => {
+  connection.query(query, usuario, (error, results) => {
     if (error) {
       res.send(error.message);
       callback(error, null);
@@ -602,14 +622,13 @@ router.post("/authadmin/:username/:password", async (req, res) => {
     }
     if (results[0] == null) {
       console.log("User not found".red);
-      res.send({ message: "Wrong" });
+      res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
       return;
     } else {
       const usuario = results[0];
-      bcrypt.compare(req.params.password, usuario.contrasena, (err, match) => {
+      bcrypt.compare(contrasena, usuario.contrasena, (err, match) => {
         if (err) {
-          console.error('Error:', err.message);
-          res.send({ message: err.message });
+          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
           return;
         }
         if (match) {
@@ -618,10 +637,10 @@ router.post("/authadmin/:username/:password", async (req, res) => {
             administrador: usuario
           };
           console.log("Correct user".green);
-          res.send({ message: "Pass" });
+          res.status(200).json({ message: "Usuario correcto" });
         } else {
           console.log("Password does not match ".red);
-          res.send({ message: "Wrong" });
+          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
         }
       });
     }

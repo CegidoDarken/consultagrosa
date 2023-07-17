@@ -2,102 +2,152 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <title>Document</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Pages / Login - NiceAdmin Bootstrap Template</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/sweetalert2.min.css">
 </head>
 <style>
-    input[type=checkbox]:checked {
-        background-color: rgba(29, 103, 42, 1) !important;
-    }
-
-    body {
-        background-image: linear-gradient(rgba(18, 42, 66, .65), rgba(18, 42, 66, .65)), url('/img/fondo.png');
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
+  body {
+    background-image: linear-gradient(rgba(18, 42, 66, .65), rgba(18, 42, 66, .65)), url('/img/fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 </style>
 
 <body>
-    <div class="container py-5 h-100 vh-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                    <div class="card-body p-5 text-center">
 
-                        <h3 class="mb-5 text-uppercase">Sistema de control de inventario</h3>
+  <main>
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex justify-content-center pt-4">
+                    <a href="/admin" class="logo d-flex align-items-center w-auto">
+                      <img src="/img/logo.png" alt="">
+                      <span class="d-none d-lg-block text-uppercase">Consultagro S.A</span>
+                    </a>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Ingrese a su cuenta</h5>
+                  </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">
-                                <svg class="icon" width="20" height="20" fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#person-fill" />
-                                </svg>
-                            </span>
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="username" placeholder="Usuario" autocomplete="fals">
-                                <label style="background-color: transparent;" for="user">Usuario</label>
-                            </div>
+                  <form id="administradorForm" class="row g-3 needs-validation" novalidate>
+                    <div class="col-12">
+                      <div class="input-group">
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Usuario"
+                            required>
+                          <label for="usuario">Usuario</label>
+                          <div class="invalid-feedback">Ingrese su nombre de usuario</div>
                         </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">
-                                <svg class="icon" width="20" height="20" fill="currentColor">
-                                    <use xlink:href="/icons/bootstrap-icons.svg#key-fill" />
-                                </svg>
-                            </span>
-                            <div class="form-floating">
-                                <input type="password" class="form-control" id="password" placeholder="Contaseña">
-                                <label for="password">Contaseña</label>
-                            </div>
-                            <button class="btn btn-outline-primary" type="button" onclick="showpassword()">
-                                <svg class="icon" width="20" height="20" fill="currentColor">
-                                    <use id="icon-use" xlink:href="/icons/bootstrap-icons.svg#eye-slash-fill" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="d-grid mx-auto">
-                            <button class="btn btn-primary" type="button" onclick="aunth()">Iniciar Sesión</button>
-                        </div>
+                      </div>
                     </div>
+
+                    <div class="col-12">
+                      <div class="input-group">
+                        <div class="form-floating mb-3">
+                          <input type="password" class="form-control" name="contrasena" id="contrasena"
+                            placeholder="Contaseña" required>
+                          <label for="contrasena">Contaseña</label>
+                          <div class="invalid-feedback">Ingrese su contraseña</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
+                          onchange="showpassword()">
+                        <label class="form-check-label fw-medium" for="flexSwitchCheckChecked">Mostrar contaseña</label>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Iniciar Sesión</button>
+                    </div>
+                    <!--<div class="col-12">
+                      <p class="small mb-0">Don't have account? <a href="pages-register.html">Create an account</a></p>
+                    </div>-->
+                  </form>
+
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+
+      </section>
+
     </div>
-    <div id="danger-message" class="alert alert-danger w-auto position-fixed bottom-0 end-0 me-3">
-        <strong>¡Atención!</strong> Usuario y/o contraseña incorrectos
-    </div>
-</body>
-<script>
-    $('#danger-message').fadeOut(1);
-    function aunth() {
-        fetch(`/authadmin/${document.getElementById('username').value}/${document.getElementById('password').value}`, { method: 'POST' }).then(res => res.json())
-            .then(element => {
-                console.log(element);
-                if (element.message == "Worng") {
-                    $('#danger-message').fadeIn(1000);
-                    setTimeout(function () {
-                        $('#danger-message').fadeOut(1000);
-                    }, 3000);
-                } else if (element.message == "Pass") {
-                    location.replace('/panel');
-                }
-            });
-    }
+  </main>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+  <script src="/js/sweetalert2.min.js"></script>
+  <script>
     function showpassword() {
-        var icon = document.getElementById('icon-use');
-        var password = document.getElementById("password");
-        if (password.type === "password") {
-            password.type = "text";
-            icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-fill');
-        } else {
-            password.type = "password";
-            icon.setAttribute('xlink:href', '/icons/bootstrap-icons.svg#eye-slash-fill');
-        }
+      var password = document.getElementById("contrasena");
+      if (password.type === "password") {
+        password.type = "text";
+      } else {
+        password.type = "password";
+      }
     }
-</script>
+    document.getElementById("administradorForm").addEventListener('submit', function (event) {
+      event.preventDefault();
+      var formData = new FormData();
+      formData.append('usuario', document.getElementById('usuario').value);
+      formData.append('contrasena', document.getElementById('contrasena').value);
+      fetch('/validar_administrador', {
+        method: 'POST',
+        body: formData
+      }).then(res => res.json())
+        .then(element => {
+          if (element.message) {
+            location.replace('/panel');
+          } else {
+            Swal.fire({
+              toast: true,
+              position: 'bottom-end',
+              icon: 'error',
+              title: element.error,
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000
+            });
+
+          }
+        });
+    });
+
+    (() => {
+      'use strict'
+      const forms = document.querySelectorAll('.needs-validation')
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+  </script>
+</body>
 
 </html>

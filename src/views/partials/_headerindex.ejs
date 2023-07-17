@@ -50,7 +50,7 @@
                 <% if (credentials) { %>
                     <li class="nav-item ">
                         <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
-                            <i class="bi bi-cart-fill"></i>
+                            <i class="bi bi-cart-fill"></i>Mi carrito
                         </a>
                     </li>
                     <li class="nav-item">
@@ -218,7 +218,68 @@
         </div>
     </div>
 </div>
+<button id="ver-carrito-btn" class="btn btn-primary">Ver Carrito</button>
+
+<!-- Modal del Carrito -->
+<div class="modal fade" id="carrito-modal" tabindex="-1" aria-labelledby="carrito-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carrito-modal-label">Carrito de Compras</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="carrito-table" class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carrito-table-body">
+                        <!-- Los datos del carrito se generan dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    // Obtén los datos del carrito desde la base de datos utilizando fetch
+    fetch('/carrito', {
+        method: 'GET'
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Genera el contenido del carrito en el modal
+            var carritoHtml = '';
+            if (data.length > 0) {
+                data.forEach(function (item) {
+                    carritoHtml += '<tr>';
+                    carritoHtml += '<td>' + item.producto + '</td>';
+                    carritoHtml += '<td> a' + item.cantidad + '</td>';
+                    carritoHtml += '</tr>';
+                });
+            } else {
+                carritoHtml += '<tr><td colspan="2">No hay elementos en el carrito</td></tr>';
+            }
+            document.getElementById('carrito-table-body').innerHTML = carritoHtml;
+        })
+        .catch(error => {
+            console.error('Error al obtener los datos del carrito:', error);
+        });
+
+    // Abrir el modal del carrito al hacer clic en el botón "Ver Carrito"
+    document.getElementById('ver-carrito-btn').addEventListener('click', function () {
+        var carritoModal = new bootstrap.Modal(document.getElementById('carrito-modal'));
+        carritoModal.show();
+    });
+
+
     function showpasswordLogin() {
         var icon = document.getElementById('icon-use');
         var password = document.getElementById("password");
@@ -289,7 +350,7 @@
             .then(element => {
                 if (element.message) {
                     location.reload()
-                } else  {
+                } else {
                     Swal.fire({
                         toast: true,
                         position: 'bottom-end',
