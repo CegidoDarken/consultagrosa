@@ -145,6 +145,7 @@
                                 },
                                 dataSrc: 'data'
                             },
+                            dom: 'Bfrtip',
                             columns: [
                                 { data: 'fecha', defaultContent: "-" },
                                 { data: 'detalle', defaultContent: "-" },
@@ -157,6 +158,9 @@
                                 { data: 'icantidad', defaultContent: "-" },
                                 { data: 'iunidad', defaultContent: "-" },
                                 { data: 'itotal', defaultContent: "-" }
+                            ],
+                            buttons: [
+                                'copy', 'excel', 'pdf'
                             ],
                             "language": {
                                 "sEmptyTable": "No hay datos disponibles en la tabla",

@@ -33,7 +33,7 @@
                           <i class="bi bi-people"></i>
                         </div>
                         <div class="ps-3">
-                          <h6>145</h6>
+                          <h6><%= num_proveedores %></h6>
                           <span class="text-success small pt-1 fw-bold"></span>
                         </div>
                       </div>
@@ -103,58 +103,68 @@
                       <div id="reportsChart"></div>
 
                       <script>
-                        document.addEventListener("DOMContentLoaded", () => {
-                          const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                        document.addEventListener("DOMContentLoaded", async () => {
 
-                          const chart = new ApexCharts(document.querySelector("#reportsChart"), {
-                            series: [{
-                              name: 'Provedores',
-                              data: [31, 40, 28, 51, 42, 82, 56, 45],
-                            }, {
-                              name: 'Productos',
-                              data: [11, 32, 45, 32, 34, 52, 41, 18]
-                            }, {
-                              name: 'Clientes',
-                              data: [15, 11, 32, 18, 9, 24, 11, 23]
-                            }],
-                            chart: {
-                              height: 350,
-                              type: 'area',
-                              toolbar: {
-                                show: false
+                          await fetch("/obtener_productos_count", {
+                            method: 'POST',
+                          }).then(response => response.json()).then(data => {
+                            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+                            const chart = new ApexCharts(document.querySelector("#reportsChart"), {
+                              series: [{
+                                name: 'Provedores',
+                                data: data.proveedores,
+                              }, {
+                                name: 'Productos',
+                                data: data.productos
+                              }, {
+                                name: 'Clientes',
+                                data: data.usuarios
+                              }],
+                              chart: {
+                                height: 350,
+                                type: 'area',
+                                toolbar: {
+                                  show: false
+                                },
                               },
-                            },
-                            markers: {
-                              size: 4
-                            },
-                            colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                            fill: {
-                              type: "gradient",
-                              gradient: {
-                                shadeIntensity: 1,
-                                opacityFrom: 0.3,
-                                opacityTo: 0.4,
-                                stops: [0, 90, 100]
+                              markers: {
+                                size: 4
+                              },
+                              colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                              fill: {
+                                type: "gradient",
+                                gradient: {
+                                  shadeIntensity: 1,
+                                  opacityFrom: 0.3,
+                                  opacityTo: 0.4,
+                                  stops: [0, 90, 100]
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                curve: 'smooth',
+                                width: 2
+                              },
+                              xaxis: {
+                                categories: meses,
+                              },
+                              tooltip: {
+                                x: {
+                                  format: 'dd/MM/yy HH:mm'
+                                },
                               }
-                            },
-                            dataLabels: {
-                              enabled: false
-                            },
-                            stroke: {
-                              curve: 'smooth',
-                              width: 2
-                            },
-                            xaxis: {
-                              categories: meses,
-                            },
-                            tooltip: {
-                              x: {
-                                format: 'dd/MM/yy HH:mm'
-                              },
-                            }
+                            });
+
+                            chart.render();
                           });
 
-                          chart.render();
+                          console.log(data);
+
+                        }).catch(error => {
+                          console.error(error);
                         });
 
                       </script>

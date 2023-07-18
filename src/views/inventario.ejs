@@ -28,7 +28,7 @@
                                 <div class="card-header">
                                     <div class="d-grid gap-2 d-md-block">
                                         <button class="btn btn-primary" type="button" onclick="nuevo(this)"><i
-                                                class="bi bi-plus"></i>Añadir Producto</button>
+                                                class="bi bi-plus"></i>Nuevo producto</button>
                                     </div>
                                 </div>
                                 <div class="card-header">
@@ -83,14 +83,14 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="formulario">
+                            <form id="productoForm">
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="img/no-image-icon.png" id="img" style=" width: 100%;
+                                            <img src="" id="img" style="width: 100%;
                                             height: 300px;
                                             object-fit: contain;
-                                            object-position: center;">
+                                            object-position: center;" class="mb-3">
                                             <div class="mb-3">
                                                 <input class="form-control form-control-sm" id="image" type="file"
                                                     accept="image/*">
@@ -131,21 +131,35 @@
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
                                                             <input type="text" class="form-control" id="codigo"
-                                                                placeholder="Ingrese un código" required>
+                                                                name="codigo" placeholder="Ingrese un código" required>
                                                             <label for="codigo">Código</label>
                                                         </div>
+                                                    </div>
+                                                    <div class=" col-8 text-start">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="tag"
+                                                                name="tag" placeholder="Ingrese un nombre de producto"
+                                                                required>
+                                                            <label for="tag">Tag</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <button class="btn btn-primary control mt-2" type="button"
+                                                            onclick="asignar_tag()">Generar</button>
                                                     </div>
                                                     <div class=" col-12 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="text" class="form-control" id="nombre"
-                                                                placeholder="Ingrese un nombre de producto">
+                                                                name="nombre"
+                                                                placeholder="Ingrese un nombre de producto" required>
                                                             <label for="nombre">Nombre</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
-                                                            <select name="categoria" class="form-select"
-                                                                id="categoria" required>
+                                                            <select name="categoria" class="form-select" id="categoria"
+                                                                required>
+                                                                <option value="" selected disabled>Categorias</option>
                                                                 <% if (categorias) { %>
                                                                     <% categorias.forEach(row=> { %><option
                                                                             value="<%= row.id_categoria %>" }>
@@ -165,21 +179,23 @@
                                                     <div class=" col-md-6 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="number" class="form-control" id="cantidad"
-                                                                placeholder="Ingrese una cantidad" oninput="calculartotal()" required>
+                                                                name="cantidad" placeholder="Ingrese una cantidad"
+                                                                oninput="calculartotal()" required>
                                                             <label for="cantidad">Cantidad</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="number" class="form-control" id="precio"
-                                                                placeholder="Ingrese un precio" oninput="calculartotal()" required>
+                                                                name="precio" placeholder="Ingrese un precio"
+                                                                oninput="calculartotal()" step="any" required>
                                                             <label for="precio">Precio</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="number" class="form-control" id="total"
-                                                                placeholder="Total" readonly>
+                                                                name="total" placeholder="Total" readonly>
                                                             <label for="total">Total</label>
                                                         </div>
                                                     </div>
@@ -193,30 +209,6 @@
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="tag" tabindex="-1" aria-labelledby="exampleModalLabel" arhide="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Asignar</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form id="formtag">
-                            <div class="modal-body">
-                                <label for="" class="form-label">Producto</label>
-                                <input type="text" class="form-control mb-2" id="productoinput" readonly>
-                                <label for="" class="form-label">Tag</label>
-                                <input id="taginput" type="number" name="tag" class="form-control mb-2"
-                                    placeholder="Ingrese un Tag" readonly>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary" id="asignar">Asignar</button>
-                            </div>
                         </form>
                     </div>
                 </div>
@@ -241,142 +233,141 @@
                 <script>
                     var id;
                     var op;
-                    $(document).ready(function () {
-                        $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
-                            var litrosSelected = $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked');
+                    $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
+                        var litrosSelected = $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked');
 
-                            if (litrosSelected.length > 0) {
-                                $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', true);
-                            } else {
-                                $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
-                            }
-                        });
-
-                        $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
-                            var kgSelected = $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked');
-
-                            if (kgSelected.length > 0) {
-                                $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', true);
-                            } else {
-                                $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', false);
-                            }
-                        });
-                        $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
-                            var medidasSeleccionadas = [];
-                            $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked').each(function () {
-                                medidasSeleccionadas.push($(this).val());
-                            });
-                            $('#medidas').val(medidasSeleccionadas.join('/'));
-                        });
-                        $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
-                            var medidasSeleccionadas = [];
-                            $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked').each(function () {
-                                medidasSeleccionadas.push($(this).val());
-                            });
-                            $('#medidas').val(medidasSeleccionadas.join('/'));
-                        });
-                        var table = $('#datatable').DataTable({
-                            ajax: {
-                                url: "/obtener_inventario",
-                                type: "POST",
-                                dataSrc: "data",
-                            },
-                            bLengthChange: false,
-                            info: true,
-                            paging: true, columns: [
-                                { data: "img" },
-                                { data: "codigo", defaultContent: "-" },
-                                { data: "nombre", defaultContent: "-" },
-                                { data: "categoria", defaultContent: "-" },
-                                { data: "tag", defaultContent: "-" },
-                                { data: "medidas", defaultContent: "-" },
-                                { data: "precio", defaultContent: "-" },
-                                { data: "cantidad", defaultContent: "-" },
-                                { data: "total", defaultContent: "-" }
-                            ],
-                            columnDefs: [
-                                {
-                                    targets: "_all",
-                                    className: "dt-center",
-                                },
-                                {
-                                    targets: 0,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        return (data.img) ? `<button data-img="${data.img}" data-nombre="${data.nombre}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
-                                    }
-                                },
-                                {
-                                    targets: 4,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        if (data.tag) {
-                                            return `<span class="badge rounded-pill text-bg-primary text-light">#${data.tag}</span>`;
-                                        } else {
-                                            return `<button class="badge rounded-pill text-bg-warning text-light border-0" data-id="${data.id_producto}" data-nombre="${data.nombre}" onclick="tag(this)">Asignar</button>`;
-                                        }
-                                    }
-                                },
-                                {
-                                    targets: 6,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        return "$" + data.precio;
-                                    }
-                                },
-                                {
-                                    targets: 8,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        return "$" + data.total;
-                                    }
-                                },
-                                {
-                                    targets: 9,
-                                    render: function (data, type, row, meta) {
-                                        var data = table.row(meta.row).data();
-                                        var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
-                                    }
-                                }
-                            ],
-                            "language": {
-                                "sEmptyTable": "No hay datos disponibles en la tabla",
-                                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
-                                "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
-                                "sInfoPostFix": "",
-                                "sInfoThousands": ",",
-                                "sLengthMenu": "Mostrar _MENU_ entradas",
-                                "sLoadingRecords": "Cargando...",
-                                "sProcessing": "Procesando...",
-                                "sSearch": "Buscar:",
-                                "sZeroRecords": "No se encontraron resultados",
-                                "oPaginate": {
-                                    "sFirst": "Primero",
-                                    "sLast": "Último",
-                                    "sNext": "Siguiente",
-                                    "sPrevious": "Anterior"
-                                },
-                                "oAria": {
-                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                                },
-                                "buttons": {
-                                    "copy": "Copiar",
-                                    "colvis": "Visibilidad"
-                                }
-                            }
-                        });
-                        $("#datatable_filter").hide();
-                        $('#search').keyup(function () {
-                            table = $('.tablesort').DataTable();
-                            table.search($(this).val()).draw();
-                        });
-                        $('#actualizar').click(async function () {
-                            await table.ajax.reload()
-                        });
+                        if (litrosSelected.length > 0) {
+                            $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', true);
+                        } else {
+                            $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
+                        }
                     });
+
+                    $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
+                        var kgSelected = $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked');
+
+                        if (kgSelected.length > 0) {
+                            $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', true);
+                        } else {
+                            $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', false);
+                        }
+                    });
+                    $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
+                        var medidasSeleccionadas = [];
+                        $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked').each(function () {
+                            medidasSeleccionadas.push($(this).val());
+                        });
+                        $('#medidas').val(medidasSeleccionadas.join('/'));
+                    });
+                    $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
+                        var medidasSeleccionadas = [];
+                        $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked').each(function () {
+                            medidasSeleccionadas.push($(this).val());
+                        });
+                        $('#medidas').val(medidasSeleccionadas.join('/'));
+                    });
+                    var table = $('#datatable').DataTable({
+                        ajax: {
+                            url: "/obtener_inventario",
+                            type: "POST",
+                            dataSrc: "data",
+                        },
+                        bLengthChange: false,
+                        info: true,
+                        paging: true, columns: [
+                            { data: "img" },
+                            { data: "codigo", defaultContent: "-" },
+                            { data: "nombre", defaultContent: "-" },
+                            { data: "categoria", defaultContent: "-" },
+                            { data: "tag", defaultContent: "-" },
+                            { data: "medidas", defaultContent: "-" },
+                            { data: "precio", defaultContent: "-" },
+                            { data: "cantidad", defaultContent: "-" },
+                            { data: "total", defaultContent: "-" }
+                        ],
+                        columnDefs: [
+                            {
+                                targets: "_all",
+                                className: "dt-center",
+                            },
+                            {
+                                targets: 0,
+                                render: function (data, type, row, meta) {
+                                    var data = table.row(meta.row).data();
+                                    return (data.img) ? `<button data-img="${data.img}" data-nombre="${data.nombre}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
+                                }
+                            },
+                            {
+                                targets: 4,
+                                render: function (data, type, row, meta) {
+                                    var data = table.row(meta.row).data();
+                                    if (data.tag) {
+                                        return `<span class="badge rounded-pill text-bg-primary text-light">#${data.tag}</span>`;
+                                    } else {
+                                        return `<span class="badge rounded-pill text-bg-warning text-light border-0">Sin asignar</span>`;
+                                    }
+                                }
+                            },
+                            {
+                                targets: 6,
+                                render: function (data, type, row, meta) {
+                                    var data = table.row(meta.row).data();
+                                    return "$" + data.precio;
+                                }
+                            },
+                            {
+                                targets: 8,
+                                render: function (data, type, row, meta) {
+                                    var data = table.row(meta.row).data();
+                                    return "$" + data.total;
+                                }
+                            },
+                            {
+                                targets: 9,
+                                render: function (data, type, row, meta) {
+                                    var data = table.row(meta.row).data();
+                                    var dataAsString = JSON.stringify(data);
+                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                }
+                            }
+                        ],
+                        "language": {
+                            "sEmptyTable": "No hay datos disponibles en la tabla",
+                            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                            "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                            "sInfoPostFix": "",
+                            "sInfoThousands": ",",
+                            "sLengthMenu": "Mostrar _MENU_ entradas",
+                            "sLoadingRecords": "Cargando...",
+                            "sProcessing": "Procesando...",
+                            "sSearch": "Buscar:",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            },
+                            "buttons": {
+                                "copy": "Copiar",
+                                "colvis": "Visibilidad"
+                            }
+                        }
+                    });
+                    $("#datatable_filter").hide();
+                    $('#search').keyup(function () {
+                        table = $('.tablesort').DataTable();
+                        table.search($(this).val()).draw();
+                    });
+                    $('#actualizar').click(async function () {
+                        await table.ajax.reload()
+                    });
+
                     function delete_producto(button) {
                         id = button.getAttribute('data-id');
                         $("#delete_producto").modal('show');
@@ -384,7 +375,7 @@
                     function view_img(button) {
                         Swal.fire({
                             title: button.getAttribute('data-nombre'),
-                            html: `<img class="card-img rounded-3 img-fluid border-0" src="${button.getAttribute('data-img')}" style=" width: 100%; height: 300px; object-fit: contain;object-position: bottom;">`,
+                            html: `<img class="card-img rounded-3 img-fluid border-0" src="${button.getAttribute('data-img')}" style=" width: 100%; height: 300px; object-fit: contain;object-position: center;">`,
                             showConfirmButton: false,
                         })
                     }
@@ -404,7 +395,7 @@
                         var medidas = button.getAttribute('data-medidas');
                         var medidasArray = medidas.split('/');
                         $("#titulo").text("Editar Producto");
-                        $("#formulario")[0].reset();
+                        $("#productoForm")[0].reset();
                         $('#img').attr('src', img);
                         $("#codigo").val(codigo);
                         $("#nombre").val(nombre);
@@ -415,26 +406,20 @@
                         $('#producto').modal('show');
                     }
                     function nuevo(button) {
-                        op = "insert_producto";
+                        op = "insertar_producto";
                         $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
                         $("#titulo").text("Nuevo Producto");
-                        $("#formulario")[0].reset();
+                        $("#productoForm")[0].reset();
                         $('#producto').modal('show');
+                        asignar_tag();
                     }
-                    async function tag(button) {
-                        id = button.getAttribute('data-id');
-                        var producto = button.getAttribute('data-nombre');
+                    async function asignar_tag() {
                         var tag = generarTagUnico();
-                        document.getElementById("taginput").value = tag;
+                        document.getElementById("tag").value = tag;
                         function generarTagUnico() {
                             var caracteres = "0123456789";
                             var longitud = 10;
-                            var tag;
-                            do {
-                                tag = generarTagAleatorio(caracteres, longitud);
-                            } while (!esTagUnico(tag));
-
-                            return tag;
+                            return generarTagAleatorio(caracteres, longitud);
                         }
 
                         function generarTagAleatorio(caracteres, longitud) {
@@ -445,27 +430,6 @@
                             }
                             return tag;
                         }
-                        async function esTagUnico(tag) {
-                            var tagExistenteEnBD = false;
-                            await fetch("obtener_tags", {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            }).then(response => response.json()).then(data => {
-                                if (data.data) {
-                                    if (data.data === tag) {
-                                        tagExistenteEnBD = true;
-                                    }
-                                }
-                            }).catch(error => {
-                                console.error(error);
-                            });
-                            return !tagExistenteEnBD;
-                        }
-
-                        $("#productoinput").val(producto);
-                        $('#tag').modal('show');
                     }
                     function calculardesc() {
                         var desc = $('#descuento').val();
@@ -513,6 +477,7 @@
                                     timer: 3000
                                 });
                                 $("#delete_producto").modal('hide');
+                                table.ajax.reload();
                             } else {
                                 Swal.fire({
                                     toast: true,
@@ -538,70 +503,59 @@
                             URL.revokeObjectURL(output.src);
                         }
                     });
-                    document.getElementById('formulario').addEventListener('submit', function (event) {
+                    document.getElementById('productoForm').addEventListener('submit', async function (event) {
                         event.preventDefault();
                         const fileInput = document.getElementById('image');
                         const file = fileInput.files[0];
+                        const formData = new FormData(event.target);
+
                         if (file) {
                             const reader = new FileReader();
-                            reader.onloadend = function () {
-                                const base64Image = reader.result;
-                                const formData = new FormData(event.target);
-                                formData.append('img', base64Image);
-                                formData.append('idproducto', id);
-                                fetch(op, {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.message === "Success") {
-                                            alert("¡Producto actualizado correctamente!");
-                                        } else {
-                                            alert("¡Error al guardar producto!");
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error(error);
-                                    });
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            const formData = new FormData(event.target);
-                            formData.append('idproducto', id);
-                            fetch(op, {
+                            await new Promise((resolve) => {
+                                reader.onloadend = function () {
+                                    formData.append('img', reader.result);
+                                    resolve();
+                                };
+                                reader.readAsDataURL(file);
+                            });
+                        }
+
+                        formData.append('idproducto', id);
+
+                        try {
+                            const response = await fetch(op, {
                                 method: 'POST',
                                 body: formData
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.message === "Success") {
-                                        alert("¡Producto actualizado correctamente!");
-                                    } else {
-                                        alert("¡Error al guardar producto!");
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error(error);
+                            });
+
+                            const data = await response.json();
+
+                            if (data.message) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    icon: 'success',
+                                    title: data.message,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 3000
                                 });
-                        }
-                    });
-                    document.getElementById('formtag').addEventListener('submit', function (event) {
-                        event.preventDefault();
-                        const formData = new FormData(event.target);
-                        formData.append('idproducto', id);
-                        fetch("asignar_producto", {
-                            method: 'POST',
-                            body: formData,
-                        }).then(response => response.json()).then(data => {
-                            if (data.message === "Success") {
-                                alert("¡Producto actualizado correctamente!");
-                            } else {
-                                alert("¡Error al guardar producto!" + data.message);
+                                table.ajax.reload();
+                                $('#producto').modal('hide');
+                            } else if (data.error) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    icon: 'error',
+                                    title: data.error,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 3000
+                                });
                             }
-                        }).catch(error => {
+                        } catch (error) {
                             console.error(error);
-                        });
+                        }
                     });
                 </script>
 
