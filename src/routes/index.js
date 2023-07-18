@@ -446,37 +446,23 @@ router.post('/carrito', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto } = req.body;
-  if (img) {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=?, `img`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, img, idproducto], (error, results) => {
-      if (error) {
-        console.log(error);
-        res.json({ message: error });
-      } else {
-        if (results) {
-          res.json({ message: "Success" });
-        } else {
-          res.json({ message: "No found" });
-        }
+  const { codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto} = req.body;
+  const sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
+  connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto], (error, results) => {
+    if (error) {
+      console.log(error);
+      if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
+        res.status(500).json({ error: "Código ya existente" });
+      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
+        res.status(500).json({ error: "Tag ya existente" });
       }
-    });
-  } else {
-    const sql = "UPDATE `productos` SET `codigo`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`descuento`=?,`preciodesc`=?, `cantidad`=?, `total`=? WHERE id_producto=?";
-    connection.query(sql, [codigo, categoria, nombre, descripcion, medidas, precio, descuento, preciodesc, cantidad, total, idproducto], (error, results) => {
-      if (error) {
-        console.log(error);
-        if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
-          res.status(500).json({ error: "Codigo ya existente" });
-        }
-
-      } else {
-        if (results) {
-          res.json({ message: "Success" });
-        }
+    } else {
+      if (results) {
+        console.log(id_producto);
+        res.json({ message: "Guardado exitosamente" });
       }
-    });
-  }
+    }
+  });
 });
 
 router.post('/insertar_producto', (req, res) => {
@@ -491,7 +477,7 @@ router.post('/insertar_producto', (req, res) => {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
         res.status(500).json({ error: "Código ya existente" });
-      }else if(error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`){
+      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
         res.status(500).json({ error: "Tag ya existente" });
       }
     } else {

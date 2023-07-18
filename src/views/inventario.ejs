@@ -87,7 +87,7 @@
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="" id="img" style="width: 100%;
+                                            <img src="img/no-image-icon.png" id="img" style="width: 100%;
                                             height: 300px;
                                             object-fit: contain;
                                             object-position: center;" class="mb-3">
@@ -138,8 +138,7 @@
                                                     <div class=" col-8 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="number" class="form-control" id="tag"
-                                                                name="tag" placeholder="Ingrese un nombre de producto"
-                                                                required>
+                                                                name="tag" placeholder="Ingrese un tag" max="9999999999">
                                                             <label for="tag">Tag</label>
                                                         </div>
                                                     </div>
@@ -157,9 +156,8 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
-                                                            <select name="categoria" class="form-select" id="categoria"
+                                                            <select name="categoria" class="form-select" id="categorias"
                                                                 required>
-                                                                <option value="" selected disabled>Categorias</option>
                                                                 <% if (categorias) { %>
                                                                     <% categorias.forEach(row=> { %><option
                                                                             value="<%= row.id_categoria %>" }>
@@ -327,7 +325,7 @@
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     var dataAsString = JSON.stringify(data);
-                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-total="${data.total}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-tag="${data.tag}" data-total="${data.total}" data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                 }
                             }
                         ],
@@ -385,12 +383,12 @@
                         id = button.getAttribute('data-id')
                         var img = button.getAttribute('data-img');
                         var codigo = button.getAttribute('data-codigo');
+                        var tag = button.getAttribute('data-tag');
                         var nombre = button.getAttribute('data-nombre');
                         var descripcion = button.getAttribute('data-descripcion');
                         var cantidad = button.getAttribute('data-cantidad');
-                        var descuento = button.getAttribute('data-descuento');
+                        var categoria = button.getAttribute('data-categoria');
                         var precio = button.getAttribute('data-precio');
-                        var preciodesc = button.getAttribute('data-preciodesc');
                         var total = button.getAttribute('data-total');
                         var medidas = button.getAttribute('data-medidas');
                         var medidasArray = medidas.split('/');
@@ -398,20 +396,22 @@
                         $("#productoForm")[0].reset();
                         $('#img').attr('src', img);
                         $("#codigo").val(codigo);
+                        $("#tag").val(tag);
                         $("#nombre").val(nombre);
                         $("#descripcion").val(descripcion);
                         $("#cantidad").val(cantidad);
                         $("#precio").val(precio);
                         $("#total").val(total);
+                        $('#categorias option[value="' + categoria + '"]').prop('selected', true);
                         $('#producto').modal('show');
                     }
                     function nuevo(button) {
                         op = "insertar_producto";
                         $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
+                        $('#img').attr('src', "img/no-image-icon.png");
                         $("#titulo").text("Nuevo Producto");
                         $("#productoForm")[0].reset();
                         $('#producto').modal('show');
-                        asignar_tag();
                     }
                     async function asignar_tag() {
                         var tag = generarTagUnico();
@@ -519,9 +519,7 @@
                                 reader.readAsDataURL(file);
                             });
                         }
-
-                        formData.append('idproducto', id);
-
+                        formData.append('id_producto', id);
                         try {
                             const response = await fetch(op, {
                                 method: 'POST',
