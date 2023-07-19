@@ -133,7 +133,7 @@
                                                 <div class="row">
                                                     <div class="col-3 card-title">Cantidad:</div>
                                                     <div class="col-9 card-text align-self-center">
-                                                        <input class="form-control" id="cantidades" type="text" readonly
+                                                        <input class="form-control" id="cantidades" type="number" readonly
                                                             required>
                                                     </div>
                                                 </div>
@@ -302,7 +302,15 @@
                 }
             }
         } else {
-            alert("ss");
+            Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: 'Cantidad excedida',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
         }
     });
     $('#tipo_movimiento').on('change', function () {
