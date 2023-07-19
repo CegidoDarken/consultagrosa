@@ -95,9 +95,123 @@
                     </div>
                 </section>
             </main>
+            <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+                tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <form id="kardexForm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">¡ESCANEA EL PRODUCTO PARA
+                                    OBTENER
+                                    MÁS DETALLES!</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card mb-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="" class="img-fluid rounded-start" id="img">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body col-12">
+                                                <div class="row">
+                                                    <div class="col-4 card-title">Nombre:</div>
+                                                    <div class="col-8 align-self-center" id="nombre">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4 card-title">Categoría:</div>
+                                                    <div class="col-8 card-text align-self-center" id="categoria">
+                                                    </div>
+                                                </div>
+                                                <p class="card-text"></p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <select class="form-select mb-3" id="modos">
+                                                        <option value="1">Saldo</option>
+                                                        <option value="2">Entrada</option>
+                                                        <option value="3">Salida</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" class="form-control" id="cantidad"
+                                                            name="cantidad" placeholder="name@example.com"
+                                                            oninput="calculartotal()" required>
+                                                        <label for="cantidad">Cantidad</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" class="form-control" id="precio"
+                                                            name="precio" placeholder="name@example.com" readonly>
+                                                        <label for="inputprecio">Precio</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" class="form-control" id="total"
+                                                            name="total" placeholder="name@example.com" readonly>
+                                                        <label for="total">Total</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button class="btn btn-primary" type="submit">Siguiente</button>
+                            </div>
+                    </form>
+                </div>
+            </div>
             <%- include("partials/_fotterpanel") %>
 </body>
 <script>
+    let producto;
+    document.getElementById('kardexForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var valorSeleccionado = $('#modos').val();
+        const formData = new FormData(event.target);
+        formData.append('id_producto', producto.id_producto);
+        console.log(formData);
+        if (valorSeleccionado == '1') {
+            console.log('Modo seleccionado: Entrada');
+            const response = await fetch('kardex_saldos', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+        } else if (valorSeleccionado == '2') {
+            console.log('Modo seleccionado: Entrada');
+            const response = await fetch('kardex_entrada', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+        } else if (valorSeleccionado == '3') {
+            console.log('Modo seleccionado: Salida');
+            const response = await fetch('kardex_salida', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+        }
+    });
+    $('#exampleModalToggle').on('shown.bs.modal', async function () {
+        await read();
+    });
+    $('#exampleModalToggle').on('hidden.bs.modal', async function () {
+        if (reader) {
+            await reader.cancel();
+            reader.releaseLock();
+            reader = null;
+        }
+    });
     let snd = new Audio("sound/beep.wav");
     let port;
     let reader = null;
@@ -126,25 +240,9 @@
         }
     }
     async function escanear() {
-        let tag;
-        Swal.fire({
-            title: '¡SELECCIONE UNA OPCIÓN!',
-            icon: 'info',
-            html: `<div class="container text-start p-3"><select id="opcion" class="form-select"><option>Entrada</option><option>Salida</option>/select></div>`,
-            showCloseButton: true,
-            showCancelButton: true,
-            confirmButtonText: 'SIGUIENTE',
-            confirmButtonColor: "#198754",
-            cancelButtonText: 'CANCELAR',
-            showConfirmButton: true,
-            focusConfirm: false,
-            width: '800px',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                read();
-            }
-        });
+        $('#exampleModalToggle').modal('show');
     }
+
     async function asignar() {
         let tag;
         Swal.fire({
@@ -260,23 +358,12 @@
             console.error('Error al leer desde el puerto serie:', error);
         }
     }
+    function calculartotal() {
+        var cantidad = $('#cantidad').val();
+        var precio = $('#precio').val();
+        $('#total').val(parseFloat(cantidad * precio).toFixed(2));
+    }
     async function read() {
-        Swal.fire({
-            title: '¡ESCANEA EL PRODUCTO PARA OBTENER MÁS DETALLES!',
-            icon: 'info',
-            text: ' ',
-            showCloseButton: true,
-            showCancelButton: false,
-            showConfirmButton: false,
-            focusConfirm: false,
-            width: '800px'
-        }).then(async (result) => {
-            if (reader) {
-                await reader.cancel();
-                reader.releaseLock();
-                reader = null;
-            }
-        });;
         if (!port) {
             console.error('No se ha establecido una conexión con el puerto serie.');
             return;
@@ -324,10 +411,11 @@
                         body: JSON.stringify({ tag: message.trim() }),
                     }).then(response => response.json()).then(async data => {
                         if (data.message) {
+                            console.log(data);
                             snd.play();
                             Swal.fire({
                                 title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
-                                icon: 'success',
+                                icon: 'error',
                                 html: `<h3 class="text-uppercase"><span class="badge bg-secondary text-uppercase m-2">${data.message}</span></h3>`,
                                 showCloseButton: true,
                                 showCancelButton: true,
@@ -345,27 +433,13 @@
                                 }
                             });
                         } else if (data.codigo) {
+                            $('#nombre').text(data.nombre);
+                            $('#categoria').text(data.categoria);
+                            $('#cantidad').text(data.cantidad);
+                            $('#precio').val(data.precio);
+                            $('#img').attr('src', data.img);
                             snd.play();
-                            Swal.fire({
-                                title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
-                                icon: 'success',
-                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body text-start"><p class="card-text text-uppercase">Nombre: ${data.nombre}</p><p class="card-text text-uppercase">Categoría: ${data.categoria}</p><p class="card-text text-uppercase">Medidas: ${data.medidas}</p><p class="card-text text-uppercase">Stock: ${data.cantidad} </p><p class="card-text text-uppercase">Precio: $${data.precio} </p><p class="card-text text-uppercase">Descuento: ${data.descuento}% </p><p class="card-text text-uppercase">Precio Desc: $${data.preciodesc} </p><p class="card-text text-uppercase">Total: $${data.total} </p></div></div></div></div>`,
-                                showCloseButton: true,
-                                showCancelButton: true,
-                                showConfirmButton: true,
-                                confirmButtonText: 'SIGUIENTE',
-                                confirmButtonColor: "#198754",
-                                cancelButtonText: 'CANCELAR',
-                                showConfirmButton: true,
-                                width: '800px'
-                            }).then(async (result) => {
-                                if (reader) {
-                                    await reader.cancel();
-                                    reader.releaseLock();
-                                    reader = null;
-                                }
-                            });
-                            producto = data.codigo;
+                            producto = data;
                         }
                     });
                     message = "";

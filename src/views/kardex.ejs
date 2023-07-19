@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Inventario</title>
+    <title>Kardex</title>
 </head>
 
 <body>
@@ -65,20 +65,20 @@
                                                         <th colspan="2"></th>
                                                         <th colspan="3" class="text-light">ENTRADAS</th>
                                                         <th colspan="3" class="text-light">SALIDAS</th>
-                                                        <th colspan="3" class="text-light">EXISTECIAS</th>
+                                                        <th colspan="3" class="text-light">SALDOS</th>
                                                     </tr>
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th>FECHA</th>
                                                         <th>DETALLE</th>
-                                                        <th>CANTIDAD</th>
-                                                        <th>PRECIO UNIDAD</th>
-                                                        <th>PRECIO TOTAL</th>
-                                                        <th>CANTIDAD</th>
-                                                        <th>PRECIO UNIDAD</th>
-                                                        <th>PRECIO TOTAL</th>
-                                                        <th>CANTIDAD</th>
-                                                        <th>PRECIO UNIDAD</th>
-                                                        <th>PRECIO TOTAL</th>
+                                                        <th>ENTRADAS/CANTIDAD</th>
+                                                        <th>ENTRADAS/PRECIO</th>
+                                                        <th>ENTRADAS/TOTAL</th>
+                                                        <th>SALIDAS/CANTIDAD</th>
+                                                        <th>SALIDAS/PRECIO</th>
+                                                        <th>SALIDAS/TOTAL</th>
+                                                        <th>SALDOS/CANTIDAD</th>
+                                                        <th>SALDOS/PRECIO</th>
+                                                        <th>SALDOS/TOTAL</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -160,7 +160,27 @@
                                 { data: 'itotal', defaultContent: "-" }
                             ],
                             buttons: [
-                                'copy', 'excel', 'pdf'
+                                {
+                                    extend: 'copy',
+                                    text: '<i class="bi bi-clipboard"></i> Copiar',
+                                    className: 'btn btn-primary btn-sm text-light'
+                                },
+                                {
+                                    extend: 'print',
+                                    text: '<i class="bi bi-printer"></i> Imprimir',
+                                    className: 'btn btn-primary btn-sm text-light'
+                                },
+                                {
+                                    extend: 'excel',
+                                    text: '<i class="bi bi-file-excel"></i>Exportar Excel',
+                                    className: 'btn btn-primary btn-sm text-light'
+                                }
+                            ],
+                            columnDefs: [
+                                {
+                                    targets: "_all",
+                                    className: "dt-center",
+                                }
                             ],
                             "language": {
                                 "sEmptyTable": "No hay datos disponibles en la tabla",

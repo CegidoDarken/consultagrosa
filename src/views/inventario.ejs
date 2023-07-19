@@ -31,15 +31,19 @@
                                                 class="bi bi-plus"></i>Nuevo producto</button>
                                     </div>
                                 </div>
-                                <div class="card-header">
-                                    <div class="input-group mb-3">
-                                        <form class="form-floating">
+                                <div class="card-header row">
+                                    <div class="col-md-3">
+                                        <div class="input-group mb-3">
                                             <input type="text" class="form-control" id="search" placeholder="Buscar"
                                                 value="">
-                                            <label for="search">Buscar</label>
-                                        </form>
-                                        <span class="input-group-text" id="basic-addon1"><i
-                                                class="bi bi-search"></i></span>
+                                            <span class="input-group-text" id="basic-addon1"><i
+                                                    class="bi bi-search"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group mb-3">
+                                            <input type="date" class="form-control" id="date" value="">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -59,6 +63,7 @@
                                                         <th>Precio</th>
                                                         <th>Cantidad</th>
                                                         <th>Total</th>
+                                                        <th>Fecha</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -281,7 +286,8 @@
                             { data: "medidas", defaultContent: "-" },
                             { data: "precio", defaultContent: "-" },
                             { data: "cantidad", defaultContent: "-" },
-                            { data: "total", defaultContent: "-" }
+                            { data: "total", defaultContent: "-" },
+                            { data: "fecha", defaultContent: "-" }
                         ],
                         columnDefs: [
                             {
@@ -321,7 +327,7 @@
                                 }
                             },
                             {
-                                targets: 9,
+                                targets: 10,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     var dataAsString = JSON.stringify(data);
@@ -430,11 +436,6 @@
                             }
                             return tag;
                         }
-                    }
-                    function calculardesc() {
-                        var desc = $('#descuento').val();
-                        var precio = $('#precio').val();
-                        $('#preciodesc').val(parseFloat(precio - (precio * (desc / 100))).toFixed(2));
                     }
 
                     function calculartotal() {

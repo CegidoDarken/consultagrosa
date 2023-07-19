@@ -81,7 +81,7 @@ router.get("/analisis", async (req, res) => {
 });
 router.get("/escanear", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  const sql = "SELECT * FROM productos,categorias, rfid_tags WHERE productos.categoria_id = categorias.id_categoria AND productos.tag_id = rfid_tags.id_tag AND tag != ''";
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -446,9 +446,18 @@ router.post('/carrito', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto} = req.body;
-  const sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
-  connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto], (error, results) => {
+  const { codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto } = req.body;
+  let sql;
+  let values;
+  if (img) {
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
+    values= [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto];
+  }else{
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
+    values= [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, id_producto];
+  }
+
+  connection.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
@@ -525,10 +534,10 @@ router.post('/insertar_salida', (req, res) => {
 router.post("/buscarproductotag", async (req, res) => {
   const { tag } = req.body;
   console.log(tag);
-  const sql = "SELECT * FROM productos,categorias, rfid_tags WHERE productos.categoria_id = categorias.id_categoria AND productos.tag_id = rfid_tags.id_tag AND tag = ?";
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag = ?";
   connection.query(sql, [tag], (error, results) => {
     if (error) {
-      res.send({ message: error });
+      res.send({ message: error.message });
     } else {
       if (results.length > 0) {
         results[0].img = results[0].img.toString();
@@ -538,6 +547,86 @@ router.post("/buscarproductotag", async (req, res) => {
       }
     }
   });
+});
+router.post("/kardex_entrada", async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const { cantidad, precio, total, id_producto } = req.body;
+
+    let sql = "UPDATE railway.productos SET cantidad = cantidad + ?, total = total + ? WHERE id_producto = ?;";
+    connection.query(sql, [cantidad, total, id_producto], (error, updateResult) => {
+      if (error) {
+        console.log('Error al actualizar el producto:', error);
+        res.status(500).json({ message: "Error al actualizar el producto" });
+      } else if (updateResult.affectedRows === 0) {
+        res.status(404).json({ message: "Producto no encontrado" });
+      } else {
+        sql = "SELECT cantidad, total FROM productos WHERE id_producto = ?;";
+        connection.query(sql, [id_producto], (error, selectResult) => {
+          if (error) {
+            console.error('Error al obtener el resultado de la suma:', error);
+            res.status(500).json({ message: "Error al obtener el resultado de la suma" });
+          } else {
+            sql = "INSERT INTO `kardex` (`producto_id`, `fecha`, `detalle`, `ecantidad`, `eunidad`, `etotal`, `icantidad`, `iunidad`, `itotal`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            connection.query(sql, [id_producto, `${year}-${month}-${day}`, 'Entrada de producto', cantidad, precio, total, selectResult[0]['cantidad'], precio, selectResult[0]['total']], (error, insertResult) => {
+              if (error) {
+                console.log('Error al insertar en el kardex:', error);
+                res.status(500).json({ message: "Error al insertar en el kardex" });
+              } else {
+                res.status(200).json({ message: "Success" });
+              }
+            });
+          }
+        });
+      }
+    });
+  } catch (err) {
+    console.log('Error en la solicitud:', err);
+    res.status(500).json({ message: "Error en la solicitud" });
+  }
+});
+router.post("/kardex_salida", async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const { cantidad, precio, total, id_producto } = req.body;
+
+    let sql = "UPDATE railway.productos SET cantidad = cantidad - ?, total = total - ? WHERE id_producto = ?;";
+    connection.query(sql, [cantidad, total, id_producto], (error, updateResult) => {
+      if (error) {
+        console.log('Error al actualizar el producto:', error);
+        res.status(500).json({ message: "Error al actualizar el producto" });
+      } else if (updateResult.affectedRows === 0) {
+        res.status(404).json({ message: "Producto no encontrado" });
+      } else {
+        sql = "SELECT cantidad, total FROM productos WHERE id_producto = ?;";
+        connection.query(sql, [id_producto], (error, selectResult) => {
+          if (error) {
+            console.error('Error al obtener el resultado de la suma:', error);
+            res.status(500).json({ message: "Error al obtener el resultado de la suma" });
+          } else {
+            sql = "INSERT INTO `kardex` (`producto_id`, `fecha`, `detalle`, `scantidad`, `sunidad`, `stotal`, `icantidad`, `iunidad`, `itotal`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            connection.query(sql, [id_producto, `${year}-${month}-${day}`, 'Salida de producto', cantidad, precio, total, selectResult[0]['cantidad'], precio, selectResult[0]['total']], (error, insertResult) => {
+              if (error) {
+                console.log('Error al insertar en el kardex:', error);
+                res.status(500).json({ message: "Error al insertar en el kardex" });
+              } else {
+                res.status(200).json({ message: "Success" });
+              }
+            });
+          }
+        });
+      }
+    });
+  } catch (err) {
+    console.log('Error en la solicitud:', err);
+    res.status(500).json({ message: "Error en la solicitud" });
+  }
 });
 
 router.post("/buscarproductoid", async (req, res) => {
