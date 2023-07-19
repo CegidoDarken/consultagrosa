@@ -111,34 +111,65 @@
                                 <div class="card mb-3">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="" class="img-fluid rounded-start" id="img">
+                                            <img src="" class="img-fluid rounded-start" id="img"
+                                                style=" width: 100%; height: 300px; object-fit: contain; object-position: center;">
                                         </div>
                                         <div class="col-md-8">
                                             <div class="card-body col-12">
                                                 <div class="row">
-                                                    <div class="col-4 card-title">Nombre:</div>
-                                                    <div class="col-8 align-self-center" id="nombre">
+                                                    <div class="col-3 card-title">Nombre:</div>
+                                                    <div class="col-9 align-self-center">
+                                                        <input class="form-control" id="nombres" type="text" readonly
+                                                            required>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-4 card-title">Categoría:</div>
-                                                    <div class="col-8 card-text align-self-center" id="categoria">
+                                                    <div class="col-3 card-title">Categoría:</div>
+                                                    <div class="col-9 card-text align-self-center">
+                                                        <input class="form-control" id="categorias" type="text" readonly
+                                                            required>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-3 card-title">Cantidad:</div>
+                                                    <div class="col-9 card-text align-self-center">
+                                                        <input class="form-control" id="cantidades" type="text" readonly
+                                                            required>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-3 card-title">Precio:</div>
+                                                    <div class="col-9 card-text align-self-center">
+                                                        <input class="form-control" id="precios" type="number" readonly
+                                                            required>
                                                     </div>
                                                 </div>
                                                 <p class="card-text"></p>
                                             </div>
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <select class="form-select mb-3" id="modos">
-                                                        <option value="1">Saldo</option>
-                                                        <option value="2">Entrada</option>
-                                                        <option value="3">Salida</option>
-                                                    </select>
+                                                    <div class="form-floating">
+                                                        <select class="form-select mb-3" id="tipo_movimiento" required>
+                                                            <option selected disabled>Movimientos</option>
+                                                            <option value="1">Saldo</option>
+                                                            <option value="2">Entrada</option>
+                                                            <option value="3">Salida</option>
+                                                        </select>
+                                                        <label for="floatingSelect">Tipo de movimiento</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control" id="detalle"
+                                                            name="detalle" placeholder="insertar"
+                                                            value="Ingreso al sistema" readonly>
+                                                        <label for="detalle">Detalle</label>
+                                                    </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="form-floating mb-3">
                                                         <input type="number" class="form-control" id="cantidad"
-                                                            name="cantidad" placeholder="name@example.com"
+                                                            name="cantidad" placeholder="insertar"
                                                             oninput="calculartotal()" required>
                                                         <label for="cantidad">Cantidad</label>
                                                     </div>
@@ -146,14 +177,14 @@
                                                 <div class="col-6">
                                                     <div class="form-floating mb-3">
                                                         <input type="number" class="form-control" id="precio"
-                                                            name="precio" placeholder="name@example.com" readonly>
+                                                            name="precio" placeholder="insertar" readonly>
                                                         <label for="inputprecio">Precio</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-floating mb-3">
                                                         <input type="number" class="form-control" id="total"
-                                                            name="total" placeholder="name@example.com" readonly>
+                                                            name="total" placeholder="insertar" readonly>
                                                         <label for="total">Total</label>
                                                     </div>
                                                 </div>
@@ -164,7 +195,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button class="btn btn-primary" type="submit">Siguiente</button>
+                                <button class="btn btn-primary" type="submit">Guardar</button>
                             </div>
                     </form>
                 </div>
@@ -175,31 +206,119 @@
     let producto;
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-        var valorSeleccionado = $('#modos').val();
-        const formData = new FormData(event.target);
-        formData.append('id_producto', producto.id_producto);
-        console.log(formData);
+        var cantidad = $('#cantidad').val();
+        var cantidades = $('#cantidades').val();
+        if (cantidad <= cantidades) {
+            var valorSeleccionado = $('#tipo_movimiento').val();
+            const formData = new FormData(event.target);
+            formData.append('id_producto', producto.id_producto);
+            if (valorSeleccionado == '1') {
+                console.log('Modo seleccionado: Saldo');
+                const response = await fetch('kardex_saldo', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.message) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                    $('#exampleModalToggle').modal('hide');
+                } else if (data.error) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: data.error,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            } else if (valorSeleccionado == '2') {
+                console.log('Modo seleccionado: Entrada');
+                const response = await fetch('kardex_entrada', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.message) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                    $('#exampleModalToggle').modal('hide');
+                } else if (data.error) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: data.error,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            } else if (valorSeleccionado == '3') {
+                console.log('Modo seleccionado: Salida');
+                const response = await fetch('kardex_salida', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.message) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                    $('#exampleModalToggle').modal('hide');
+                } else if (data.error) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'error',
+                        title: data.error,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            }
+        } else {
+            alert("ss");
+        }
+    });
+    $('#tipo_movimiento').on('change', function () {
+        var valorSeleccionado = $(this).val();
         if (valorSeleccionado == '1') {
-            console.log('Modo seleccionado: Entrada');
-            const response = await fetch('kardex_saldos', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            $('#detalle').val('Ingreso al sistema');
+            $('#cantidad').val(producto.cantidad);
+            $('#precio').val(producto.precio);
+            $('#total').val((producto.cantidad * producto.precio));
+            $('#precio').prop('readonly', true);
         } else if (valorSeleccionado == '2') {
-            console.log('Modo seleccionado: Entrada');
-            const response = await fetch('kardex_entrada', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            $('#detalle').val('Entrada de producto');
+            $('#precio').removeAttr('readonly');
         } else if (valorSeleccionado == '3') {
-            console.log('Modo seleccionado: Salida');
-            const response = await fetch('kardex_salida', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            $('#detalle').val('Salida de producto');
+            $('#precio').prop('readonly', true);
         }
     });
     $('#exampleModalToggle').on('shown.bs.modal', async function () {
@@ -324,7 +443,6 @@
                         document.getElementById("disconnected").style.display = "block";
                         console.log('Desconectado del puerto serie.');
                     } else if (message.includes("MIFARE_Write() success:")) {
-                        snd.play();
                         fetch('/buscarproductotag', {
                             method: 'POST',
                             headers: { "Content-Type": "application/json" },
@@ -412,7 +530,6 @@
                     }).then(response => response.json()).then(async data => {
                         if (data.message) {
                             console.log(data);
-                            snd.play();
                             Swal.fire({
                                 title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
                                 icon: 'error',
@@ -433,9 +550,10 @@
                                 }
                             });
                         } else if (data.codigo) {
-                            $('#nombre').text(data.nombre);
-                            $('#categoria').text(data.categoria);
-                            $('#cantidad').text(data.cantidad);
+                            $('#nombres').val(data.nombre);
+                            $('#categorias').val(data.categoria);
+                            $('#cantidades').val(data.cantidad);
+                            $('#precios').val(data.precio);
                             $('#precio').val(data.precio);
                             $('#img').attr('src', data.img);
                             snd.play();
