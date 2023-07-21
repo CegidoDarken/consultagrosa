@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Historial de pedidos</title>
+</head>
+
+<body>
+    <%- include("partials/_headerpanel") %>
+        <%- include("partials/_sidebarpanel") %>
+            <main id="main" class="main">
+
+                <div class="pagetitle">
+                    <h1>Historial de pedidos</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Reportes</li>
+                            <li class="breadcrumb-item active">Historial de pedidos</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header row">
+                                    <div class="col-md-12 mb-4">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="search" placeholder="Buscar"
+                                                value="">
+                                            <span class="input-group-text" id="basic-addon1"><i
+                                                    class="bi bi-search"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group mb-3">
+                                            <input type="date" class="form-control" id="date" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container-fluid mt-2">
+                                        <div class="table-wrapper">
+                                            <table
+                                                class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                                id="datatable">
+                                                <thead>
+                                                    <tr class="text-light" style="background-color: #59ab6e;">
+                                                        <th>FECHA</th>
+                                                        <th>CLIENTE</th>
+                                                        <th>PRODUCTO</th>
+                                                        <th>CANTIDAD</th>
+                                                        <th>PRECIO PRODUCTO</th>
+                                                        <th>TOTAL</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <div class="modal fade" id="tag" tabindex="-1" aria-labelledby="exampleModalLabel" arhide="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Asignar</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="formtag">
+                            <div class="modal-body">
+                                <label for="" class="form-label">Producto</label>
+                                <input type="text" class="form-control mb-2" id="productoinput" readonly>
+                                <label for="" class="form-label">Tag</label>
+                                <input id="taginput" type="number" name="tag" class="form-control mb-2"
+                                    placeholder="Ingrese un Tag" readonly>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary" id="asignar">Asignar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="delete_producto" tabindex="-1" aria-labelledby="exampleModalLabel"
+                arhide="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar producto</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">¿Estás seguro de que deseas eiminar este producto?</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-danger" id="eliminar">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <%- include("partials/_fotterpanel") %>
+                <script>
+                    $(document).ready(function () {
+                        var tabla = $('#datatable').DataTable({
+                            ajax: {
+                                url: '/obtener_historial',
+                                type: 'POST',
+                            },
+                            dom: 'Bfrtip',
+                            columns: [
+                                { data: 'fecha', defaultContent: "-" },
+                                { data: 'nombre_usuario', defaultContent: "-" },
+                                { data: 'nombre_producto', defaultContent: "-" },
+                                { data: 'cantidad', defaultContent: "-" },
+                                {
+                                    data: 'precio',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
+                                {
+                                    data: 'total_pedido',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                }
+                            ],
+                            buttons: [
+                                {
+                                    extend: 'copy',
+                                    text: '<i class="bi bi-clipboard"></i> Copiar',
+                                    className: 'btn btn-primary btn-sm text-light'
+                                },
+                                {
+                                    extend: 'excel',
+                                    text: '<i class="bi bi-file-excel"></i>Exportar Excel',
+                                    className: 'btn btn-primary btn-sm text-light'
+                                }
+                            ],
+                            columnDefs: [
+                                {
+                                    targets: "_all",
+                                    className: "dt-center",
+                                }
+                            ],
+                            "language": {
+                                "sEmptyTable": "No hay datos disponibles en la tabla",
+                                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                                "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                                "sInfoPostFix": "",
+                                "sInfoThousands": ",",
+                                "sLengthMenu": "Mostrar _MENU_ entradas",
+                                "sLoadingRecords": "Cargando...",
+                                "sProcessing": "Procesando...",
+                                "sSearch": "Buscar:",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Último",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                },
+                                "buttons": {
+                                    "copy": "Copiar",
+                                    "colvis": "Visibilidad"
+                                }
+                            }
+                        });
+                        $("#datatable_filter").hide();
+                        $('#search').keyup(function () {
+                            table = $('.tablesort').DataTable();
+                            table.search($(this).val()).draw();
+                        });
+                        $('#date').change(function () {
+                            table = $('.tablesort').DataTable();
+                            table.search($(this).val()).draw();
+                        });
+                        $('#actualizar').click(async function () {
+                            await table.ajax.reload()
+                        });
+                        $('#productos').change(function () {
+                            tabla.ajax.reload();
+                        });
+                    });
+
+                </script>
+
+</body>
+
+</html>

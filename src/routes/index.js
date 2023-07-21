@@ -94,6 +94,26 @@ router.get("/escanear", async (req, res) => {
     }
   });
 });
+
+router.post("/obtener_historial", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `railway`.`detallepedidos` AS dp JOIN `railway`.`pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `railway`.`productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `railway`.`usuarios` AS u ON p.`usuario_id` = u.`id_usuario`;";
+  connection.query(sql, (error, results) => {
+    if (error) {
+      res.send({ message: error });
+    } else {
+      if (results) {
+        res.json({ data: results });
+      } else {
+        res.json({ message: "Producto no reconocido" });
+      }
+    }
+  });
+});
+router.get("/historial", async (req, res) => {
+  credentials = req.session.credentials.administrador;
+  res.render("historial", { credentials });
+});
 router.get("/panel", async (req, res) => {
   credentials = req.session.credentials.administrador;
   num_productos = await obtener_num_productos();
