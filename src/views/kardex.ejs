@@ -143,21 +143,48 @@
                                 data: function (d) {
                                     d.id_producto = $("#productos").val()
                                 },
-                                dataSrc: 'data'
                             },
                             dom: 'Bfrtip',
                             columns: [
                                 { data: 'fecha', defaultContent: "-" },
                                 { data: 'detalle', defaultContent: "-" },
                                 { data: 'ecantidad', defaultContent: "-" },
-                                { data: 'eunidad', defaultContent: "-" },
-                                { data: 'etotal', defaultContent: "-" },
+                                {
+                                    data: 'eunidad',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
+                                {
+                                    data: 'etotal',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
                                 { data: 'scantidad', defaultContent: "-" },
-                                { data: 'sunidad', defaultContent: "-" },
-                                { data: 'stotal', defaultContent: "-" },
+                                {
+                                    data: 'sunidad',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                }, {
+                                    data: 'stotal',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
                                 { data: 'icantidad', defaultContent: "-" },
-                                { data: 'iunidad', defaultContent: "-" },
-                                { data: 'itotal', defaultContent: "-" }
+                                {
+                                    data: 'iunidad',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                }, {
+                                    data: 'itotal',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
                             ],
                             buttons: [
                                 {

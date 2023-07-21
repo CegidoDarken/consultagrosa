@@ -133,8 +133,8 @@
                                                 <div class="row">
                                                     <div class="col-3 card-title">Cantidad:</div>
                                                     <div class="col-9 card-text align-self-center">
-                                                        <input class="form-control" id="cantidades" type="number" readonly
-                                                            required>
+                                                        <input class="form-control" id="cantidades" type="number"
+                                                            readonly required>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -162,7 +162,7 @@
                                                     <div class="form-floating mb-3">
                                                         <input type="text" class="form-control" id="detalle"
                                                             name="detalle" placeholder="insertar"
-                                                            value="Ingreso al sistema" readonly>
+                                                            value="Ingreso al sistema">
                                                         <label for="detalle">Detalle</label>
                                                     </div>
                                                 </div>
@@ -208,70 +208,70 @@
         event.preventDefault();
         var cantidad = $('#cantidad').val();
         var cantidades = $('#cantidades').val();
-        if (cantidad <= cantidades) {
-            var valorSeleccionado = $('#tipo_movimiento').val();
-            const formData = new FormData(event.target);
-            formData.append('id_producto', producto.id_producto);
-            if (valorSeleccionado == '1') {
-                console.log('Modo seleccionado: Saldo');
-                const response = await fetch('kardex_saldo', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
 
-                if (data.message) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-                    $('#exampleModalToggle').modal('hide');
-                } else if (data.error) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'error',
-                        title: data.error,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-                }
-            } else if (valorSeleccionado == '2') {
-                console.log('Modo seleccionado: Entrada');
-                const response = await fetch('kardex_entrada', {
-                    method: 'POST',
-                    body: formData
+        var valorSeleccionado = $('#tipo_movimiento').val();
+        const formData = new FormData(event.target);
+        formData.append('id_producto', producto.id_producto);
+        if (valorSeleccionado == '1') {
+            console.log('Modo seleccionado: Saldo');
+            const response = await fetch('kardex_saldo', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.message) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'success',
+                    title: data.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
                 });
-                const data = await response.json();
-                if (data.message) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-                    $('#exampleModalToggle').modal('hide');
-                } else if (data.error) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'error',
-                        title: data.error,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-                }
-            } else if (valorSeleccionado == '3') {
+                $('#exampleModalToggle').modal('hide');
+            } else if (data.error) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    title: data.error,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            }
+        } else if (valorSeleccionado == '2') {
+            console.log('Modo seleccionado: Entrada');
+            const response = await fetch('kardex_entrada', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.message) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'success',
+                    title: data.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+                $('#exampleModalToggle').modal('hide');
+            } else if (data.error) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    title: data.error,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            }
+        } else if (valorSeleccionado == '3') {
+            if (cantidad <= cantidades || cantidad != 0) {
                 console.log('Modo seleccionado: Salida');
                 const response = await fetch('kardex_salida', {
                     method: 'POST',
@@ -289,37 +289,34 @@
                         timer: 3000
                     });
                     $('#exampleModalToggle').modal('hide');
-                } else if (data.error) {
+                } else {
                     Swal.fire({
                         toast: true,
                         position: 'bottom-end',
                         icon: 'error',
-                        title: data.error,
+                        title: 'Cantidad nos disponible',
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 3000
                     });
                 }
+            } else if (data.error) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    title: data.error,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
             }
-        } else {
-            Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'error',
-                        title: 'Cantidad nos diponible',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
         }
     });
     $('#tipo_movimiento').on('change', function () {
         var valorSeleccionado = $(this).val();
         if (valorSeleccionado == '1') {
             $('#detalle').val('Ingreso al sistema');
-            $('#cantidad').val(producto.cantidad);
-            $('#precio').val(producto.precio);
-            $('#total').val((producto.cantidad * producto.precio));
             $('#precio').prop('readonly', true);
         } else if (valorSeleccionado == '2') {
             $('#detalle').val('Entrada de producto');
@@ -529,6 +526,7 @@
                         document.getElementById("connected").style.display = "none";
                         document.getElementById("disconnected").style.display = "block";
                         console.log('Desconectado del puerto serie.');
+                        $('.modal').modal('hide');
                         return;
                     }
                     fetch('/buscarproductotag', {
@@ -537,27 +535,25 @@
                         body: JSON.stringify({ tag: message.trim() }),
                     }).then(response => response.json()).then(async data => {
                         if (data.message) {
-                            console.log(data);
                             Swal.fire({
-                                title: '¡PRODUCTO ESCANEADO CORRECTAMENTE!',
+                                toast: true,
+                                position: 'bottom-end',
                                 icon: 'error',
-                                html: `<h3 class="text-uppercase"><span class="badge bg-secondary text-uppercase m-2">${data.message}</span></h3>`,
-                                showCloseButton: true,
-                                showCancelButton: true,
-                                showConfirmButton: true,
-                                confirmButtonText: 'SIGUIENTE',
-                                confirmButtonColor: "#198754",
-                                cancelButtonText: 'CANCELAR',
-                                showConfirmButton: true,
-                                width: '800px'
-                            }).then(async (result) => {
-                                if (reader) {
-                                    await reader.cancel();
-                                    reader.releaseLock();
-                                    reader = null;
-                                }
+                                text: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
                             });
                         } else if (data.codigo) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'success',
+                                text: "El primer producto que se escaneó",
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
                             $('#nombres').val(data.nombre);
                             $('#categorias').val(data.categoria);
                             $('#cantidades').val(data.cantidad);
