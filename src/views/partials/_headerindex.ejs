@@ -51,7 +51,7 @@
                 <% if (credentials) { %>
                     <li class="nav-item ">
                         <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
-                            <i class="bi bi-cart-fill"></i>Mi carrito
+                            <i class="bi bi-cart-fill"></i>Carrito
                         </a>
                     </li>
                     <li class="nav-item">
@@ -64,6 +64,11 @@
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="bi bi-gear"></i> Configuración</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-bag"></i> Mis pedidos
+                                    </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#">
@@ -169,12 +174,16 @@
                                 <label style="color: #59ab6e;" for="email"><i class="bi bi-envelope"></i> Email</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <select class="form-select" id="provincias" required></select>
-                                <label style="color: #59ab6e;" for="provincias">Seleccione una provincia</label>
+                                <select class="form-select" id="provincias" required>
+                                    <option value="" selected disabled>Selecciona una opción</option>
+                                </select>
+                                <label style="color: #59ab6e;" for="provincias">Provincias</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <select class="form-select" id="ciudades" required></select>
-                                <label style="color: #59ab6e;" for="ciudades">Seleccione una ciudad</label>
+                                <select class="form-select" id="ciudades" required>
+                                    <option value="" selected disabled>Selecciona una opción</option>
+                                </select>
+                                <label style="color: #59ab6e;" for="ciudades">Ciudades</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="direccion" placeholder=" " required>
@@ -221,7 +230,6 @@
 </div>
 <button id="ver-carrito-btn" class="btn btn-primary">Ver Carrito</button>
 
-<!-- Modal del Carrito -->
 <div class="modal fade" id="carrito-modal" tabindex="-1" aria-labelledby="carrito-modal-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -234,7 +242,9 @@
                     <thead>
                         <tr>
                             <th>Producto</th>
+                            <th>Cantidad</th>
                             <th>Precio</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody id="carrito-table-body">
@@ -251,27 +261,36 @@
 
 <script>
     // Obtén los datos del carrito desde la base de datos utilizando fetch
-    fetch('/carrito', {
-        method: 'GET'
+    fetch('/obtener_carrito', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id_usuario: "43" }),
+    }).then(function (response) {
+        return response.json();
     })
-        .then(response => response.json())
-        .then(data => {
-            // Genera el contenido del carrito en el modal
-            var carritoHtml = '';
-            if (data.length > 0) {
-                data.forEach(function (item) {
+        .then(function (data) {
+            console.log(data);
+            if (data.data !== null) {
+                carritoHtml = "";
+                data.data.forEach(function (item) {
+                    console.log(item);
                     carritoHtml += '<tr>';
-                    carritoHtml += '<td>' + item.producto + '</td>';
-                    carritoHtml += '<td> a' + item.cantidad + '</td>';
+                    carritoHtml += '<td><img src="' + item.img + '" alt=""></td>';
+                    carritoHtml += '<td>' + item.nombre + '</td>';
+                    carritoHtml += '<td>' + item.precio + '</td>';
+                    carritoHtml += '<td>' + item.cantidad + '</td>';
+                    carritoHtml += '<td>' + item.total + '</td>';
                     carritoHtml += '</tr>';
+                    document.getElementById('carrito-table-body').innerHTML = carritoHtml;
                 });
-            } else {
-                carritoHtml += '<tr><td colspan="2">No hay elementos en el carrito</td></tr>';
+
+
             }
-            document.getElementById('carrito-table-body').innerHTML = carritoHtml;
         })
-        .catch(error => {
-            console.error('Error al obtener los datos del carrito:', error);
+        .catch(function (error) {
+            console.error("Error:", error);
         });
 
     // Abrir el modal del carrito al hacer clic en el botón "Ver Carrito"
@@ -327,6 +346,7 @@
             })
             .then(function (data) {
                 if (data.data !== null) {
+                    ciudadesSelect.innerHTML = "<option value='' selected disabled>Selecciona una opción</option>";
                     data.data.forEach(function (ciudad) {
                         var option = document.createElement("option");
                         option.value = ciudad.id_ciudad;
@@ -349,20 +369,20 @@
             body: formData
         }).then(res => res.json())
             .then(element => {
-                if (element.message) {
-                    location.reload()
-                } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'error',
-                        title: element.error,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-
-                }
+                $('.modal').modal('hide');
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: element.type,
+                    title: element.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                }).then((result) => {
+                    if (element.type === "success") {
+                        location.reload()
+                    }
+                });
             });
     });
 

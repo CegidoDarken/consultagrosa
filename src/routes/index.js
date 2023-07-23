@@ -14,22 +14,16 @@ function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
 }
+
+//TODO: Rutas
 router.get("/", async (req, res) => {
-  if (req.session.credentials == null) {
+  /*if (req.session.credentials == null) {
     req.session.credentials = {
       cliente: null,
       administrador: null
     };
-  }
-  const query = 'SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria';
-  connection.query(query, async (error, results) => {
-    if (error) {
-      res.send(error.message);
-      callback(error, null);
-      return;
-    }
-    res.render("index", { credentials: req.session.credentials.cliente, results });
-  });
+  }*/
+  res.render("index", { credentials: req.session.credentials.cliente, productos: await obtener_productos() });
 });
 
 router.get("/admin", async (req, res) => {
@@ -387,7 +381,7 @@ router.post("/obtener_usuarios", async (req, res) => {
 });
 
 router.post("/obtener_provincias", async (req, res) => {
-  const sql = "SELECT * FROM provincias";
+  const sql = "SELECT * FROM provincias ORDER BY provincia";
   connection.query(sql, (error, result) => {
     if (error) {
       res.json({ data: error.message });
@@ -415,7 +409,7 @@ router.post("/obtener_kardex", async (req, res) => {
 router.post("/obtener_ciudades", async (req, res) => {
   const provinciaId = req.body.provinciaId;
 
-  const sql = "SELECT * FROM ciudades WHERE provincia_id = ?";
+  const sql = "SELECT * FROM ciudades WHERE provincia_id = ? ORDER BY ciudad";
   connection.query(sql, [provinciaId], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -456,13 +450,21 @@ router.post("/obtener_productos", async (req, res) => {
     }
   });
 });
-router.post('/carrito', (req, res) => {
-  const { id } = req.body;
-  const carrito = cache.get('carrito') || [];
-  carrito.push(id);
-  cache.set('carrito', carrito);
-  console.log(cache.get('carrito'));
-  res.send('Producto agregado al carrito');
+router.post('/obtener_carrito', (req, res) => {
+  const { id_usuario } = req.body;
+  const sql = "SELECT img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
+  connection.query(sql, [id_usuario], (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      result.forEach(element => {
+        if (element.img) {
+          element.img = element.img.toString();
+        }
+      });
+      res.json({ data: result });
+    }
+  });
 });
 
 router.post('/update_producto', (req, res) => {
@@ -710,6 +712,23 @@ router.post("/productos", async (req, res) => {
     }
   });
 });
+//TODO: Funciones
+async function obtener_productos() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function obtener_productos_count() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT 2023 AS `year`, 1 AS `month` UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
@@ -761,21 +780,20 @@ router.post("/validar_cliente", async (req, res) => {
       callback(error, null);
       return;
     }
-    if (results[0] == null) {
-      console.log("User not found".red);
-      res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
+    if (results.length === 0) {
+      res.status(400).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
       return;
     } else {
       const usuario = results[0];
-      bcrypt.compare(password, usuario.contrasena, (err, match) => {
+      bcrypt.compare(password, usuario.contrasena, (error, match) => {
         if (match) {
           req.session.credentials = {
             cliente: usuario,
             administrador: req.session.credentials.administrador
           };
-          res.send({ message: "Usuario Correcto" });
+          res.status(200).send({ type: "success", message: "Bienvenido "+ usuario.nombre, data: null });
         } else {
-          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
+          res.status(400).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
         }
       });
     }
