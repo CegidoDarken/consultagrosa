@@ -4,8 +4,12 @@
 <head>
     <title>Kardex PEPS</title>
 </head>
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.0.16/jspdf.plugin.autotable.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 
 <body>
+
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
             <main id="main" class="main">
@@ -27,26 +31,14 @@
                             <div class="card">
                                 <div class="card-header row">
                                     <div class="col-md-12 mb-4">
-                                        <div class="form-floating">
-                                            <select class="form-select form-select-sm" id="productos">
-                                                <% if (productos) { %>
-                                                    <% productos.forEach(row=> { %><option
-                                                            value="<%= row.id_producto %>" }>
-                                                            Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %>
-                                                        </option>
-                                                        <% }); %>
-                                                            <% } %>
-                                            </select>
-                                            <label for="floatingSelect">Productos</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control" id="search" placeholder="Buscar"
-                                                value="">
-                                            <span class="input-group-text" id="basic-addon1"><i
-                                                    class="bi bi-search"></i></span>
-                                        </div>
+                                        <select class="js-example-basic-single form-select" id="productos">
+                                            <% if (productos) { %>
+                                                <% productos.forEach(row=> { %><option value="<%= row.id_producto %>" }>
+                                                        Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %>
+                                                    </option>
+                                                    <% }); %>
+                                                        <% } %>
+                                        </select>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group mb-3">
@@ -57,6 +49,10 @@
                                 <div class="card-body">
                                     <div class="container-fluid mt-2">
                                         <div class="table-wrapper">
+                                            <button class="btn btn-primary mb-2" onclick="ExportToExcel('xlsx')"><i
+                                                    class="bi bi-file-excel"></i>Exportar Excel</button>
+                                            <button class="btn btn-danger mb-2" onclick="exportPDF()"><i
+                                                    class="bi bi-file-pdf"></i>Exportar PDF</button>
                                             <table
                                                 class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
                                                 id="datatable">
@@ -70,15 +66,15 @@
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th>FECHA</th>
                                                         <th>DETALLE</th>
-                                                        <th>ENTRADAS/CANTIDAD</th>
-                                                        <th>ENTRADAS/PRECIO</th>
-                                                        <th>ENTRADAS/TOTAL</th>
-                                                        <th>SALIDAS/CANTIDAD</th>
-                                                        <th>SALIDAS/PRECIO</th>
-                                                        <th>SALIDAS/TOTAL</th>
-                                                        <th>SALDOS/CANTIDAD</th>
-                                                        <th>SALDOS/PRECIO</th>
-                                                        <th>SALDOS/TOTAL</th>
+                                                        <th>CANTIDAD</th>
+                                                        <th>PRECIO</th>
+                                                        <th>TOTAL</th>
+                                                        <th>CANTIDAD</th>
+                                                        <th>PRECIO</th>
+                                                        <th>TOTAL</th>
+                                                        <th>CANTIDAD</th>
+                                                        <th>PRECIO</th>
+                                                        <th>TOTAL</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -135,6 +131,14 @@
             </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
+                    $('.js-example-basic-single').select2();
+                    function ExportToExcel(type, fn, dl) {
+                        var elt = document.getElementById('datatable');
+                        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+                        return dl ?
+                            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+                            XLSX.writeFile(wb, fn || ('Kardex' + Date.now() + "." + (type || 'xlsx')));
+                    }
                     $(document).ready(function () {
                         var tabla = $('#datatable').DataTable({
                             ajax: {
@@ -144,7 +148,6 @@
                                     d.id_producto = $("#productos").val()
                                 },
                             },
-                            dom: 'Bfrtip',
                             columns: [
                                 { data: 'fecha', defaultContent: "-" },
                                 { data: 'detalle', defaultContent: "-" },
@@ -185,18 +188,6 @@
                                         return (data !== null) ? "$" + data : "-";
                                     }
                                 },
-                            ],
-                            buttons: [
-                                {
-                                    extend: 'copy',
-                                    text: '<i class="bi bi-clipboard"></i> Copiar',
-                                    className: 'btn btn-primary btn-sm text-light'
-                                },
-                                {
-                                    extend: 'excel',
-                                    text: '<i class="bi bi-file-excel"></i>Exportar Excel',
-                                    className: 'btn btn-primary btn-sm text-light'
-                                }
                             ],
                             columnDefs: [
                                 {

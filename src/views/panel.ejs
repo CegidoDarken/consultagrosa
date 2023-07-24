@@ -33,7 +33,9 @@
                           <i class="bi bi-people"></i>
                         </div>
                         <div class="ps-3">
-                          <h6><%= num_proveedores %></h6>
+                          <h6>
+                            <%= num_proveedores %>
+                          </h6>
                           <span class="text-success small pt-1 fw-bold"></span>
                         </div>
                       </div>
@@ -80,25 +82,13 @@
                   </div>
 
                 </a>
-
+                <select class="col-12 card form-select" name="" id="year">
+                  <option value="">asa</option>
+                </select>
                 <div class="col-12">
                   <div class="card">
-
-                    <div class="filter">
-                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                          <h6>Filter</h6>
-                        </li>
-
-                        <li><a class="dropdown-item" href="#">Today</a></li>
-                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                        <li><a class="dropdown-item" href="#">This Year</a></li>
-                      </ul>
-                    </div>
-
                     <div class="card-body">
-                      <h5 class="card-title">Actividades <span>| 2023</span></h5>
+                      <h5 class="card-title">Registro de actividades <span>| 2023</span></h5>
 
                       <div id="reportsChart"></div>
 
@@ -177,19 +167,6 @@
                 <div class="col-12">
                   <div class="card recent-sales overflow-auto">
 
-                    <div class="filter">
-                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                          <h6>Filter</h6>
-                        </li>
-
-                        <li><a class="dropdown-item" href="#">Today</a></li>
-                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                        <li><a class="dropdown-item" href="#">This Year</a></li>
-                      </ul>
-                    </div>
-
                     <div class="card-body">
                       <h5 class="card-title">Pedidos recientes <span></span></h5>
 
@@ -257,21 +234,8 @@
                 <div class="col-12">
                   <div class="card top-selling overflow-auto">
 
-                    <div class="filter">
-                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                          <h6>Filter</h6>
-                        </li>
-
-                        <li><a class="dropdown-item" href="#">Today</a></li>
-                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                        <li><a class="dropdown-item" href="#">This Year</a></li>
-                      </ul>
-                    </div>
-
                     <div class="card-body pb-0">
-                      <h5 class="card-title">Más pedidos <span></span></h5>
+                      <h5 class="card-title">Productos más pedidos <span></span></h5>
 
                       <table class="table table-borderless">
                         <thead>
@@ -331,25 +295,24 @@
             <div class="col-lg-4">
 
               <div class="card">
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
 
                 <div class="card-body pb-0">
-                  <h5 class="card-title">Productos <span>| 2023</span></h5>
+                  <h5 class="card-title">Ordenes productos <span>| 2023</span></h5>
 
                   <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 
                   <script>
+                    (() => {
+                      let year_satart = 2017;
+                      let year_end = (new Date).getFullYear() + 10; // current year
+                      let year_selected = (new Date).getFullYear();
+                      let option;
+                      for (let i = year_satart; i <= year_end; i++) {
+                        let selected = (i === year_selected ? ' selected' : '');
+                        option += '<option value="' + i + '"' + selected + '>' + i + '</option>';
+                      }
+                      document.getElementById("year").innerHTML = option;
+                    })();
                     document.addEventListener("DOMContentLoaded", () => {
                       echarts.init(document.querySelector("#trafficChart")).setOption({
                         tooltip: {

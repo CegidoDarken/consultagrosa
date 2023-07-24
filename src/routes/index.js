@@ -3,17 +3,13 @@ const { Server } = require('socket.io');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const { connection } = require('../database');
-const XLSX = require('xlsx');
-const fs = require('fs-extra');
-const mime = require('mime-types');
-const NodeCache = require('node-cache');
-const cache = new NodeCache();
 require('datatables.net-bs5');
 let io;
 function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
 }
+var apriori = require("node-apriori");
 
 //TODO: Rutas
 router.get("/", async (req, res) => {
@@ -58,10 +54,66 @@ router.get("/contactanos", async (req, res) => {
 });
 router.get("/detalleproducto", async (req, res) => {
   credentials = req.session.credentials.cliente;
-  const productId = req.query.producto;
-  console.log(productId);
-  res.render("detalleproducto", { credentials });
+  const { producto } = req.query;
+  let productos_recomendado = [];
+  let array = await aprioris(producto);
+  for (const element of array) {
+    const producto_id = await obtener_producto_id(element);
+    productos_recomendado.push(producto_id);
+  }
+  res.render("detalleproducto", { credentials, producto: await obtener_producto_id(producto), recomendados: productos_recomendado});
 });
+
+async function aprioris(producto) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT GROUP_CONCAT(`detallepedidos`.`producto_id` SEPARATOR ',') AS `productos` FROM `pedidos` INNER JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` WHERE `pedidos`.`id_pedido` IN (SELECT DISTINCT `detallepedidos`.`pedido_id` FROM `detallepedidos` WHERE `detallepedidos`.`producto_id` = ?) GROUP BY `pedidos`.`id_pedido`, `pedidos`.`usuario_id`, `pedidos`.`fecha`, `pedidos`.`total`;";
+    connection.query(sql, [producto], (error, results) => {
+      if (error) {
+        res.send({ message: error });
+      } else {
+        if (results) {
+          let productos = [];
+          let productos_recomendado = [];
+          results.forEach(elements => {
+            productos.push(elements.productos.split(","));
+          });
+          var aprioriAlgo = new apriori.Apriori(0.1);
+          aprioriAlgo.exec(productos)
+            .then(function (result) {
+              var frequentItemsets = result.itemsets;
+              var recommendations = generateRecommendations(frequentItemsets);
+              recommendations.forEach(async function (recommendation, index) {
+                if (producto != recommendation) {
+                  productos_recomendado.push(recommendation);
+                  resolve(productos_recomendado);
+                }
+              });
+            });
+          function generateRecommendations(itemsets) {
+            itemsets.sort(function (a, b) {
+              return b.support - a.support;
+            });
+            var recommendations = [];
+            var recommendationSet = new Set();
+            for (var i = 0; i < itemsets.length; i++) {
+              var itemset = itemsets[i];
+              if (itemset.items.length > 0 && !recommendationSet.has(itemset.items[0])) {
+                recommendations.push(itemset.items[0]);
+                recommendationSet.add(itemset.items[0]);
+              }
+            }
+
+            return recommendations;
+          }
+        } else {
+          res.json({ message: "Producto no reconocido" });
+        }
+      }
+    })
+  });
+  /*
+  */
+}
 router.get("/acerca", async (req, res) => {
   credentials = req.session.credentials.cliente;
   res.render("acerca", { credentials });
@@ -468,15 +520,15 @@ router.post('/obtener_carrito', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto } = req.body;
+  const { codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
   let sql;
   let values;
   if (img) {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
-    values = [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
+    values = [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
   } else {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medidas`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
-    values = [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
+    values = [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, id_producto];
   }
 
   connection.query(sql, values, (error, results) => {
@@ -501,9 +553,9 @@ router.post('/insertar_producto', (req, res) => {
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const { codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img } = req.body;
-  const sql = "INSERT INTO `railway`.`productos`(`codigo`, `tag`,`categoria_id`,`nombre`,`descripcion`,`medidas`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-  connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medidas, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
+  const { codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  const sql = "INSERT INTO `railway`.`productos`(`codigo`, `tag`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+  connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
@@ -729,6 +781,22 @@ async function obtener_productos() {
     });
   });
 }
+async function obtener_producto_id(id_producto) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND id_producto = ?";
+    connection.query(sql, [id_producto], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          resolve(result[0]);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function obtener_productos_count() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT 2023 AS `year`, 1 AS `month` UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
@@ -791,7 +859,7 @@ router.post("/validar_cliente", async (req, res) => {
             cliente: usuario,
             administrador: req.session.credentials.administrador
           };
-          res.status(200).send({ type: "success", message: "Bienvenido "+ usuario.nombre, data: null });
+          res.status(200).send({ type: "success", message: "Bienvenido " + usuario.nombre, data: null });
         } else {
           res.status(400).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
         }
