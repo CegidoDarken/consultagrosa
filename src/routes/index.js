@@ -61,7 +61,7 @@ router.get("/detalleproducto", async (req, res) => {
     const producto_id = await obtener_producto_id(element);
     productos_recomendado.push(producto_id);
   }
-  res.render("detalleproducto", { credentials, producto: await obtener_producto_id(producto), recomendados: productos_recomendado});
+  res.render("detalleproducto", { credentials, producto: await obtener_producto_id(producto), recomendados: productos_recomendado });
 });
 
 async function aprioris(producto) {
@@ -82,12 +82,12 @@ async function aprioris(producto) {
             .then(function (result) {
               var frequentItemsets = result.itemsets;
               var recommendations = generateRecommendations(frequentItemsets);
-              recommendations.forEach(async function (recommendation, index) {
-                if (producto != recommendation) {
-                  productos_recomendado.push(recommendation);
-                  resolve(productos_recomendado);
+              for (const element of recommendations) {
+                if (element !== producto) {
+                  productos_recomendado.push(element);
                 }
-              });
+              }
+              resolve(productos_recomendado);
             });
           function generateRecommendations(itemsets) {
             itemsets.sort(function (a, b) {
