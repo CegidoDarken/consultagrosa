@@ -17,8 +17,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: "cegidocarlos@gmail.com",
-    pass: "yhazaidwhlqacqpm",
+    user: "consultagrosaprueba@gmail.com",
+    pass: "oyzqvyofgutbpdev",
   },
 });
 
@@ -496,7 +496,7 @@ router.post('/registrar_cliente', (req, res) => {
           if (results) {
             const enlaceValidacion = `http://tu-sitio.com/validar?correo=${encodeURIComponent(correo)}`;
             var mailOptions = {
-              form: 'cegidocarlos@gmail.com',
+              form: 'consultagrosaprueba@gmail.com',
               to: correo,
               subject: 'Confirma tu cuenta',
               text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlaceValidacion}`,
