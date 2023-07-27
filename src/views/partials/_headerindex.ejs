@@ -27,6 +27,18 @@
     .content-elements::-webkit-scrollbar-thumb:hover {
         background: #336840;
     }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 </style>
 
 <head>
@@ -38,7 +50,8 @@
     <link rel="stylesheet" href="/css/custom.css">
     <link href="/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.bootstrap5.min.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.5/datatables.min.js"></script>
 </head>
 <nav class="navbar navbar-expand-lg navbar-light shadow">
     <div class="container-fluid d-flex justify-content-between align-items-center">
@@ -58,11 +71,11 @@
             <div class="flex-fill">
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/acerca"><i class="bi bi-question-circle-fill"></i> Acerca de
+                        <a class="nav-link" href="/"><i class="bi bi-question-circle-fill"></i> Acerca de
                             nosotros</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="/"><i class="bi bi-bag-fill"></i>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tienda"><i class="bi bi-bag-fill"></i>
                             Tienda</a>
                     </li>
                     <li class="nav-item">
@@ -73,7 +86,7 @@
             <ul class="navbar-nav">
                 <% if (credentials) { %>
                     <li class="nav-item ">
-                        <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#Cart">
+                        <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#carrito-modal">
                             <i class="bi bi-cart-fill"></i>Carrito
                         </a>
                     </li>
@@ -147,13 +160,14 @@
                             <div class="card-body">
                                 <form id="loginForm">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="usuario" placeholder=" " required>
+                                        <input type="text" class="form-control" id="usuario" placeholder=" "
+                                            name="usuario" required>
                                         <label style="color: #59ab6e;" for="usuario"><i class="bi bi-person"></i>
                                             Usuario</label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input type="password" class="form-control" id="password" placeholder=" "
-                                            required>
+                                        <input type="password" name="contrasena" class="form-control" id="password"
+                                            placeholder=" " required>
                                         <label style="color: #59ab6e;" for="password"><i class="bi bi-key"></i>
                                             Contraseña</label>
                                     </div>
@@ -174,27 +188,32 @@
                         tabindex="0">
                         <form id="registrarForm">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="nombre" placeholder=" " required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder=" "
+                                    required>
                                 <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="usuario-nuevo" placeholder=" " required>
+                                <input type="text" class="form-control" id="usuario-nuevo" placeholder=" "
+                                    name="usuario" required>
                                 <label style="color: #59ab6e;" for="usuario-nuevo"><i class="bi bi-person"></i>
                                     Usuario</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="identificacion" placeholder=" " required>
+                                <input type="number" class="form-control" id="identificacion" placeholder=" "
+                                    name="identificacion" required>
                                 <label style="color: #59ab6e;" for="identificacion"><i class="bi bi-person-vcard"></i>
                                     Cédula/RUC</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="telefono" placeholder=" " required>
+                                <input type="number" class="form-control" id="telefono" placeholder=" " name="telefono"
+                                    required>
                                 <label style="color: #59ab6e;" for="telefono"><i class="bi bi-telephone"></i>
                                     Teléfono</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email" placeholder=" " required>
-                                <label style="color: #59ab6e;" for="email"><i class="bi bi-envelope"></i> Email</label>
+                                <input type="email" class="form-control" id="correo" name="correo" placeholder=" "
+                                    required>
+                                <label style="color: #59ab6e;" for="correo"><i class="bi bi-envelope"></i> Email</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <select class="form-select" id="provincias" required>
@@ -203,19 +222,20 @@
                                 <label style="color: #59ab6e;" for="provincias">Provincias</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <select class="form-select" id="ciudades" required>
+                                <select class="form-select" id="ciudades" name="ciudad" required>
                                     <option value="" selected disabled>Selecciona una opción</option>
                                 </select>
                                 <label style="color: #59ab6e;" for="ciudades">Ciudades</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="direccion" placeholder=" " required>
+                                <input type="text" class="form-control" id="direccion" placeholder=" " name="direccion"
+                                    required>
                                 <label style="color: #59ab6e;" for="direccion"><i class="bi bi-signpost-2"></i>
                                     Dirección</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="password-nuevo" placeholder=" "
-                                    required>
+                                    name="contrasena" required>
                                 <label style="color: #59ab6e;" for="password-nuevo"><i class="bi bi-key"></i>
                                     Contraseña</label>
                             </div>
@@ -251,77 +271,162 @@
         </div>
     </div>
 </div>
-<button id="ver-carrito-btn" class="btn btn-primary">Ver Carrito</button>
 
 <div class="modal fade" id="carrito-modal" tabindex="-1" aria-labelledby="carrito-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="carrito-modal-label">Carrito de Compras</h5>
+                <h5 class="modal-title" id="carrito-modal-label">Carrito</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table id="carrito-table" class="table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="carrito-table-body">
-                        <!-- Los datos del carrito se generan dinámicamente aquí -->
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="carrito-table" class="fl-table table table-sm table-hover text-center tablesort w-100"
+                        style="min-width: 100% !important;">
+                        <thead style="min-width: 100% !important;">
+                            <tr>
+                                <th class="text-center" style="width: 120px !important;">Id</th>
+                                <th class="text-center" style="width: 120px !important;">Producto</th>
+                                <th class="text-center" style="width: 120px !important;">Nombre</th>
+                                <th class="text-center" style="width: 120px !important;">Precio</th>
+                                <th class="text-center" style="max-width: 12px !important;">Cantidad</th>
+                                <th class="text-center" style="width: 120px !important;">Total</th>
+                                <th class="text-center" style="width: 120px !important;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Vaciar carrito</button>
+                <button type="button" class="btn btn-primary"><i class="bi bi-bag-fill"></i>
+                    Realizar pedido</button>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-    // Obtén los datos del carrito desde la base de datos utilizando fetch
-    fetch('/obtener_carrito', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ id_usuario: "43" }),
-    }).then(function (response) {
-        return response.json();
-    })
-        .then(function (data) {
-            console.log(data);
-            if (data.data !== null) {
-                carritoHtml = "";
-                data.data.forEach(function (item) {
-                    console.log(item);
-                    carritoHtml += '<tr>';
-                    carritoHtml += '<td><img src="' + item.img + '" alt=""></td>';
-                    carritoHtml += '<td>' + item.nombre + '</td>';
-                    carritoHtml += '<td>' + item.precio + '</td>';
-                    carritoHtml += '<td>' + item.cantidad + '</td>';
-                    carritoHtml += '<td>' + item.total + '</td>';
-                    carritoHtml += '</tr>';
-                    document.getElementById('carrito-table-body').innerHTML = carritoHtml;
-                });
-
-
+    var carrito = $('#carrito-table').DataTable({
+        ajax: {
+            url: "/obtener_carrito",
+            type: "POST",
+            data: {
+                id_usuario: "<%= (credentials)?credentials.id_usuario:null %>",
             }
-        })
-        .catch(function (error) {
-            console.error("Error:", error);
-        });
-
-    // Abrir el modal del carrito al hacer clic en el botón "Ver Carrito"
-    document.getElementById('ver-carrito-btn').addEventListener('click', function () {
-        var carritoModal = new bootstrap.Modal(document.getElementById('carrito-modal'));
-        carritoModal.show();
+        },
+        searching: false,
+        bLengthChange: false,
+        info: false,
+        paging: false,
+        columns: [
+            { data: "id_producto" },
+            { data: "img" },
+            { data: "nombre", defaultContent: "-" },
+            { data: "precio", defaultContent: "-" },
+            { data: "cantidad", defaultContent: "-" },
+            { data: "total", defaultContent: "-" },
+        ],
+        columnDefs: [
+            {
+                targets: "_all",
+                className: "text-center",
+            },
+            {
+                targets: 0,
+                visible: false,
+            },
+            {
+                targets: 1,
+                render: function (data, type, row, meta) {
+                    var data = carrito.row(meta.row).data();
+                    return `<img src="${data.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                }
+            },
+            {
+                targets: 3,
+                render: function (data, type, row, meta) {
+                    var data = carrito.row(meta.row).data();
+                    return `$${data.precio}`;
+                }
+            },
+            {
+                targets: 4,
+                render: function (data, type, row, meta) {
+                    return `
+          <div class="quantity-control input-group">
+            <button class="btn-minus btn btn-primary btn-sm" data-row="${meta.row}">-</button>
+            <input type="number" class="input form-control" value="${row.cantidad}" min="1" data-row="${meta.row}" />
+            <button class="btn-plus btn btn-primary btn-sm" data-row="${meta.row}">+</button>
+          </div>
+        `;
+                }
+            },
+            {
+                targets: 5,
+                render: function (data, type, row, meta) {
+                    var data = carrito.row(meta.row).data();
+                    return `$${data.total}`;
+                }
+            },
+            {
+                targets: 6,
+                render: function (data, type, row, meta) {
+                    var data = carrito.row(meta.row).data();
+                    return `<a type="button" class="btn btn-sm btn-primary me-1" href="/detalleproducto?producto=${data.id_producto}"><i class="bi bi-eye-fill"></i></a><a class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>`;
+                }
+            }
+        ],
+        "language": {
+            "sEmptyTable": "No hay datos disponibles en la tabla",
+            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+            "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+            "sInfoPostFix": "",
+            "sInfoThousands": ",",
+            "sLengthMenu": "Mostrar _MENU_ entradas",
+            "sLoadingRecords": "Cargando...",
+            "sProcessing": "Procesando...",
+            "sSearch": "Buscar:",
+            "sZeroRecords": "No se encontraron resultados",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            },
+            "buttons": {
+                "copy": "Copiar",
+                "colvis": "Visibilidad"
+            }
+        }
+    });
+    $(document).ready(function() {
+      $('#carrito-modal').on('shown.bs.modal', function () {
+        console.log('Modal shown!');
+        carrito.ajax.reload()
+      });
+    });
+    $(document).on('click', '.btn-minus', function () {
+        var row = $(this).data('row');
+        var inputElement = $(`.input[data-row="${row}"]`);
+        var currentValue = parseInt(inputElement.val());
+        if (currentValue > 1) {
+            inputElement.val(currentValue - 1);
+        }
     });
 
+    $(document).on('click', '.btn-plus', function () {
+        var row = $(this).data('row');
+        var inputElement = $(`.input[data-row="${row}"]`);
+        var currentValue = parseInt(inputElement.val());
+        inputElement.val(currentValue + 1);
+    });
 
     function showpasswordLogin() {
         var icon = document.getElementById('icon-use');
@@ -384,9 +489,7 @@
     });
     document.getElementById("loginForm").addEventListener('submit', function (event) {
         event.preventDefault();
-        var formData = new FormData();
-        formData.append('usuario', document.getElementById('usuario').value);
-        formData.append('password', document.getElementById('password').value);
+        var formData = new FormData(event.target);
         fetch('/validar_cliente', {
             method: 'POST',
             body: formData
@@ -403,7 +506,7 @@
                     timer: 3000
                 }).then((result) => {
                     if (element.type === "success") {
-                        location.reload()
+                        location.reload();
                     }
                 });
             });
@@ -411,37 +514,56 @@
 
     document.getElementById("registrarForm").addEventListener('submit', function (event) {
         event.preventDefault();
-        event.preventDefault();
-        var formData = new FormData();
-        formData.append('nombre', document.getElementById('nombre').value);
-        formData.append('usuario', document.getElementById('usuario-nuevo').value);
-        formData.append('identificacion', document.getElementById('identificacion').value);
-        formData.append('telefono', document.getElementById('telefono').value);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('id_ciudad', document.getElementById('ciudades').value);
-        formData.append('direccion', document.getElementById('direccion').value);
-        formData.append('password', document.getElementById('password-nuevo').value);
-        formData.append('password-confirm', document.getElementById('password-confirm').value);
+        if (document.getElementById('password-nuevo').value != document.getElementById('password-confirm').value) {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'error',
+                html: "Contraseñas no coinciden",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+            return;
+        }
+        var formData = new FormData(event.target);
         fetch('/registrar_cliente', {
             method: 'POST',
             body: formData
         }).then(res => res.json())
             .then(element => {
                 console.log(element);
-                if (element.message) {
-                    location.reload()
-                } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'bottom-end',
-                        icon: 'error',
-                        title: element.error,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: element.type,
+                    title: element.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+                if (element.type === "success") {
+                    $("#registrarForm")[0].reset()
+                    $('.modal').modal('hide');
                 }
-            });
+            })
     });
+    let cantidadActual = 1; // Variable global para el seguimiento de la cantidad actual
+
+    function aumentarCantidad() {
+        cantidadActual++;
+        actualizarCantidad();
+    }
+
+    function disminuirCantidad() {
+        if (cantidadActual > 1) {
+            cantidadActual--;
+            actualizarCantidad();
+        }
+    }
+    function actualizarCantidad() {
+        document.getElementById('var-value2').innerText = cantidadActual;
+        document.getElementById('product-quanity2').value = cantidadActual;
+    }
 
 </script>

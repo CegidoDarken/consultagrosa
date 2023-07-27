@@ -2,6 +2,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const { connection } = require('../database');
 require('datatables.net-bs5');
 let io;
@@ -11,15 +12,19 @@ function configureSocket(server) {
 }
 var apriori = require("node-apriori");
 
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "cegidocarlos@gmail.com",
+    pass: "yhazaidwhlqacqpm",
+  },
+});
+
 //TODO: Rutas
-router.get("/", async (req, res) => {
-  /*if (req.session.credentials == null) {
-    req.session.credentials = {
-      cliente: null,
-      administrador: null
-    };
-  }*/
-  res.render("index", { credentials: req.session.credentials.cliente, productos: await obtener_productos() });
+router.get("/tienda", async (req, res) => {
+  res.render("tienda", { credentials: req.session.credentials.cliente, productos: await obtener_productos() });
 });
 
 router.get("/admin", async (req, res) => {
@@ -111,12 +116,53 @@ async function aprioris(producto) {
       }
     })
   });
-  /*
-  */
 }
-router.get("/acerca", async (req, res) => {
+router.post('/agregar_carrito', (req, res) => {
+  const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
+  connection.query(
+    'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
+    [producto_id, usuario_id],
+    (err, cartResults) => {
+      if (err) {
+        console.error('Error al obtener la información del carrito: ', err);
+        return res.status(500).json({ error: 'Error al obtener la información del carrito' });
+      }
+      if (cartResults.length === 0) {
+        connection.query(
+          'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
+          [producto_id, usuario_id, cantidad_deseada, cantidad_deseada * precio],
+          (err, insertResult) => {
+            if (err) {
+              console.error('Error al insertar el producto en el carrito: ', err);
+              return res.status(500).json({ error: 'Error al insertar el producto en el carrito' });
+            }
+            return res.json({ message: 'Producto agregado al carrito exitosamente' });
+          }
+        );
+      } else {
+        const { cantidad, total } = cartResults[0];
+        const newCantidad = parseInt(cantidad) + parseInt(cantidad_deseada);
+        const newTotal = parseInt(total) + parseInt(cantidad_deseada) * parseInt(precio);
+
+        connection.query(
+          'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
+          [newCantidad, newTotal, producto_id, usuario_id],
+          (err, updateResult) => {
+            if (err) {
+              console.error('Error al actualizar el producto en el carrito: ', err);
+              return res.status(500).json({ error: 'Error al actualizar el producto en el carrito' });
+            }
+            return res.json({ message: 'Producto actualizado en el carrito exitosamente' });
+          }
+        );
+      }
+    }
+  );
+});
+
+router.get("/", async (req, res) => {
   credentials = req.session.credentials.cliente;
-  res.render("acerca", { credentials });
+  res.render("index", { credentials });
 });
 router.get("/test", async (req, res) => {
   res.render("test");
@@ -128,12 +174,12 @@ router.get("/analisis", async (req, res) => {
 router.get("/escanear", async (req, res) => {
   credentials = req.session.credentials.administrador;
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
-  connection.query(sql, (error, results) => {
+  connection.query(sql, (error, productos) => {
     if (error) {
       res.send({ message: error });
     } else {
-      if (results) {
-        res.render("escanear", { credentials, productos: results });
+      if (productos) {
+        res.render("escanear", { credentials, productos });
       } else {
         res.send({ message: "Producto no reconocido" });
       }
@@ -143,7 +189,7 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_historial", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `railway`.`detallepedidos` AS dp JOIN `railway`.`pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `railway`.`productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `railway`.`usuarios` AS u ON p.`usuario_id` = u.`id_usuario`;";
+  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario`;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -269,6 +315,55 @@ async function obtener_num_productos() {
     });
   });
 }
+router.post("/obtener_mas_pedidos", async (req, res) => {
+  res.json({ productos: await obtener_mas_pedidos() });
+});
+async function obtener_mas_pedidos() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT p.img, p.nombre, p.precio, SUM(d.cantidad) AS vendidos, SUM(d.cantidad * p.precio) AS ganancias FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 6;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          result.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+
+router.post("/obtener_recientes", async (req, res) => {
+  res.json({ productos: await obtener_recientes() });
+});
+async function obtener_recientes() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT `pedidos`.`id_pedido`, `usuarios`.`nombre` AS `cliente`, `productos`.`nombre` AS `producto`, `productos`.`precio`, `estado` FROM `pedidos` JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` JOIN `productos` ON `detallepedidos`.`producto_id` = `productos`.`id_producto` JOIN `usuarios` ON `pedidos`.`usuario_id` = `usuarios`.`id_usuario` ORDER BY `pedidos`.`fecha` DESC LIMIT 10;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          result.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function obtener_num_proveedores() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT count(*) AS num_proveedores FROM proveedores;";
@@ -359,7 +454,7 @@ router.post("/asignar_producto", async (req, res) => {
       console.error(error);
     } else {
       if (result.affectedRows > 0) {
-        const sql = "UPDATE `railway`.`productos` SET `tag_id` = ? WHERE `id_producto` = ?;";
+        const sql = "UPDATE `productos` SET `tag_id` = ? WHERE `id_producto` = ?;";
         connection.query(sql, [result.insertId, idproducto], (error, results) => {
           if (error) {
             console.error(error);
@@ -377,30 +472,49 @@ router.post("/asignar_producto", async (req, res) => {
   });
 });
 router.post('/registrar_cliente', (req, res) => {
-  const nombre = req.body.nombre;
-  const usuario = req.body.usuario;
-  const identificacion = req.body.identificacion;
-  const telefono = req.body.telefono;
-  const email = req.body.email;
-  const id_ciudad = req.body.id_ciudad;
-  const direccion = req.body.direccion;
-  const password = req.body.password;
-  const passwordConfirm = req.body['password-confirm'];
+  const { ciudad, usuario, contrasena, direccion, identificacion, nombre, correo, telefono } = req.body;
+  bcrypt.hash(contrasena, 10, (error, hash) => {
+    if (error) {
+      res.status(400).json({ type: "error", message: error.message, data: null });
+    } else {
+      const currentDate = new Date(Date.now());
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const sql = "INSERT INTO `usuarios` (`perfil_id`, `ciudad_id`, `usuario`, `contrasena`, `nombre`, `direccion`, `identificacion`, `correo`, `telefono`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+      connection.query(sql, [2, ciudad, usuario, hash, nombre, direccion, identificacion, correo, telefono, `${year}-${month}-${day}`], (error, results) => {
+        if (error) {
+          console.log(error);
+          if (error.message.includes("usuario_UNIQUE")) {
+            res.status(400).json({ type: "error", message: "Usuario ya registrado", data: null });
+          } else if (error.message.includes("identificacion_UNIQUE")) {
+            res.status(400).json({ type: "error", message: "Cédula ya registrada", data: null });
+          } else if (error.message.includes("correo_UNIQUE")) {
+            res.status(400).json({ type: "error", message: "Correo ya registrado", data: null });
+          }
+        } else {
+          if (results) {
+            const enlaceValidacion = `http://tu-sitio.com/validar?correo=${encodeURIComponent(correo)}`;
+            var mailOptions = {
+              form: 'cegidocarlos@gmail.com',
+              to: correo,
+              subject: 'Confirma tu cuenta',
+              text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlaceValidacion}`,
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                res.status(400).json({ type: "error", message: error.message, data: null });
+              } else {
+                res.status(200).json({ type: "success", message: "Se ha enviado un correo de verificacion a " + correo, data: null });
+              }
+            });
 
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ error: 'Las contraseñas no coinciden' });
-  }
-  const query = 'SELECT * FROM usuarios WHERE usuario = ?';
-  connection.query(query, [usuario], (err, results) => {
-    if (err) {
-      console.error('Error al consultar en la base de datos:', err);
-      return res.status(500).json({ error: 'Error en el servidor' });
-    }
-    if (results.length > 0) {
-      return res.status(400).json({ error: 'El usuario ya está registrado' });
+          }
+        }
+      });
     }
   });
-  res.status(200).json({ message: 'Registro exitoso' });
+
 });
 
 router.post("/obtener_inventario_total", async (req, res) => {
@@ -433,7 +547,7 @@ router.post("/obtener_usuarios", async (req, res) => {
 });
 
 router.post("/obtener_provincias", async (req, res) => {
-  const sql = "SELECT * FROM provincias ORDER BY provincia";
+  const sql = "SELECT * FROM provincias ORDER BY provincia ASC";
   connection.query(sql, (error, result) => {
     if (error) {
       res.json({ data: error.message });
@@ -461,7 +575,7 @@ router.post("/obtener_kardex", async (req, res) => {
 router.post("/obtener_ciudades", async (req, res) => {
   const provinciaId = req.body.provinciaId;
 
-  const sql = "SELECT * FROM ciudades WHERE provincia_id = ? ORDER BY ciudad";
+  const sql = "SELECT * FROM ciudades WHERE provincia_id = ? ORDER BY ciudad ASC";
   connection.query(sql, [provinciaId], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -503,8 +617,9 @@ router.post("/obtener_productos", async (req, res) => {
   });
 });
 router.post('/obtener_carrito', (req, res) => {
-  const { id_usuario } = req.body;
-  const sql = "SELECT img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
+  const id_usuario = req.body.id_usuario;
+  console.log(id_usuario);
+  const sql = "SELECT id_producto, img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
   connection.query(sql, [id_usuario], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -554,7 +669,7 @@ router.post('/insertar_producto', (req, res) => {
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
   const { codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
-  const sql = "INSERT INTO `railway`.`productos`(`codigo`, `tag`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+  const sql = "INSERT INTO `productos`(`codigo`, `tag`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
   connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
@@ -839,13 +954,11 @@ router.get('/carrito', (req, res) => {
 });
 
 router.post("/validar_cliente", async (req, res) => {
-  console.log("Authentication".yellow);
-  const { usuario, password } = req.body
+  const { usuario, contrasena } = req.body
   const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ?;';
   connection.query(query, [usuario], (error, results) => {
     if (error) {
       res.send(error.message);
-      callback(error, null);
       return;
     }
     if (results.length === 0) {
@@ -853,7 +966,7 @@ router.post("/validar_cliente", async (req, res) => {
       return;
     } else {
       const usuario = results[0];
-      bcrypt.compare(password, usuario.contrasena, (error, match) => {
+      bcrypt.compare(contrasena, usuario.contrasena, (error, match) => {
         if (match) {
           req.session.credentials = {
             cliente: usuario,

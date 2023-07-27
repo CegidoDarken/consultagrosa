@@ -1,5 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    figure.zoom {
+        background-position: 50% 50%;
+        background-size: 0%;
+        position: relative;
+        overflow: hidden;
+        cursor: zoom-in;
+    }
+
+    figure.zoom img:hover {
+        opacity: 0;
+    }
+
+    figure.zoom:hover {
+        background-size: cover;
+    }
+
+    figure.zoom img {
+        transition: opacity 0.5s;
+        display: block;
+        width: 100%;
+    }
+</style>
 
 <body>
     <%- include("partials/_headerindex") %>
@@ -7,8 +30,12 @@
             <div class="container pb-5">
                 <div class="row">
                     <div class="col-lg-5 mt-5">
-                        <div class="card mb-3"><img class="card-img img-fluid" src="<%= producto.img %>"
-                                style=" width: 100%;height: 600px;object-fit: contain;object-position: center;">
+                        <div class="card mb-3">
+                            <figure class="zoom" onmousemove="zoom(event)"
+                                style="background-image: url('<%= producto.img %>')">
+                                <img class="card-img img-fluid" src="<%= producto.img %>"
+                                    style=" width: 100%;height: 600px;object-fit: contain;object-position: center;">
+                            </figure>
                         </div>
                     </div>
 
@@ -33,47 +60,28 @@
                                 <p>
                                     <%= producto.descripcion %>
                                 </p>
-
-                                <form action="" method="GET">
-                                    <input type="hidden" name="product-title" value="Activewear">
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <ul class="list-inline pb-3">
-                                                <li class="list-inline-item">Medida:</li>
-                                                <span class="badge btn-success rounded-pill text-bg-success">
-                                                    <%= producto.medida %>
-                                                </span>
-                                            </ul>
-                                        </div>
-                                        <div class="col-auto">
-                                            <ul class="list-inline pb-3">
-                                                <li class="list-inline-item text-right">
-                                                    Cantidad
-                                                    <input type="hidden" name="product-quanity" id="product-quanity"
-                                                        value="1">
-                                                </li>
-                                                <li class="list-inline-item"><span class="btn btn-sm"
-                                                        id="btn-minus">-</span></li>
-                                                <li class="list-inline-item"><span class="badge bg-secondary"
-                                                        id="var-value">1</span></li>
-                                                <li class="list-inline-item"><span class="btn btn-sm"
-                                                        id="btn-plus">+</span></li>
-                                            </ul>
-                                        </div>
+                                <input type="hidden" name="product-title" value="Activewear">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <ul class="list-inline pb-3">
+                                            <li class="list-inline-item">Medida:</li>
+                                            <span class="badge btn-success rounded-pill text-bg-success">
+                                                <%= producto.medida %>
+                                            </span>
+                                        </ul>
                                     </div>
-                                    <div class="row pb-3">
-                                        <div class="col d-grid">
-                                            <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                value="buy"><i class="bi bi-bag-fill"></i> Realizar pedido</button>
-                                        </div>
-                                        <div class="col d-grid">
-                                            <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                value="addtocard"><i class="bi bi-cart-fill"></i> Añadir al
-                                                carrito</button>
-                                        </div>
+                                </div>
+                                <div class="row pb-3">
+                                    <div class="col d-grid">
+                                        <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                            value="buy"><i class="bi bi-bag-fill"></i> Realizar pedido</button>
                                     </div>
-                                </form>
-
+                                    <div class="col d-grid">
+                                        <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                            onclick="agregar_carrito()"><i class="bi bi-cart-fill"></i> Añadir al
+                                            carrito</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -85,36 +93,36 @@
                 <div class="row text-left p-2 pb-3">
                     <h4>Productos recomendados</h4>
                 </div>
-
                 <div class="row">
-                    <!--Start Controls-->
                     <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button" data-bs-slide="prev">
+                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
+                            data-bs-slide="prev">
                             <i class="bi bi-caret-left-fill"></i>
                         </a>
                     </div>
                     <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item"
                         data-bs-ride="carousel">
                         <div class="carousel-inner" role="listbox">
-                            <% if (recomendados) { %>
-                                <% for (let i = 0; i < recomendados.length; i += 3) { %>
+                            <% if (recomendados.length> 0 ) { %>
+                                <% for (let i=0; i < recomendados.length; i +=3) { %>
                                     <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
                                         <div class="row">
-                                            <% for (let j = i; j < Math.min(i + 3, recomendados.length); j++) { %>
+                                            <% for (let j=i; j < Math.min(i + 3, recomendados.length); j++) { %>
                                                 <div class="col-4">
                                                     <div class="card mb-4 product-wap rounded-3 shadow border-0">
                                                         <div class="card rounded-3 border-0">
                                                             <img class="card-img rounded-3 img-fluid border-0"
-                                                            src="<%= recomendados[j].img? recomendados[j].img : '/img/no-image-icon.png' %>" target="_blank" style=" width: 100%;
+                                                                src="<%= recomendados[j].img? recomendados[j].img : '/img/no-image-icon.png' %>"
+                                                                target="_blank" style=" width: 100%;
                                                             height: 300px;
                                                             object-fit: contain;
                                                             object-position: center;">
                                                             <div
                                                                 class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                                                 <ul class="list-unstyled">
-                                                                    <li><a class="btn btn-success text-white" href="detalleproducto" style="z-index: 9999;"><i
-                                                                                class="bi bi-cart-plus-fill"></i></a></li>
-                                                                    <li><a class="btn btn-success text-white mt-2" href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i class="bi bi-eye-fill"></a></i></a></li>
+                                                                    <li><a class="btn btn-success text-white mt-2"
+                                                                            href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
+                                                                                class="bi bi-eye-fill"></a></i></a></li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -137,15 +145,18 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <% } %>
+                                                <% } %>
                                         </div>
                                     </div>
-                                <% } %>
-                            <% } %>
+                                    <% } %>
+                                        <% }else{ %>
+                                            <div class="text-center">No hay productos recomendados</div>
+                                            <% } %>
                         </div>
                     </div>
                     <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button" data-bs-slide="next">
+                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
+                            data-bs-slide="next">
                             <i class="bi bi-caret-right-fill"></i>
                         </a>
                     </div>
@@ -154,5 +165,43 @@
         </section>
         <%- include("partials/_fotterindex") %>
 </body>
+<script>
+    function agregar_carrito() {
+        let formData = new FormData();
+        formData.append('producto_id', '<%= producto.id_producto??null %>');
+        formData.append('precio', '<%= producto.precio %>');
+        formData.append('cantidad_deseada', 1);
+        formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
+        fetch("/agregar_carrito", {
+            method: "POST",
+            body: formData
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    }
+    function zoom(e) {
+        var zoomer = e.currentTarget;
+        e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
+        e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageX
+        x = offsetX / zoomer.offsetWidth * 100
+        y = offsetY / zoomer.offsetHeight * 100
+        zoomer.style.backgroundPosition = x + '% ' + y + '%';
+    }
+</script>
 
 </html>

@@ -150,7 +150,7 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
-                                                            <select name="medida" class="form-select" required>
+                                                            <select name="medida" class="form-select" id="medidas" required>
                                                                 <option value="" selected disabled>Selecciona una opción
                                                                 </option>
                                                                 <optgroup label="Litros">
@@ -231,39 +231,6 @@
                 <script>
                     var id;
                     var op;
-                    $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
-                        var litrosSelected = $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked');
-
-                        if (litrosSelected.length > 0) {
-                            $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', true);
-                        } else {
-                            $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
-                        }
-                    });
-
-                    $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
-                        var kgSelected = $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked');
-
-                        if (kgSelected.length > 0) {
-                            $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', true);
-                        } else {
-                            $('input[name="1l"], input[name="5l"], input[name="20l"]').prop('disabled', false);
-                        }
-                    });
-                    $('input[name="1l"], input[name="5l"], input[name="20l"]').change(function () {
-                        var medidasSeleccionadas = [];
-                        $('input[name="1l"]:checked, input[name="5l"]:checked, input[name="20l"]:checked').each(function () {
-                            medidasSeleccionadas.push($(this).val());
-                        });
-                        $('#medidas').val(medidasSeleccionadas.join('/'));
-                    });
-                    $('input[name="1kg"], input[name="5kg"], input[name="25kg"]').change(function () {
-                        var medidasSeleccionadas = [];
-                        $('input[name="1kg"]:checked, input[name="5kg"]:checked, input[name="25kg"]:checked').each(function () {
-                            medidasSeleccionadas.push($(this).val());
-                        });
-                        $('#medidas').val(medidasSeleccionadas.join('/'));
-                    });
                     var table = $('#datatable').DataTable({
                         ajax: {
                             url: "/obtener_inventario",
@@ -278,7 +245,7 @@
                             { data: "nombre", defaultContent: "-" },
                             { data: "categoria", defaultContent: "-" },
                             { data: "tag", defaultContent: "-" },
-                            { data: "medidas", defaultContent: "-" },
+                            { data: "medida", defaultContent: "-" },
                             { data: "precio", defaultContent: "-" },
                             { data: "cantidad", defaultContent: "-" },
                             { data: "total", defaultContent: "-" },
@@ -326,7 +293,7 @@
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     var dataAsString = JSON.stringify(data);
-                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medidas="${data.medidas}" data-tag="${data.tag}" data-total="${data.total}" data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medida="${data.medida}" data-tag="${data.tag}" data-total="${data.total}" data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                 }
                             }
                         ],
@@ -380,7 +347,6 @@
                     }
                     function update_producto(button) {
                         op = "update_producto";
-                        $('input[name="1l"], input[name="5l"], input[name="20l"], input[name="1kg"], input[name="5kg"], input[name="25kg"]').prop('disabled', false);
                         id = button.getAttribute('data-id')
                         var img = button.getAttribute('data-img');
                         var codigo = button.getAttribute('data-codigo');
@@ -391,8 +357,7 @@
                         var categoria = button.getAttribute('data-categoria');
                         var precio = button.getAttribute('data-precio');
                         var total = button.getAttribute('data-total');
-                        var medidas = button.getAttribute('data-medidas');
-                        var medidasArray = medidas.split('/');
+                        var medida = button.getAttribute('data-medida');
                         $("#titulo").text("Editar Producto");
                         $("#productoForm")[0].reset();
                         $('#img').attr('src', img);
@@ -404,6 +369,7 @@
                         $("#precio").val(precio);
                         $("#total").val(total);
                         $('#categorias option[value="' + categoria + '"]').prop('selected', true);
+                        $('#medidas option[value="' + medida + '"]').prop('selected', true);
                         $('#producto').modal('show');
                     }
                     function nuevo(button) {
@@ -504,7 +470,6 @@
                         const fileInput = document.getElementById('image');
                         const file = fileInput.files[0];
                         const formData = new FormData(event.target);
-
                         if (file) {
                             const reader = new FileReader();
                             await new Promise((resolve) => {

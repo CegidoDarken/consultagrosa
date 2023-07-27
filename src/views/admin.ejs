@@ -108,9 +108,7 @@
     }
     document.getElementById("administradorForm").addEventListener('submit', function (event) {
       event.preventDefault();
-      var formData = new FormData();
-      formData.append('usuario', document.getElementById('usuario').value);
-      formData.append('contrasena', document.getElementById('contrasena').value);
+      var formData = new FormData(event.target);
       fetch('/validar_administrador', {
         method: 'POST',
         body: formData

@@ -82,9 +82,15 @@
                   </div>
 
                 </a>
-                <select class="col-12 card form-select" name="" id="year">
-                  <option value="">asa</option>
-                </select>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="form-floating">
+                      <select class="form-select" name="" id="year">
+                      </select>
+                      <label for="floatingSelect">Año</label>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
@@ -147,12 +153,8 @@
                                 },
                               }
                             });
-
                             chart.render();
                           });
-
-                          console.log(data);
-
                         }).catch(error => {
                           console.error(error);
                         });
@@ -163,7 +165,77 @@
 
                   </div>
                 </div>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Actividades pedidos <span>| 2023</span></h5>
 
+                      <div id="reportsChart2"></div>
+
+                      <script>
+                        document.addEventListener("DOMContentLoaded", async () => {
+
+                          await fetch("/obtener_productos_count", {
+                            method: 'POST',
+                          }).then(response => response.json()).then(data => {
+                            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+                            const chart = new ApexCharts(document.querySelector("#reportsChart2"), {
+                              series: [{
+                                name: 'Pedidos',
+                                data: data.proveedores,
+                              }, {
+                                name: 'Devoluciones',
+                                data: data.productos
+                              }],
+                              chart: {
+                                height: 350,
+                                type: 'area',
+                                toolbar: {
+                                  show: false
+                                },
+                              },
+                              markers: {
+                                size: 4
+                              },
+                              colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                              fill: {
+                                type: "gradient",
+                                gradient: {
+                                  shadeIntensity: 1,
+                                  opacityFrom: 0.3,
+                                  opacityTo: 0.4,
+                                  stops: [0, 90, 100]
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                curve: 'smooth',
+                                width: 2
+                              },
+                              xaxis: {
+                                categories: meses,
+                              },
+                              tooltip: {
+                                x: {
+                                  format: 'dd/MM/yy HH:mm'
+                                },
+                              }
+                            });
+                            chart.render();
+                          });
+                        }).catch(error => {
+                          console.error(error);
+                        });
+
+                      </script>
+
+                    </div>
+
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="card recent-sales overflow-auto">
 
@@ -180,49 +252,7 @@
                             <th scope="col">Estado</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row"><a href="#">#2457</a></th>
-                            <td>Brandon Jacob</td>
-                            <td><a href="#" class="text-primary">At praesentium minu</a></td>
-                            <td>$64</td>
-                            <td><span class="badge bg-success">Approved</span></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#">#2147</a></th>
-                            <td>Bridie Kessler</td>
-                            <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a></td>
-                            <td>$47</td>
-                            <td><span class="badge bg-warning">Pending</span></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#">#2049</a></th>
-                            <td>Ashleigh Langosh</td>
-                            <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
-                            <td>$147</td>
-                            <td><span class="badge bg-success">Approved</span></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#">#2644</a></th>
-                            <td>Angus Grady</td>
-                            <td><a href="#" class="text-primary">Ut voluptatem id earum et</a></td>
-                            <td>$67</td>
-                            <td><span class="badge bg-danger">Rejected</span></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#">#2644</a></th>
-                            <td>Raheem Lehner</td>
-                            <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
-                            <td>$165</td>
-                            <td><span class="badge bg-success">Approved</span></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#">#2644</a></th>
-                            <td>Raheem Lehner</td>
-                            <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
-                            <td>$165</td>
-                            <td><span class="badge bg-success">Approved</span></td>
-                          </tr>
+                        <tbody id="tbody">
                         </tbody>
                       </table>
 
@@ -247,42 +277,7 @@
                             <th scope="col">Ganancias</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row"><a href="#"><img src="/img/product-1.jpg" alt=""></a></th>
-                            <td><a href="#" class="text-primary fw-bold">Ut inventore ipsa voluptas nulla</a></td>
-                            <td>$64</td>
-                            <td class="fw-bold">124</td>
-                            <td>$5,828</td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#"><img src="/img/product-2.jpg" alt=""></a></th>
-                            <td><a href="#" class="text-primary fw-bold">Exercitationem similique doloremque</a></td>
-                            <td>$46</td>
-                            <td class="fw-bold">98</td>
-                            <td>$4,508</td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#"><img src="/img/product-3.jpg" alt=""></a></th>
-                            <td><a href="#" class="text-primary fw-bold">Doloribus nisi exercitationem</a></td>
-                            <td>$59</td>
-                            <td class="fw-bold">74</td>
-                            <td>$4,366</td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#"><img src="/img/product-4.jpg" alt=""></a></th>
-                            <td><a href="#" class="text-primary fw-bold">Officiis quaerat sint rerum error</a></td>
-                            <td>$32</td>
-                            <td class="fw-bold">63</td>
-                            <td>$2,016</td>
-                          </tr>
-                          <tr>
-                            <th scope="row"><a href="#"><img src="/img/product-5.jpg" alt=""></a></th>
-                            <td><a href="#" class="text-primary fw-bold">Sit unde debitis delectus repellendus</a></td>
-                            <td>$79</td>
-                            <td class="fw-bold">41</td>
-                            <td>$3,239</td>
-                          </tr>
+                        <tbody id="tbody2">
                         </tbody>
                       </table>
 
@@ -304,7 +299,7 @@
                   <script>
                     (() => {
                       let year_satart = 2017;
-                      let year_end = (new Date).getFullYear() + 10; // current year
+                      let year_end = (new Date).getFullYear(); // current year
                       let year_selected = (new Date).getFullYear();
                       let option;
                       for (let i = year_satart; i <= year_end; i++) {
@@ -350,6 +345,52 @@
                           }
                           ]
                         }]
+                      });
+                    });
+
+                    fetch("/obtener_mas_pedidos", {
+                      method: 'POST',
+                    }).then(response => response.json()).then(data => {
+                      var carritoHtml = "";
+                      data.productos.forEach(function (item) {
+                        carritoHtml += '<tr>';
+                        carritoHtml += '<td><img src="' + item.img + '" alt="" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;"></td>';
+                        carritoHtml += '<td>' + item.nombre + '</td>';
+                        carritoHtml += '<td>$' + item.precio + '</td>';
+                        carritoHtml += '<td>' + item.vendidos + '</td>';
+                        carritoHtml += '<td>$' + item.ganancias + '</td>';
+                        carritoHtml += '</tr>';
+                        document.getElementById('tbody2').innerHTML = carritoHtml;
+                      });
+                    });
+                    fetch("/obtener_recientes", {
+                      method: 'POST',
+                    }).then(response => response.json()).then(data => {
+                      var carritoHtml = "";
+                      console.log(data);
+                      data.productos.forEach(function (item) {
+                        let estadoClass = '';
+                        switch (item.estado) {
+                          case 'Aprobado':
+                            estadoClass = 'text-bg-success';
+                            break;
+                          case 'Pendiente':
+                            estadoClass = 'text-bg-warning';
+                            break;
+                          case 'Cancelado':
+                            estadoClass = 'text-bg-danger';
+                            break;
+                          default:
+                            estadoClass = '';
+                        }
+                        carritoHtml += '<tr>';
+                        carritoHtml += '<td><a href="#">#' + item.id_pedido + '</a></td>';
+                        carritoHtml += '<td>' + item.cliente + '</td>';
+                        carritoHtml += '<td>' + item.producto + '</td>';
+                        carritoHtml += '<td>$' + item.precio + '</td>';
+                        carritoHtml += '<td><span class="badge rounded-pill ' + estadoClass + '">' + item.estado + '</span></td>';
+                        carritoHtml += '</tr>';
+                        document.getElementById('tbody').innerHTML = carritoHtml;
                       });
                     });
                   </script>

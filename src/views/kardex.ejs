@@ -4,9 +4,10 @@
 <head>
     <title>Kardex PEPS</title>
 </head>
+
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.0.16/jspdf.plugin.autotable.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
 
 <body>
 
@@ -30,7 +31,7 @@
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-header row">
-                                    <div class="col-md-12 mb-4">
+                                    <div class="col-md-4 mb-4">
                                         <select class="js-example-basic-single form-select" id="productos">
                                             <% if (productos) { %>
                                                 <% productos.forEach(row=> { %><option value="<%= row.id_producto %>" }>
@@ -49,9 +50,9 @@
                                 <div class="card-body">
                                     <div class="container-fluid mt-2">
                                         <div class="table-wrapper">
-                                            <button class="btn btn-primary mb-2" onclick="ExportToExcel('xlsx')"><i
+                                            <button class="btn btn-primary mb-2" onclick="ExportToExcel()"><i
                                                     class="bi bi-file-excel"></i>Exportar Excel</button>
-                                            <button class="btn btn-danger mb-2" onclick="exportPDF()"><i
+                                            <button class="btn btn-danger mb-2" onclick="ExportToPDF()"><i
                                                     class="bi bi-file-pdf"></i>Exportar PDF</button>
                                             <table
                                                 class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
@@ -131,13 +132,36 @@
             </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
-                    $('.js-example-basic-single').select2();
-                    function ExportToExcel(type, fn, dl) {
+                    $('.js-example-basic-single').select2({ theme: 'bootstrap-5' });
+                    function ExportToExcel() {
                         var elt = document.getElementById('datatable');
                         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-                        return dl ?
-                            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
-                            XLSX.writeFile(wb, fn || ('Kardex' + Date.now() + "." + (type || 'xlsx')));
+                        return XLSX.writeFile(wb, 'Kardex' + Date.now() + "." + 'xlsx');
+                    }
+
+                    function ExportToPDF() {
+                        var doc = new jsPDF('l', 'pt', 'letter');
+                        var htmlstring = '';
+                        var tempVarToCheckPageHeight = 0;
+                        var pageHeight = 0;
+                        pageHeight = doc.internal.pageSize.height;
+                        specialElementHandlers = {
+                            '#bypassme': function (element, renderer) {
+                                return true
+                            }
+                        };
+                        var y = 20;
+                        doc.setLineWidth(2);
+                        var text = "Kardex PEPS";
+                        var textWidth = doc.getTextWidth(text);
+                        var x = (doc.internal.pageSize.getWidth() - textWidth) / 2;
+                        doc.text(x, y = y + 30, text);
+                        doc.autoTable({
+                            html: '#datatable',
+                            theme: 'grid',
+                            startY: y + 20,
+                        })
+                        doc.save(('Kardex' + Date.now() + "." + 'pdf'));
                     }
                     $(document).ready(function () {
                         var tabla = $('#datatable').DataTable({

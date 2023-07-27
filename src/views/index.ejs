@@ -2,185 +2,84 @@
 <html lang="en">
 
 <head>
-    <title>Consultagro S.A</title>
+    <title>Acerca de nosotros</title>
 </head>
 
 <body>
     <%- include("partials/_headerindex") %>
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-3">
-                    <h2 class="h2 pb-4"><i class="bi bi-ui-checks-grid"></i> Categorias</h2>
-                    <div class="row">
-                        <div class="dropdown dropend col-md-2">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Tipos
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><button class="dropdown-item filter-button" data-filter="all">Todos</button></li>
-                                <li><button class="dropdown-item filter-button"
-                                        data-filter="Nutriente">Nutrientes</button></li>
-                                <li><button class="dropdown-item filter-button"
-                                        data-filter="Fungicida">Fungicidas</button></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown dropend">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Medidas
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Litros</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Kilogramos</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
+        <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="w-100 pt-1 mb-5 text-right">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <div class="col-lg-9">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <ul class="list-inline shop-top-menu pb-3 pt-1">
-                                <li class="list-inline-item">
-                                    <a class="h3 text-dark text-decoration-none mr-3" href="#"
-                                        style="color: #59ab6e !important;">Todos</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="h3 text-dark text-decoration-none mr-3" href="#">Más vendidos</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="h3 text-dark text-decoration-none" href="#">Ofertas</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6 pb-4">
-                            <div class="d-flex">
-                                <div class="input-group mb-3">
-                                    <input type="search" class="form-control" placeholder="Buscar" id="search">
-                                    <span class="input-group-text" id="inputGroup-sizing-default">
-                                        <i class="bi bi-search"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                <form action="" method="get" class="modal-content modal-body border-0 p-0">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                        <button type="submit" class="input-group-text bg-success text-light">
+                            <i class="fa fa-fw fa-search text-white"></i>
+                        </button>
                     </div>
-                    <div class="row content-elements" style="overflow-y: scroll;height: 800px;">
-                        <% if (productos) { %>
-                            <% productos.forEach(value=> { %>
-                                <div class="col-md-4 content filter <%= value.categoria %>">
-                                    <div class="card mb-4 product-wap rounded-3 shadow border-0">
-                                        <div class="card rounded-3 border-0">
-                                            <img class="card-img rounded-3 img-fluid border-0"
-                                                data-src="<%= value.img? value.img : '/img/no-image-icon.png' %>" style=" width: 100%;
-                                            height: 300px;
-                                            object-fit: contain;
-                                            object-position: center;">
-                                            <div
-                                                class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                                <ul class="list-unstyled">
-                                                    <li><a class="btn btn-success text-white" href=""><i
-                                                                class="bi bi-cart-plus-fill"></i></a></li>
-                                                    <li><a class="btn btn-success text-white mt-2"
-                                                            href="/detalleproducto?producto=<%= value.id_producto %>"><i
-                                                                class="bi bi-eye-fill"></a></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <a class="h3 text-decoration-none" id="nombre">
-                                                <%= value.nombre %> <span class="badge"
-                                                        style="background-color: #59ab6e;">
-                                                        <%= value.categoria %>
-                                                    </span>
-                                            </a>
-                                            <a class="h3 text-decoration-none d-flex text-center">
-                                                <p class="m-1 ms-0">Medida:</p>
-                                                <span class="badge m-1"
-                                                    style="background-color: #59ab6e;">
-                                                    <%= value.medida??"Ninguna" %>
-                                                </span>
-                                            </a>
-                                            <p class="fw-bold mb-0">$<%= value.precio %>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }); %>
-                                    <% }; %>
-                                        <div id="noResultsMessage" style="display: none;">No se han encontrado
-                                            resultados.
-                                        </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <section class="bg-success py-5" style=" background-image: linear-gradient(rgba(46, 87, 56, 0.65), rgba(46, 87, 56, 0.65)), url('/img/agricultura.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;">
+            <div class="container">
+                <div class="row align-items-center py-5">
+                    <div class="col-md-8 text-white">
+                        <h1>QUIENES SOMOS</h1>
+                        <p>
+                            Una empresa diferenciada en el sector agricola, consientes de enfrentar un
+                            campo Cada vez más competitivo y posicionado por importantes empresas
+                            Formuladoras y Distribuidoras locales e internacionales, con la firme
+                            convicción de que nuestros procesos son cada vez de mayor importancia.
+                            vamos hacia adelante pensando en elevar nuestro compromiso con nuestros
+                            Clientes y Medio Ambiente.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/img/logo.png" width="150">
                     </div>
                 </div>
             </div>
-            <nav>
-                <ul class="pagination justify-content-center pagination-sm">
-                </ul>
-            </nav>
-        </div>
+        </section>
+
+        <section class="container py-5">
+            <div class="row text-center pt-5 pb-3">
+                <div class="col-lg-6 m-auto">
+                    <h1 class="h1">Nuestros Servicios</h1>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-1-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Consultoria técnica en control de Sigatoka</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-2-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Uso y manejo de plaguicidas</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-5 col-lg-4 pb-5">
+                    <div class="h-100 py-5 services-icon-wap shadow rounded-2">
+                        <div class="h1 text-success text-center"><i class="bi bi-3-circle-fill"></i></div>
+                        <h2 class="h5 mt-4 text-center">Como mejorar la producción</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
         <%- include("partials/_fotterindex") %>
-            <script>
-                $('#search').on('input', filterRows);
-                if ("IntersectionObserver" in window) {
-                    const images = document.querySelectorAll("img");
-                    let observer = new IntersectionObserver(
-                        (entries, observer) => {
-                            entries.forEach((entry) => {
-                                if (!entry.isIntersecting) return;
-                                const image = entry.target;
-                                const newURL = image.getAttribute("data-src");
-                                image.src = newURL;
-                                observer.unobserve(image);
-                            });
-                        },
-                        {
-                            threshold: [0.2]
-                        }
-                    );
-
-                    images.forEach((image) => {
-                        observer.observe(image);
-                    });
-                }
-                function filterRows() {
-                    let query = $.trim($('#search').val().toUpperCase());
-                    let found = false;
-                    $('div.content').each(async function () {
-                        let nombre = $(this).closest('.content').find('#nombre').text().trim().toUpperCase();
-                        if (nombre.indexOf(query) !== -1) {
-                            $(this).closest('div.content').fadeIn();
-                            found = true;
-                        } else {
-                            $(this).closest('div.content').fadeOut();
-                        }
-                    });
-
-                    if (!found) {
-                        $('#noResultsMessage').fadeIn();
-                    } else {
-                        $('#noResultsMessage').fadeOut();
-                    }
-                }
-                $(".filter-button").click(function () {
-                    let found = false;
-                    var value = $(this).attr('data-filter');
-                    if (value == "all") {
-                        $('.filter').fadeIn();
-                    } else {
-                        $(".filter").not('.' + value).fadeOut();
-                        $('.filter').filter('.' + value).fadeIn();
-                    }
-                });
-
-                if ($(".filter-button").removeClass("active")) {
-                    $(this).removeClass("active");
-                }
-            </script>
 </body>
 
 </html>
