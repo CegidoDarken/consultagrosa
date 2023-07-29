@@ -505,7 +505,7 @@ router.post('/registrar_cliente', (req, res) => {
           }
         } else {
           if (results) {
-            const enlaceValidacion = `http://localhost:3000/validar?correo=${encodeURIComponent(correo)}`;
+            const enlaceValidacion = `https://consultagrosa-production.up.railway.app/validar?correo=${encodeURIComponent(correo)}`;
             var mailOptions = {
               form: 'consultagrosaprueba@gmail.com',
               to: correo,
