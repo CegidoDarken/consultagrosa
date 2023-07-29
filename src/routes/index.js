@@ -47,7 +47,14 @@ router.get("/pedidos", async (req, res) => {
 });
 
 router.get("/validar", async (req, res) => {
-  res.render("validar");
+  const { correo } = req.query;
+  const updateQuery = `UPDATE usuarios SET estado = 1 WHERE correo = ?`;
+  connection.query(updateQuery, [correo], (error, result) => {
+    if (error) {
+      return res.render("validar", { type: "error", message: "Error al actualizar el estado del usuario: " + error, data: null });
+    }
+    return res.render("validar", { type: "success", message: "Cuenta validada exitosamente", data: null });
+  });
 });
 
 router.get("/perfiladministrador", async (req, res) => {
