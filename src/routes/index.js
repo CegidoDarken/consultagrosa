@@ -45,6 +45,11 @@ router.get("/pedidos", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("pedidos", { credentials });
 });
+
+router.get("/validar", async (req, res) => {
+  res.render("validar");
+});
+
 router.get("/perfiladministrador", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("perfiladministrador", { credentials });
@@ -124,8 +129,7 @@ router.post('/agregar_carrito', (req, res) => {
     [producto_id, usuario_id],
     (err, cartResults) => {
       if (err) {
-        console.error('Error al obtener la información del carrito: ', err);
-        return res.status(500).json({ error: 'Error al obtener la información del carrito' });
+        return res.status(500).json({ type: "error", message: 'Error al obtener la información del carrito: ' + err, data: null });
       }
       if (cartResults.length === 0) {
         connection.query(
@@ -134,9 +138,9 @@ router.post('/agregar_carrito', (req, res) => {
           (err, insertResult) => {
             if (err) {
               console.error('Error al insertar el producto en el carrito: ', err);
-              return res.status(500).json({ error: 'Error al insertar el producto en el carrito' });
+              return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
             }
-            return res.json({ message: 'Producto agregado al carrito exitosamente' });
+            return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
           }
         );
       } else {
@@ -149,10 +153,9 @@ router.post('/agregar_carrito', (req, res) => {
           [newCantidad, newTotal, producto_id, usuario_id],
           (err, updateResult) => {
             if (err) {
-              console.error('Error al actualizar el producto en el carrito: ', err);
-              return res.status(500).json({ error: 'Error al actualizar el producto en el carrito' });
+              return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
             }
-            return res.json({ message: 'Producto actualizado en el carrito exitosamente' });
+            return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
           }
         );
       }
@@ -471,11 +474,12 @@ router.post("/asignar_producto", async (req, res) => {
     }
   });
 });
+
 router.post('/registrar_cliente', (req, res) => {
   const { ciudad, usuario, contrasena, direccion, identificacion, nombre, correo, telefono } = req.body;
   bcrypt.hash(contrasena, 10, (error, hash) => {
     if (error) {
-      res.status(400).json({ type: "error", message: error.message, data: null });
+      res.status(500).json({ type: "error", message: error.message, data: null });
     } else {
       const currentDate = new Date(Date.now());
       const year = currentDate.getFullYear();
@@ -486,15 +490,15 @@ router.post('/registrar_cliente', (req, res) => {
         if (error) {
           console.log(error);
           if (error.message.includes("usuario_UNIQUE")) {
-            res.status(400).json({ type: "error", message: "Usuario ya registrado", data: null });
+            res.status(500).json({ type: "error", message: "Usuario ya registrado", data: null });
           } else if (error.message.includes("identificacion_UNIQUE")) {
-            res.status(400).json({ type: "error", message: "Cédula ya registrada", data: null });
+            res.status(500).json({ type: "error", message: "Cédula ya registrada", data: null });
           } else if (error.message.includes("correo_UNIQUE")) {
-            res.status(400).json({ type: "error", message: "Correo ya registrado", data: null });
+            res.status(500).json({ type: "error", message: "Correo ya registrado", data: null });
           }
         } else {
           if (results) {
-            const enlaceValidacion = `http://tu-sitio.com/validar?correo=${encodeURIComponent(correo)}`;
+            const enlaceValidacion = `http://localhost:3000/validar?correo=${encodeURIComponent(correo)}`;
             var mailOptions = {
               form: 'consultagrosaprueba@gmail.com',
               to: correo,
@@ -503,7 +507,7 @@ router.post('/registrar_cliente', (req, res) => {
             };
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
-                res.status(400).json({ type: "error", message: error.message, data: null });
+                res.status(500).json({ type: "error", message: error.message, data: null });
               } else {
                 res.status(200).json({ type: "success", message: "Se ha enviado un correo de verificacion a " + correo, data: null });
               }
@@ -515,6 +519,23 @@ router.post('/registrar_cliente', (req, res) => {
     }
   });
 
+});
+router.post('/reenviar_correo', (req, res) => {
+  const { correo } = req.body;
+  const enlaceValidacion = `https://consultagrosa-production.up.railway.app/validar?correo=${encodeURIComponent(correo)}`;
+  var mailOptions = {
+    form: 'consultagrosaprueba@gmail.com',
+    to: correo,
+    subject: 'Confirma tu cuenta',
+    text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlaceValidacion}`,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).json({ type: "error", message: error.message, data: null });
+    } else {
+      return res.status(200).json({ type: "success", message: "Se ha enviado un correo de verificacion a " + correo, data: null });
+    }
+  });
 });
 
 router.post("/obtener_inventario_total", async (req, res) => {
@@ -958,23 +979,25 @@ router.post("/validar_cliente", async (req, res) => {
   const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ?;';
   connection.query(query, [usuario], (error, results) => {
     if (error) {
-      res.send(error.message);
-      return;
+      return res.status(500).json({ type: "error", message: "Error al validar" + error, data: null });
     }
     if (results.length === 0) {
-      res.status(400).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
+      res.status(500).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
       return;
     } else {
       const usuario = results[0];
       bcrypt.compare(contrasena, usuario.contrasena, (error, match) => {
         if (match) {
+          if (usuario.estado === 0) {
+            return res.status(500).json({ type: "warning", message: "Usuario no validado", data: { correo: usuario.correo } });
+          }
           req.session.credentials = {
             cliente: usuario,
             administrador: req.session.credentials.administrador
           };
-          res.status(200).send({ type: "success", message: "Bienvenido " + usuario.nombre, data: null });
+          return res.status(200).json({ type: "success", message: "Bienvenido " + usuario.nombre, data: null });
         } else {
-          res.status(400).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
+          return res.status(500).json({ type: "error", message: "Usuario y/o contraseña incorrrectos", data: null });
         }
       });
     }
@@ -993,13 +1016,13 @@ router.post("/validar_administrador", async (req, res) => {
     }
     if (results[0] == null) {
       console.log("User not found".red);
-      res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
+      res.status(500).json({ error: "Usuario y/o contraseña incorrrectos" });
       return;
     } else {
       const usuario = results[0];
       bcrypt.compare(contrasena, usuario.contrasena, (err, match) => {
         if (err) {
-          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
+          res.status(500).json({ error: "Usuario y/o contraseña incorrrectos" });
           return;
         }
         if (match) {
@@ -1011,7 +1034,7 @@ router.post("/validar_administrador", async (req, res) => {
           res.status(200).json({ message: "Usuario correcto" });
         } else {
           console.log("Password does not match ".red);
-          res.status(400).json({ error: "Usuario y/o contraseña incorrrectos" });
+          res.status(500).json({ error: "Usuario y/o contraseña incorrrectos" });
         }
       });
     }
