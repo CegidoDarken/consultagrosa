@@ -53,7 +53,7 @@
     <script src="/js/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-1.13.5/datatables.min.js"></script>
 </head>
-<nav class="navbar navbar-expand-lg navbar-light shadow">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light shadow">
     <div class="container-fluid d-flex justify-content-between align-items-center">
 
         <a class="navbar-brand text-success logo align-self-start text-uppercase" href="">
@@ -86,8 +86,10 @@
             <ul class="navbar-nav">
                 <% if (credentials) { %>
                     <li class="nav-item ">
-                        <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#carrito-modal">
-                            <i class="bi bi-cart-fill"></i>Carrito
+                        <a href="" class="nav-link position-relative" data-bs-toggle="modal"
+                            data-bs-target="#carrito-modal">
+                            <i class="bi bi-cart-fill"></i> <span id="cantidad-carrito"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -285,31 +287,37 @@
                         style="min-width: 100% !important;">
                         <thead style="min-width: 100% !important;">
                             <tr>
-                                <th class="text-center" style="width: 120px !important;">Id</th>
-                                <th class="text-center" style="width: 120px !important;">Producto</th>
+                                <th class="text-center" style="width: 120px !important;"></th>
+                                <th class="text-center" style="width: 120px !important;"></th>
+                                <th class="text-center" style="width: 120px !important;">Imagen</th>
                                 <th class="text-center" style="width: 120px !important;">Nombre</th>
                                 <th class="text-center" style="width: 120px !important;">Precio</th>
                                 <th class="text-center" style="max-width: 11px !important;">Cantidad</th>
-                                <th class="text-center" style="width: 120px !important;">Subtotal</th>
+                                <th class="text-center" style="width: 120px !important;">Total</th>
                                 <th class="text-center" style="width: 120px !important;"></th>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
-                    <div class="container-fluid align-self-end text-end pe-5">
-                        <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Vaciar carrito</button>
-                <button type="button" class="btn btn-primary"><i class="bi bi-bag-fill"></i>
+                <div class="container-fluid align-self-end text-end pe-5">
+                    <h5>Subtotal: <span id="subtotal">$0</span></h5>
+                    <h5>IVA: <span id="iva">$0</span></h5>
+                    <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="vaciar_carrito()" id="vaciar" disabled><i
+                        class="bi bi-trash-fill"></i>
+                    Vaciar carrito</button>
+                <button type="button" class="btn btn-primary" id="pedido" disabled><i class="bi bi-bag-fill"></i>
                     Realizar pedido</button>
             </div>
         </div>
     </div>
 </div>
+<br><br>
 <script>
     let total = 0;
     var carrito = $('#carrito-table').DataTable({
@@ -325,6 +333,7 @@
         info: false,
         paging: false,
         columns: [
+            { data: "id_carrito" },
             { data: "id_producto" },
             { data: "img" },
             { data: "nombre", defaultContent: "-" },
@@ -343,32 +352,36 @@
             },
             {
                 targets: 1,
+                visible: false,
+            },
+            {
+                targets: 2,
                 render: function (data, type, row, meta) {
                     var data = carrito.row(meta.row).data();
                     return `<img src="${data.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                 }
             },
             {
-                targets: 3,
+                targets: 4,
                 render: function (data, type, row, meta) {
                     var data = carrito.row(meta.row).data();
                     return `$${data.precio}`;
                 }
             },
             {
-                targets: 4,
+                targets: 5,
                 render: function (data, type, row, meta) {
                     return `
           <div class="quantity-control input-group" >
-            <button class="btn-minus btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
             <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
-            <button class="btn-plus btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
           </div>
         `;
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 render: function (data, type, row, meta) {
                     var data = carrito.row(meta.row).data();
                     total += row.total;
@@ -376,10 +389,10 @@
                 }
             },
             {
-                targets: 6,
+                targets: 7,
                 render: function (data, type, row, meta) {
                     var data = carrito.row(meta.row).data();
-                    return `<a type="button" class="btn btn-sm btn-primary me-1" href="/detalleproducto?producto=${data.id_producto}"><i class="bi bi-eye-fill"></i></a><a class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>`;
+                    return `<button type="button" class="btn btn-sm btn-primary me-1"  onclick="location.href='/detalleproducto?producto=${data.id_producto}';"><i class="bi bi-eye-fill"></i></button><button class="btn btn-sm btn-danger" onclick="eliminar_carrito(${data.id_carrito})"><i class="bi bi-trash-fill"></i></button>`;
                 }
             }
         ],
@@ -411,11 +424,18 @@
             }
         },
         drawCallback: function (settings) {
+            var iva = 0.12;
+            $('#vaciar').prop('disabled', false);
+            $('#pedido').prop('disabled', false);
             var api = this.api();
-            var totalGeneral = api.column(5).data().reduce(function (a, b) {
+            var totalGeneral = api.column(6).data().reduce(function (a, b) {
                 return a + b;
             }, 0);
-            $("#total").text("$" + totalGeneral);
+            var montoIva = totalGeneral * iva;
+            var totalConIva = totalGeneral + montoIva;
+            $("#subtotal").text("$" + totalGeneral.toFixed(2)); // Mostrar el subtotal sin IVA
+            $("#iva").text("$" + montoIva.toFixed(2)); // Mostrar el monto del IVA
+            $("#total").text("$" + totalConIva.toFixed(2)); // Mostrar el total con IVA
         }
     });
     $(document).ready(function () {
@@ -440,6 +460,55 @@
         inputElement.val(currentValue + 1);
     });
 
+
+    function eliminar_carrito(id_carrito) {
+        fetch("delete_carrito", {
+            method: 'POST',
+            body: JSON.stringify({ id_carrito: id_carrito }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json()).then(data => {
+            console.log(data);
+
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: data.type,
+                title: data.message,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+            carrito.ajax.reload();
+        }).catch(error => {
+            console.error(error);
+        });
+    }
+    function vaciar_carrito() {
+        fetch("vaciar_carrito", {
+            method: 'POST',
+            body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>" }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json()).then(data => {
+            console.log(data);
+
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: data.type,
+                title: data.message,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+            carrito.ajax.reload();
+        }).catch(error => {
+            console.error(error);
+        });
+    }
     function showpasswordLogin() {
         var icon = document.getElementById('icon-use');
         var password = document.getElementById("password");
@@ -450,7 +519,29 @@
         }
     }
     var provinciasSelect = document.getElementById("provincias");
-
+    function obtener_cantidad_carrito(params) {
+        fetch("/obtener_cantidad_carrito", {
+            method: "POST",
+            body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>" }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                if (data.data !== null) {
+                    if (data.data[0].cantidad != 0) {
+                        $("#cantidad-carrito").text(data.data[0].cantidad);
+                    }
+                }
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    }
+    obtener_cantidad_carrito();
     fetch("/obtener_provincias", {
         method: "POST"
     })

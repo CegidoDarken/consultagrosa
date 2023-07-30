@@ -150,7 +150,8 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
-                                                            <select name="medida" class="form-select" id="medidas" required>
+                                                            <select name="medida" class="form-select" id="medidas"
+                                                                required>
                                                                 <option value="" selected disabled>Selecciona una opción
                                                                 </option>
                                                                 <optgroup label="Litros">
@@ -471,6 +472,32 @@
                         const file = fileInput.files[0];
                         const formData = new FormData(event.target);
                         if (file) {
+                            var maxSizeInBytes = 1024 * 1024; // 1 MB
+                            var allowedType = 'image/png';
+                            if (file.type !== allowedType) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    icon: 'error',
+                                    title: "Solo se permiten archivos PNG.",
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 3000
+                                });
+                                return;
+                            }
+                            if (file.size > maxSizeInBytes) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    icon: 'error',
+                                    title: "El tamaño del archivo debe ser menor o igual a 1 MB.",
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 3000
+                                });
+                                return;
+                            }
                             const reader = new FileReader();
                             await new Promise((resolve) => {
                                 reader.onloadend = function () {

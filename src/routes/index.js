@@ -240,6 +240,21 @@ router.post("/obtener_historial", async (req, res) => {
     }
   });
 });
+router.post("/obtener_cantidad_carrito", async (req, res) => {
+  const id_usuario = req.body.id_usuario;
+  const sql = "SELECT COUNT(*) as cantidad FROM carritos WHERE usuario_id = ?;";
+  connection.query(sql,[id_usuario], (error, results) => {
+    if (error) {
+      res.send({ message: error });
+    } else {
+      if (results) {
+        res.json({ data: results });
+      } else {
+        res.json({ message: "Producto no reconocido" });
+      }
+    }
+  });
+});
 router.get("/historial", async (req, res) => {
   credentials = req.session.credentials.administrador;
   res.render("historial", { credentials });
@@ -354,12 +369,14 @@ async function obtener_num_productos() {
   });
 }
 router.post("/obtener_mas_pedidos", async (req, res) => {
-  res.json({ productos: await obtener_mas_pedidos() });
+  const anio = req.body.anio;
+  res.json({ productos: await obtener_mas_pedidos(anio) });
 });
-async function obtener_mas_pedidos() {
+async function obtener_mas_pedidos(anio) {
+  
   return new Promise((resolve, reject) => {
-    const sql = "SELECT p.img, p.nombre, p.precio, SUM(d.cantidad) AS vendidos, SUM(d.cantidad * p.precio) AS ganancias FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 6;";
-    connection.query(sql, (error, result) => {
+    const sql = "SELECT p.img, p.nombre, p.precio, SUM(d.cantidad) AS vendidos, SUM(d.cantidad * p.precio) AS ganancias FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id WHERE YEAR(p.fecha) = ? GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 6;";
+    connection.query(sql,[anio], (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -675,7 +692,7 @@ router.post("/obtener_productos", async (req, res) => {
 router.post('/obtener_carrito', (req, res) => {
   const id_usuario = req.body.id_usuario;
   console.log(id_usuario);
-  const sql = "SELECT id_producto, img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
+  const sql = "SELECT id_carrito, id_producto, img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
   connection.query(sql, [id_usuario], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -755,6 +772,36 @@ router.post('/delete_producto', (req, res) => {
         res.send({ message: "Success" });
       } else {
         res.send({ message: "No found" });
+      }
+    }
+  });
+});
+router.post('/delete_carrito', (req, res) => {
+  const id_carrito = req.body.id_carrito;
+  console.log(id_carrito);
+  const sql = "DELETE FROM `carritos` WHERE id_carrito = ?";
+  connection.query(sql, [id_carrito], (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ type: "error", message: error.message, data: null });
+    } else {
+      if (results) {
+        return res.status(500).json({ type: "success", message: "Eliminado exitosamente", data: null });
+      }
+    }
+  });
+});
+router.post('/vaciar_carrito', (req, res) => {
+  const id_usuario = req.body.id_usuario;
+  console.log(id_usuario);
+  const sql = "DELETE FROM `carritos` WHERE usuario_id = ?";
+  connection.query(sql, [id_usuario], (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ type: "error", message: error.message, data: null });
+    } else {
+      if (results) {
+        return res.status(500).json({ type: "success", message: "Eliminado exitosamente", data: null });
       }
     }
   });

@@ -50,6 +50,7 @@
                                                 id="datatable">
                                                 <thead>
                                                     <tr class="text-light" style="background-color: #59ab6e;">
+                                                        <th>#</th>
                                                         <th>FECHA</th>
                                                         <th>CLIENTE</th>
                                                         <th>PRODUCTO</th>
@@ -120,6 +121,7 @@
                             },
                             dom: 'Bfrtip',
                             columns: [
+                                { data: 'id_detalle_pedido', defaultContent: "-" },
                                 { data: 'fecha', defaultContent: "-" },
                                 { data: 'nombre_usuario', defaultContent: "-" },
                                 { data: 'nombre_producto', defaultContent: "-" },

@@ -68,13 +68,13 @@
 </footer>
 
 <script>
-    function agregar_carrito(id_producto, precio, cantidad) {
+    async function agregar_carrito(id_producto, precio, cantidad) {
         let formData = new FormData();
         formData.append('producto_id', id_producto);
         formData.append('precio', precio);
         formData.append('cantidad_deseada', cantidad);
         formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
-        fetch("/agregar_carrito", {
+        await fetch("/agregar_carrito", {
             method: "POST",
             body: formData
         })
@@ -82,6 +82,7 @@
                 return response.json();
             })
             .then(function (data) {
+                obtener_cantidad_carrito();
                 carrito.ajax.reload()
                 Swal.fire({
                     toast: true,

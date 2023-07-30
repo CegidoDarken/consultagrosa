@@ -13,7 +13,7 @@
           <h1>Panel</h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+              <li class="breadcrumb-item"><a href="index.html">Reportes</a></li>
               <li class="breadcrumb-item active">Panel</li>
             </ol>
           </nav>
@@ -23,7 +23,6 @@
           <div class="row">
             <div class="col-lg-8">
               <div class="row">
-
                 <div class="col-xxl-4 col-md-6">
                   <div class="card info-card sales-card">
                     <div class="card-body">
@@ -82,6 +81,31 @@
                   </div>
 
                 </a>
+                <div class="col-12">
+                  <div class="card recent-sales overflow-auto">
+
+                    <div class="card-body">
+                      <h5 class="card-title">Pedidos recientes <span></span></h5>
+
+                      <table class="table table-borderless datatable">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                  </div>
+                </div>
+
                 <div class="col-12">
                   <div class="card">
                     <div class="form-floating">
@@ -236,36 +260,12 @@
 
                   </div>
                 </div>
-                <div class="col-12">
-                  <div class="card recent-sales overflow-auto">
-
-                    <div class="card-body">
-                      <h5 class="card-title">Pedidos recientes <span></span></h5>
-
-                      <table class="table table-borderless datatable">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Cliente</th>
-                            <th scope="col">Producto</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Estado</th>
-                          </tr>
-                        </thead>
-                        <tbody id="tbody">
-                        </tbody>
-                      </table>
-
-                    </div>
-
-                  </div>
-                </div>
 
                 <div class="col-12">
                   <div class="card top-selling overflow-auto">
 
                     <div class="card-body pb-0">
-                      <h5 class="card-title">Productos más pedidos <span></span></h5>
+                      <h5 class="card-title">Productos más pedidos <span>| 2023</span></h5>
 
                       <table class="table table-borderless">
                         <thead>
@@ -347,54 +347,63 @@
                         }]
                       });
                     });
-
-                    fetch("/obtener_mas_pedidos", {
-                      method: 'POST',
-                    }).then(response => response.json()).then(data => {
-                      var carritoHtml = "";
-                      data.productos.forEach(function (item) {
-                        carritoHtml += '<tr>';
-                        carritoHtml += '<td><img src="' + item.img + '" alt="" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;"></td>';
-                        carritoHtml += '<td>' + item.nombre + '</td>';
-                        carritoHtml += '<td>$' + item.precio + '</td>';
-                        carritoHtml += '<td>' + item.vendidos + '</td>';
-                        carritoHtml += '<td>$' + item.ganancias + '</td>';
-                        carritoHtml += '</tr>';
-                        document.getElementById('tbody2').innerHTML = carritoHtml;
-                      });
-                    });
-                    fetch("/obtener_recientes", {
-                      method: 'POST',
-                    }).then(response => response.json()).then(data => {
-                      var carritoHtml = "";
-                      console.log(data);
-                      data.productos.forEach(function (item) {
-                        let estadoClass = '';
-                        switch (item.estado) {
-                          case 'Aprobado':
-                            estadoClass = 'text-bg-success';
-                            break;
-                          case 'Pendiente':
-                            estadoClass = 'text-bg-warning';
-                            break;
-                          case 'Cancelado':
-                            estadoClass = 'text-bg-danger';
-                            break;
-                          default:
-                            estadoClass = '';
+                    function obtener_mas_pedidos(anio) {
+                      fetch("/obtener_mas_pedidos", {
+                        method: 'POST',
+                        body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+                        headers: {
+                          'Content-Type': 'application/json'
                         }
-                        carritoHtml += '<tr>';
-                        carritoHtml += '<td><a href="#">#' + item.id_pedido + '</a></td>';
-                        carritoHtml += '<td>' + item.cliente + '</td>';
-                        carritoHtml += '<td>' + item.producto + '</td>';
-                        carritoHtml += '<td>$' + item.precio + '</td>';
-                        carritoHtml += '<td><span class="badge rounded-pill ' + estadoClass + '">' + item.estado + '</span></td>';
-                        carritoHtml += '</tr>';
-                        document.getElementById('tbody').innerHTML = carritoHtml;
+                      }).then(response => response.json()).then(data => {
+                        var carritoHtml = "";
+                        data.productos.forEach(function (item) {
+                          carritoHtml += '<tr>';
+                          carritoHtml += '<td><img src="' + item.img + '" alt="" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;"></td>';
+                          carritoHtml += '<td>' + item.nombre + '</td>';
+                          carritoHtml += '<td>$' + item.precio + '</td>';
+                          carritoHtml += '<td>' + item.vendidos + '</td>';
+                          carritoHtml += '<td>$' + item.ganancias + '</td>';
+                          carritoHtml += '</tr>';
+                          document.getElementById('tbody2').innerHTML = carritoHtml;
+                        });
                       });
+                      fetch("/obtener_recientes", {
+                        method: 'POST',
+                      }).then(response => response.json()).then(data => {
+                        var carritoHtml = "";
+                        console.log(data);
+                        data.productos.forEach(function (item) {
+                          let estadoClass = '';
+                          switch (item.estado) {
+                            case 'Aprobado':
+                              estadoClass = 'text-bg-success';
+                              break;
+                            case 'Pendiente':
+                              estadoClass = 'text-bg-warning';
+                              break;
+                            case 'Cancelado':
+                              estadoClass = 'text-bg-danger';
+                              break;
+                            default:
+                              estadoClass = '';
+                          }
+                          carritoHtml += '<tr>';
+                          carritoHtml += '<td><a href="#">#' + item.id_pedido + '</a></td>';
+                          carritoHtml += '<td>' + item.cliente + '</td>';
+                          carritoHtml += '<td>' + item.producto + '</td>';
+                          carritoHtml += '<td>$' + item.precio + '</td>';
+                          carritoHtml += '<td><span class="badge rounded-pill ' + estadoClass + '">' + item.estado + '</span></td>';
+                          carritoHtml += '</tr>';
+                          document.getElementById('tbody').innerHTML = carritoHtml;
+                        });
+                      });
+                    }
+                    obtener_mas_pedidos();
+                    $('#year').change(function () {
+                      var anio = $(this).val();
+                      obtener_mas_pedidos(anio);
                     });
                   </script>
-
                 </div>
               </div>
             </div>
