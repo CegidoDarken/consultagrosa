@@ -289,14 +289,17 @@
                                 <th class="text-center" style="width: 120px !important;">Producto</th>
                                 <th class="text-center" style="width: 120px !important;">Nombre</th>
                                 <th class="text-center" style="width: 120px !important;">Precio</th>
-                                <th class="text-center" style="max-width: 12px !important;">Cantidad</th>
-                                <th class="text-center" style="width: 120px !important;">Total</th>
+                                <th class="text-center" style="max-width: 11px !important;">Cantidad</th>
+                                <th class="text-center" style="width: 120px !important;">Subtotal</th>
                                 <th class="text-center" style="width: 120px !important;"></th>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
+                    <div class="container-fluid align-self-end text-end pe-5">
+                        <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -308,6 +311,7 @@
     </div>
 </div>
 <script>
+    let total = 0;
     var carrito = $('#carrito-table').DataTable({
         ajax: {
             url: "/obtener_carrito",
@@ -355,10 +359,10 @@
                 targets: 4,
                 render: function (data, type, row, meta) {
                     return `
-          <div class="quantity-control input-group">
-            <button class="btn-minus btn btn-primary btn-sm" data-row="${meta.row}">-</button>
-            <input type="number" class="input form-control" value="${row.cantidad}" min="1" data-row="${meta.row}" />
-            <button class="btn-plus btn btn-primary btn-sm" data-row="${meta.row}">+</button>
+          <div class="quantity-control input-group" >
+            <button class="btn-minus btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
+            <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
+            <button class="btn-plus btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
           </div>
         `;
                 }
@@ -367,6 +371,7 @@
                 targets: 5,
                 render: function (data, type, row, meta) {
                     var data = carrito.row(meta.row).data();
+                    total += row.total;
                     return `$${data.total}`;
                 }
             },
@@ -404,6 +409,13 @@
                 "copy": "Copiar",
                 "colvis": "Visibilidad"
             }
+        },
+        drawCallback: function (settings) {
+            var api = this.api();
+            var totalGeneral = api.column(5).data().reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            $("#total").text("$" + totalGeneral);
         }
     });
     $(document).ready(function () {

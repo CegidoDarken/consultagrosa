@@ -129,43 +129,71 @@ async function aprioris(producto) {
     })
   });
 }
-router.post('/agregar_carrito', (req, res) => {
+
+router.post('/agregar_carrito', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
   connection.query(
     'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
     [producto_id, usuario_id],
-    (err, cartResults) => {
+    async (err, cartResults) => {
       if (err) {
         return res.status(500).json({ type: "error", message: 'Error al obtener la información del carrito: ' + err, data: null });
       }
-      if (cartResults.length === 0) {
-        connection.query(
-          'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
-          [producto_id, usuario_id, cantidad_deseada, cantidad_deseada * precio],
-          (err, insertResult) => {
-            if (err) {
-              console.error('Error al insertar el producto en el carrito: ', err);
-              return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
-            }
-            return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
-          }
-        );
-      } else {
-        const { cantidad, total } = cartResults[0];
-        const newCantidad = parseInt(cantidad) + parseInt(cantidad_deseada);
-        const newTotal = parseInt(total) + parseInt(cantidad_deseada) * parseInt(precio);
-
-        connection.query(
-          'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
-          [newCantidad, newTotal, producto_id, usuario_id],
-          (err, updateResult) => {
-            if (err) {
-              return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
-            }
-            return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
-          }
-        );
+      let cantidad_actual = 0;
+      if (cartResults.length !== 0) {
+        cantidad_actual = cartResults[0].cantidad;
       }
+      const nueva_cantidad = parseInt(cantidad_actual) + parseInt(cantidad_deseada);
+      connection.query(
+        'SELECT cantidad FROM productos WHERE id_producto = ?',
+        [producto_id],
+        (err, productResults) => {
+          if (err) {
+            return res.status(500).json({ type: "error", message: 'Error al obtener la información del producto: ' + err, data: null });
+          }
+
+          if (productResults.length === 0) {
+            return res.status(404).json({ type: "error", message: 'Producto no encontrado', data: null });
+          }
+
+          const cantidad_disponible = productResults[0].cantidad;
+
+          if (nueva_cantidad > cantidad_disponible) {
+            return res.status(400).json({ type: "error", message: 'La cantidad deseada supera la cantidad disponible', data: null });
+          }
+          if (nueva_cantidad < 1) {
+            return res.status(400)
+          }
+          if (cartResults.length === 0) {
+            connection.query(
+              'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
+              [producto_id, usuario_id, cantidad_deseada, cantidad_deseada * precio],
+              (err, insertResult) => {
+                if (err) {
+                  console.error('Error al insertar el producto en el carrito: ', err);
+                  return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
+                }
+                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
+              }
+            );
+          } else {
+            const { cantidad, total } = cartResults[0];
+            const newCantidad = parseInt(cantidad) + parseInt(cantidad_deseada);
+            const newTotal = parseInt(total) + parseInt(cantidad_deseada) * parseInt(precio);
+
+            connection.query(
+              'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
+              [newCantidad, newTotal, producto_id, usuario_id],
+              (err, updateResult) => {
+                if (err) {
+                  return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
+                }
+                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
+              }
+            );
+          }
+        }
+      );
     }
   );
 });

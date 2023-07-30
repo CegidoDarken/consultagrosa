@@ -66,6 +66,38 @@
         </div>-->
     </div>
 </footer>
+
+<script>
+    function agregar_carrito(id_producto, precio, cantidad) {
+        let formData = new FormData();
+        formData.append('producto_id', id_producto);
+        formData.append('precio', precio);
+        formData.append('cantidad_deseada', cantidad);
+        formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
+        fetch("/agregar_carrito", {
+            method: "POST",
+            body: formData
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                carrito.ajax.reload()
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: data.type,
+                    title: data.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    }
+</script>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/templatemo.min.js"></script>

@@ -77,9 +77,18 @@
                                             value="buy"><i class="bi bi-bag-fill"></i> Realizar pedido</button>
                                     </div>
                                     <div class="col d-grid">
-                                        <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                            onclick="agregar_carrito(1)"><i class="bi bi-cart-fill"></i> Añadir al
-                                            carrito</button>
+
+                                        <% if (credentials) { %>
+                                            <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                                onclick="agregar_carrito('<%= producto.id_producto %>','<%= producto.precio %>', 1)"><i
+                                                    class="bi bi-cart-fill"></i> Añadir al
+                                                carrito</button>
+                                            <% } else { %>
+                                                <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                                    data-bs-toggle="modal" data-bs-target="#login"><i
+                                                        class="bi bi-cart-fill"></i> Añadir al
+                                                    carrito</button>
+                                                <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -120,9 +129,24 @@
                                                             <div
                                                                 class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                                                 <ul class="list-unstyled">
-                                                                    <li><a class="btn btn-success text-white mt-2"
-                                                                            href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
-                                                                                class="bi bi-eye-fill"></a></i></a></li>
+                                                                    <% if (credentials) { %>
+                                                                        <li><button
+                                                                                class="btn btn-success text-white mt-2"
+                                                                                onclick="agregar_carrito('<%= recomendados[j].id_producto %>','<%= recomendados[j].precio %>', 1)"><i
+                                                                                    class="bi bi-cart-fill"></></i></a>
+                                                                        </li>
+                                                                        <% } else { %>
+                                                                            <li><button
+                                                                                    class="btn btn-success text-white mt-2"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#login"><i
+                                                                                        class="bi bi-cart-fill"></>
+                                                                                    </i></a></li>
+                                                                            <% } %>
+                                                                                <li><a class="btn btn-success text-white mt-2"
+                                                                                        href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
+                                                                                            class="bi bi-eye-fill"></a></i></a>
+                                                                                </li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -166,35 +190,6 @@
         <%- include("partials/_fotterindex") %>
 </body>
 <script>
-    function agregar_carrito(cantidad) {
-        let formData = new FormData();
-        formData.append('producto_id', '<%= producto.id_producto %>');
-        formData.append('precio', '<%= producto.precio %>');
-        formData.append('cantidad_deseada', cantidad);
-        formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
-        fetch("/agregar_carrito", {
-            method: "POST",
-            body: formData
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                console.log(data);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: data.type,
-                    title: data.message,
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
-            })
-            .catch(function (error) {
-                console.error("Error:", error);
-            });
-    }
     function zoom(e) {
         var zoomer = e.currentTarget;
         e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
