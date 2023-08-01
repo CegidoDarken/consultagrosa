@@ -83,7 +83,9 @@
             })
             .then(function (data) {
                 obtener_cantidad_carrito();
-                carrito.ajax.reload()
+                carrito.api().ajax.reload();
+                $('#vaciar').prop('disabled', true);
+                $('#pedido').prop('disabled', true);
                 Swal.fire({
                     toast: true,
                     position: 'bottom-end',

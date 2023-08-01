@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>dashboard</title>
+</head>
+
+<body>
+  <%- include("partials/_headerpanel") %>
+    <%- include("partials/_sidebarpanel") %>
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1>Dashboard</h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Reportes</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="row">
+                <div class="col-xxl-4 col-md-6">
+                  <div class="card info-card sales-card">
+                    <div class="card-body">
+                      <h5 class="card-title">Proveedores <span></span></h5>
+                      <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <i class="bi bi-people"></i>
+                        </div>
+                        <div class="ps-3">
+                          <h6>
+                            <%= num_proveedores %>
+                          </h6>
+                          <span class="text-success small pt-1 fw-bold"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <a class="col-xxl-4 col-md-6" href="/inventario">
+                  <div class="card info-card revenue-card">
+                    <div class="card-body">
+                      <h5 class="card-title">Inventario <span></span></h5>
+                      <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <i class="bi bi-boxes"></i>
+                        </div>
+                        <div class="ps-3">
+                          <h6>
+                            <%= num_productos %>
+                          </h6>
+                          <span class="text-success small pt-1 fw-bold"></span>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+
+                <a class="col-xxl-4 col-xl-12" href="/usuarios">
+                  <div class="card info-card customers-card">
+                    <div class="card-body">
+                      <h5 class="card-title">Clientes <span></span></h5>
+                      <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <i class="bi bi-people"></i>
+                        </div>
+                        <div class="ps-3">
+                          <h6>
+                            <%= num_clientes %>
+                          </h6>
+                          <span class="text-danger small pt-1 fw-bold text-light"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="form-floating">
+                      <select class="form-select" name="" id="year">
+                      </select>
+                      <label for="floatingSelect">Año</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Registro de actividades <span>| 2023</span></h5>
+                      <div id="reportsChart"></div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Actividades pedidos <span>| 2023</span></h5>
+                      <div id="reportsChart2"></div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="card top-selling overflow-auto">
+
+                    <div class="card-body pb-0">
+                      <h5 class="card-title">Productos más pedidos <span>| 2023</span></h5>
+                      <table class="table table-borderless" id="mas_pedidos">
+                        <thead>
+                          <tr>
+                            <th scope="col">Imagen</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Vendidos</th>
+                            <th scope="col">Ganancias</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbody2">
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="col-12">
+                <div class="card recent-sales overflow-auto">
+
+                  <div class="card-body">
+                    <h5 class="card-title">Pedidos recientes <span></span></h5>
+
+                    <table class="table table-borderless datatable">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Cliente</th>
+                          <th scope="col">Producto</th>
+                          <th scope="col">Precio</th>
+                          <th scope="col">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody">
+                      </tbody>
+                    </table>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </main>
+      <%- include("partials/_fotterpanel") %>
+</body>
+<script>
+
+  function productos_count(anio) {
+    document.addEventListener("DOMContentLoaded", async () => {
+      await fetch("/obtener_productos_count", {
+        method: 'POST',
+        body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.json()).then(data => {
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const chart = new ApexCharts(document.querySelector("#reportsChart"), {
+          series: [{
+            name: 'Productos',
+            data: data.productos
+          }, {
+            name: 'Clientes',
+            data: data.usuarios
+          }],
+          chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+              show: false
+            },
+          },
+          markers: {
+            size: 4
+          },
+          colors: ['#4154f1', '#2eca6a', '#ff771d'],
+          fill: {
+            type: "gradient",
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.4,
+              stops: [0, 90, 100]
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            curve: 'smooth',
+            width: 2
+          },
+          xaxis: {
+            categories: meses,
+          },
+          tooltip: {
+            x: {
+              format: 'dd/MM/yy HH:mm'
+            },
+          }
+        });
+        chart.render();
+      });
+    }).catch(error => {
+      console.error(error);
+    });
+
+  }
+  productos_count();
+  (() => {
+    let year_satart = 2017;
+    let year_end = (new Date).getFullYear(); // current year
+    let year_selected = (new Date).getFullYear();
+    let option;
+    for (let i = year_satart; i <= year_end; i++) {
+      let selected = (i === year_selected ? ' selected' : '');
+      option += '<option value="' + i + '"' + selected + '>' + i + '</option>';
+    }
+    document.getElementById("year").innerHTML = option;
+  })();
+  var carrito = $('#mas_pedidos').DataTable({
+    ajax: {
+      url: "/obtener_mas_pedidos",
+      type: "POST",
+      data: {
+        anio: 2023,
+      }
+    },
+    searching: false,
+    bLengthChange: false,
+    info: false,
+    paging: false,
+    columns: [
+      { data: "img" },
+      { data: "nombre", defaultContent: "-" },
+      { data: "precio", defaultContent: "-" },
+      { data: "cantidad", defaultContent: "-" },
+      { data: "total", defaultContent: "-" },
+    ],
+    columnDefs: [
+      {
+        targets: "_all",
+        className: "text-center",
+      },
+      {
+        targets: 0,
+        visible: false,
+      },
+      {
+        targets: 1,
+        visible: false,
+      },
+      {
+        targets: 2,
+        render: function (data, type, row, meta) {
+          var data = carrito.row(meta.row).data();
+          return `<img src="${data.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+        }
+      },
+      {
+        targets: 4,
+        render: function (data, type, row, meta) {
+          var data = carrito.row(meta.row).data();
+          return `$${data.precio}`;
+        }
+      },
+      {
+        targets: 5,
+        render: function (data, type, row, meta) {
+          return `
+          <div class="quantity-control input-group" >
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
+            <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
+          </div>
+        `;
+        }
+      },
+      {
+        targets: 6,
+        render: function (data, type, row, meta) {
+          var data = carrito.row(meta.row).data();
+          total += row.total;
+          return `$${data.total}`;
+        }
+      },
+      {
+        targets: 7,
+        render: function (data, type, row, meta) {
+          var data = carrito.row(meta.row).data();
+          return `<button type="button" class="btn btn-sm btn-primary me-1"  onclick="location.href='/detalleproducto?producto=${data.id_producto}';"><i class="bi bi-eye-fill"></i></button><button class="btn btn-sm btn-danger" onclick="eliminar_carrito(${data.id_carrito})"><i class="bi bi-trash-fill"></i></button>`;
+        }
+      }
+    ],
+    "language": {
+      "sEmptyTable": "No hay datos disponibles en la tabla",
+      "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+      "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+      "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+      "sInfoPostFix": "",
+      "sInfoThousands": ",",
+      "sLengthMenu": "Mostrar _MENU_ entradas",
+      "sLoadingRecords": "Cargando...",
+      "sProcessing": "Procesando...",
+      "sSearch": "Buscar:",
+      "sZeroRecords": "No se encontraron resultados",
+      "oPaginate": {
+        "sFirst": "Primero",
+        "sLast": "Último",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
+      },
+      "oAria": {
+        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+      },
+      "buttons": {
+        "copy": "Copiar",
+        "colvis": "Visibilidad"
+      }
+    }
+  });
+  function obtener_mas_pedidos(anio) {
+
+  }
+  obtener_mas_pedidos();
+  document.addEventListener('DOMContentLoaded', function () {
+    var yearSelect = document.getElementById('year');
+    yearSelect.addEventListener('change', function () {
+      alert(yearSelect.value);
+      var anio = yearSelect.value;
+      obtener_mas_pedidos(anio);
+    });
+  });
+</script>
+
+</html>

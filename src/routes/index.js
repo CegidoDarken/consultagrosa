@@ -35,15 +35,10 @@ router.get("/admin", async (req, res) => {
     };
   }
   if (req.session.credentials.administrador) {
-    res.redirect("/panel");
+    res.redirect("/dashboard");
   } else {
     res.render("admin");
   }
-});
-
-router.get("/pedidos", async (req, res) => {
-  credentials = req.session.credentials.administrador;
-  res.render("pedidos", { credentials });
 });
 
 router.get("/validar", async (req, res) => {
@@ -225,9 +220,9 @@ router.get("/escanear", async (req, res) => {
   });
 });
 
-router.post("/obtener_historial", async (req, res) => {
+router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario`;";
+  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -240,10 +235,65 @@ router.post("/obtener_historial", async (req, res) => {
     }
   });
 });
+router.post("/realizar_pedidos", async (req, res) => {
+  const { id_usuario, total, pedidos } = req.body;
+  const fechaActual = new Date().toISOString();
+  const dateObject = new Date(fechaActual);
+  const year = dateObject.getFullYear();
+  const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObject.getDate()).padStart(2, '0');
+  const formattedDate = `${year}/${month}/${day}`;
+
+  try {
+    const insertPedidoQuery = `
+      INSERT INTO railway.pedidos
+      (usuario_id, fecha, total)
+      VALUES (?, ?, ?)
+    `;
+
+    const insertDetallePedidoQuery = `
+      INSERT INTO railway.detallepedidos
+      (pedido_id, producto_id, precio, cantidad, total, estado)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    const pedidoResult = await new Promise((resolve, reject) => {
+      connection.query(insertPedidoQuery, [id_usuario, formattedDate, total], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+
+    const pedidoId = pedidoResult.insertId;
+
+    for (const pedido of pedidos) {
+      const { id_producto, precio, cantidad } = pedido;
+      await new Promise((resolve, reject) => {
+        connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], (error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
+    }
+
+    res.status(200).json({ message: 'Pedidos creados exitosamente.' });
+  } catch (error) {
+    console.error('Error creating orders:', error);
+    res.status(500).json({ error: 'Error al crear los pedidos.' });
+  }
+});
+
+
 router.post("/obtener_cantidad_carrito", async (req, res) => {
   const id_usuario = req.body.id_usuario;
   const sql = "SELECT COUNT(*) as cantidad FROM carritos WHERE usuario_id = ?;";
-  connection.query(sql,[id_usuario], (error, results) => {
+  connection.query(sql, [id_usuario], (error, results) => {
     if (error) {
       res.send({ message: error });
     } else {
@@ -255,19 +305,19 @@ router.post("/obtener_cantidad_carrito", async (req, res) => {
     }
   });
 });
-router.get("/historial", async (req, res) => {
+router.get("/pedidos", async (req, res) => {
   credentials = req.session.credentials.administrador;
-  res.render("historial", { credentials });
+  res.render("pedidos", { credentials });
 });
-router.get("/panel", async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   credentials = req.session.credentials.administrador;
   num_productos = await obtener_num_productos();
   num_clientes = await obtener_num_clientes();
   num_proveedores = await obtener_num_proveedores();
-  res.render("panel", { credentials, num_productos, num_clientes, num_proveedores });
+  res.render("dashboard", { credentials, num_productos, num_clientes, num_proveedores });
 });
 
-router.get("/panel", async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   const sql = "SELECT count(id_producto) AS num_productos FROM productos;";
   connection.query(sql, (error, productos) => {
     if (error) {
@@ -282,9 +332,10 @@ router.get("/panel", async (req, res) => {
   });
 });
 router.post("/obtener_productos_count", async (req, res) => {
-  res.json({ productos: await obtener_productos_count(), usuarios: await obtener_usuarios_count(), proveedores: await obtener_proveedores_count() });
+  let anio = req.body.anio;
+  res.json({ productos: await obtener_productos_count(anio), usuarios: null, proveedores: await obtener_proveedores_count() });
 });
-async function obtener_productos_count() {
+async function obtener_productos_count(anio) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT 2023 AS `year`, 1 AS `month` UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
     connection.query(sql, (error, result) => {
@@ -373,10 +424,10 @@ router.post("/obtener_mas_pedidos", async (req, res) => {
   res.json({ productos: await obtener_mas_pedidos(anio) });
 });
 async function obtener_mas_pedidos(anio) {
-  
+
   return new Promise((resolve, reject) => {
     const sql = "SELECT p.img, p.nombre, p.precio, SUM(d.cantidad) AS vendidos, SUM(d.cantidad * p.precio) AS ganancias FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id WHERE YEAR(p.fecha) = ? GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 6;";
-    connection.query(sql,[anio], (error, result) => {
+    connection.query(sql, [anio], (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -435,17 +486,17 @@ async function obtener_num_proveedores() {
     });
   });
 }
-router.get("/inventario", async (req, res) => {
+router.get("/productos", async (req, res) => {
   credentials = req.session.credentials.administrador;
   const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
   connection.query(sql, (error, categorias) => {
     if (error) {
-      res.render("inventario", { credentials, categorias: error.message });
+      res.render("productos", { credentials, categorias: error.message });
     } else {
       if (categorias.length > 0) {
-        res.render("inventario", { credentials, categorias });
+        res.render("productos", { credentials, categorias });
       } else {
-        res.render("inventario", { credentials, categorias: null });
+        res.render("productos", { credentials, categorias: null });
       }
     }
   });
@@ -1015,24 +1066,6 @@ async function obtener_producto_id(id_producto) {
     });
   });
 }
-async function obtener_productos_count() {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT 2023 AS `year`, 1 AS `month` UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
-    connection.query(sql, (error, productos) => {
-      if (error) {
-        reject(error);
-      } else {
-        if (productos.length > 0) {
-          const productCounts = productos.map(item => item.product_count);
-          resolve(productCounts);
-        } else {
-          resolve(null);
-        }
-      }
-    });
-  });
-}
-
 
 router.get("/logoutcliente", async (req, res) => {
   delete req.session.credentials.cliente;

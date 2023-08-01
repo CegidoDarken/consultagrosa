@@ -114,7 +114,7 @@
       }).then(res => res.json())
         .then(element => {
           if (element.message) {
-            location.replace('/panel');
+            location.replace('/dashboard');
           } else {
             Swal.fire({
               toast: true,

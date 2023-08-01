@@ -30,20 +30,23 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card">
-                                <div class="card-header row">
-                                    <div class="col-md-4 mb-4">
-                                        <select class="js-example-basic-single form-select" id="productos">
-                                            <% if (productos) { %>
-                                                <% productos.forEach(row=> { %><option value="<%= row.id_producto %>" }>
-                                                        Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %>
-                                                    </option>
-                                                    <% }); %>
-                                                        <% } %>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="input-group mb-3">
-                                            <input type="date" class="form-control" id="date" value="">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <select class="js-example-basic-single form-select" id="productos">
+                                                <% if (productos) { %>
+                                                    <% productos.forEach(row=> { %><option
+                                                            value="<%= row.id_producto %>" }>
+                                                            Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %>
+                                                        </option>
+                                                        <% }); %>
+                                                            <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="input-group">
+                                                <input type="date" class="form-control" id="date" value="">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -57,6 +60,7 @@
                                             <table
                                                 class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
                                                 id="datatable">
+                                                <caption>Kardex PEPS</caption>
                                                 <thead>
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th colspan="2"></th>
@@ -151,15 +155,23 @@
                             }
                         };
                         var y = 20;
+                        var date = new Date().toJSON().slice(0, 10).split('-').reverse().join('/')
                         doc.setLineWidth(2);
-                        var text = "Kardex PEPS";
-                        var textWidth = doc.getTextWidth(text);
-                        var x = (doc.internal.pageSize.getWidth() - textWidth) / 2;
-                        doc.text(x, y = y + 30, text);
+                        var text = "Consultagro  S.A \nDirección: Avenida Juan X Marcos & Olmedo, Babahoyo \nTeléfono: 05-2570884 \nCorreo: consultagro.cia@gmail.com";
+                        var x = doc.internal.pageSize.getWidth() / 2;
+                        doc.setFontSize(9);
+                        doc.text(50, 20, text);
+                        doc.setFontSize(16);
+                        doc.text(x, 65, "Kardex PEPS");
+                        doc.setFontSize(9);
+                        doc.text(50, (doc.internal.pageSize.height - 25), ("Autor: <%= credentials.nombre %>" + " \nFecha: " + date));
+                        var img = new Image()
+                        img.src = 'img/logo.png'
+                        doc.addImage(img, 'png', (doc.internal.pageSize.getWidth() - 100), 0, 60, 60);
                         doc.autoTable({
                             html: '#datatable',
                             theme: 'grid',
-                            startY: y + 20,
+                            startY: y + 70,
                         })
                         doc.save(('Kardex' + Date.now() + "." + 'pdf'));
                     }

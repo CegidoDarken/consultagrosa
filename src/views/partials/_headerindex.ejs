@@ -275,7 +275,7 @@
 </div>
 
 <div class="modal fade" id="carrito-modal" tabindex="-1" aria-labelledby="carrito-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
+    <div class="modal-dialog modal-xl modal-fullscreen-sm-down modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="carrito-modal-label">Carrito</h5>
@@ -292,9 +292,9 @@
                                 <th class="text-center" style="width: 120px !important;">Imagen</th>
                                 <th class="text-center" style="width: 120px !important;">Nombre</th>
                                 <th class="text-center" style="width: 120px !important;">Precio</th>
-                                <th class="text-center" style="max-width: 11px !important;">Cantidad</th>
+                                <th class="text-center" style="max-width: 60px !important;">Cantidad</th>
                                 <th class="text-center" style="width: 120px !important;">Total</th>
-                                <th class="text-center" style="width: 120px !important;"></th>
+                                <th class="text-center" style="width: 20px !important;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -303,30 +303,81 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="container-fluid align-self-end text-end pe-5">
+                <div class="container-fluid text-start ps-5">
                     <h5>Subtotal: <span id="subtotal">$0</span></h5>
                     <h5>IVA: <span id="iva">$0</span></h5>
                     <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
+                    <div class="d-flex justify-content-start">
+                        <button type="button" class="btn btn-danger me-2" onclick="vaciar_carrito()" id="vaciar"
+                            disabled>
+                            <i class="bi bi-trash-fill"></i>
+                            Vaciar carrito
+                        </button>
+                        <button type="button" class="btn btn-primary" id="pedido" onclick="realizar_pedidos()" disabled>
+                            <i class="bi bi-bag-fill"></i>
+                            Realizar pedidos
+                        </button>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-danger" onclick="vaciar_carrito()" id="vaciar" disabled><i
-                        class="bi bi-trash-fill"></i>
-                    Vaciar carrito</button>
-                <button type="button" class="btn btn-primary" id="pedido" disabled><i class="bi bi-bag-fill"></i>
-                    Realizar pedidos</button>
+
             </div>
+
         </div>
     </div>
 </div>
 <br><br>
 <script>
-    let total = 0;
-    var carrito = $('#carrito-table').DataTable({
+    async function obtener_cantidad_carrito() {
+        fetch("/obtener_cantidad_carrito", {
+            method: "POST",
+            body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>" }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                if (data.data !== null) {
+                    if (data.data[0].cantidad != 0) {
+                        $("#cantidad-carrito").text(data.data[0].cantidad);
+                    }
+                }
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    }
+    var totalConIva = 0;
+    var pedidos = [];
+
+    const carrito = $('#carrito-table').dataTable({
         ajax: {
             url: "/obtener_carrito",
             type: "POST",
             data: {
                 id_usuario: "<%= (credentials)?credentials.id_usuario:null %>",
             }
+        },
+        drawCallback: async function (settings, json) {
+            $('#vaciar').prop('disabled', true);
+            $('#pedido').prop('disabled', true);
+            var iva = 0.12;
+            var api = this.api();
+            var totalGeneral = await api.column(6).data().reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            var montoIva = totalGeneral * iva;
+            totalConIva = totalGeneral + montoIva;
+            $("#subtotal").text("$" + totalGeneral.toFixed(2));
+            $("#iva").text("$" + montoIva.toFixed(2));
+            $("#total").text("$" + totalConIva.toFixed(2));
+            if (totalConIva != 0) {
+                $('#vaciar').prop('disabled', false);
+                $('#pedido').prop('disabled', false);
+            }
+
         },
         searching: false,
         bLengthChange: false,
@@ -357,20 +408,25 @@
             {
                 targets: 2,
                 render: function (data, type, row, meta) {
-                    var data = carrito.row(meta.row).data();
-                    return `<img src="${data.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                }
+            },
+            {
+                targets: 3,
+                render: function (data, type, row, meta) {
+                    return `<a href="/detalleproducto?producto=${row.id_producto}">${row.nombre}</a>`;
                 }
             },
             {
                 targets: 4,
                 render: function (data, type, row, meta) {
-                    var data = carrito.row(meta.row).data();
-                    return `$${data.precio}`;
+                    return `$${row.precio}`;
                 }
             },
             {
                 targets: 5,
                 render: function (data, type, row, meta) {
+                    pedidos = row;
                     return `
           <div class="quantity-control input-group" >
             <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
@@ -383,16 +439,14 @@
             {
                 targets: 6,
                 render: function (data, type, row, meta) {
-                    var data = carrito.row(meta.row).data();
                     total += row.total;
-                    return `$${data.total}`;
+                    return `$${row.total}`;
                 }
             },
             {
                 targets: 7,
                 render: function (data, type, row, meta) {
-                    var data = carrito.row(meta.row).data();
-                    return `<button type="button" class="btn btn-sm btn-primary me-1"  onclick="location.href='/detalleproducto?producto=${data.id_producto}';"><i class="bi bi-eye-fill"></i></button><button class="btn btn-sm btn-danger" onclick="eliminar_carrito(${data.id_carrito})"><i class="bi bi-trash-fill"></i></button>`;
+                    return `<button class="btn btn-sm btn-danger" onclick="eliminar_carrito(${row.id_carrito})"><i class="bi bi-trash-fill"></i></button>`;
                 }
             }
         ],
@@ -422,28 +476,9 @@
                 "copy": "Copiar",
                 "colvis": "Visibilidad"
             }
-        },
-        drawCallback: function (settings) {
-            var iva = 0.12;
-            $('#vaciar').prop('disabled', false);
-            $('#pedido').prop('disabled', false);
-            var api = this.api();
-            var totalGeneral = api.column(6).data().reduce(function (a, b) {
-                return a + b;
-            }, 0);
-            var montoIva = totalGeneral * iva;
-            var totalConIva = totalGeneral + montoIva;
-            $("#subtotal").text("$" + totalGeneral.toFixed(2)); // Mostrar el subtotal sin IVA
-            $("#iva").text("$" + montoIva.toFixed(2)); // Mostrar el monto del IVA
-            $("#total").text("$" + totalConIva.toFixed(2)); // Mostrar el total con IVA
         }
     });
-    $(document).ready(function () {
-        $('#carrito-modal').on('shown.bs.modal', function () {
-            console.log('Modal shown!');
-            carrito.ajax.reload()
-        });
-    });
+
     $(document).on('click', '.btn-minus', function () {
         var row = $(this).data('row');
         var inputElement = $(`.input[data-row="${row}"]`);
@@ -468,9 +503,10 @@
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(response => response.json()).then(data => {
-            console.log(data);
-
+        }).then(response => response.json()).then(async data => {
+            await obtener_cantidad_carrito();
+            $('#vaciar').prop('disabled', true);
+            $('#pedido').prop('disabled', true);
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
@@ -480,11 +516,12 @@
                 timerProgressBar: true,
                 timer: 3000
             });
-            carrito.ajax.reload();
+            carrito.api().ajax.reload();
         }).catch(error => {
             console.error(error);
         });
     }
+
     function vaciar_carrito() {
         fetch("vaciar_carrito", {
             method: 'POST',
@@ -492,9 +529,30 @@
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(response => response.json()).then(data => {
-            console.log(data);
+        }).then(response => response.json()).then(async data => {
+            $("#cantidad-carrito").text("");
+            $('#vaciar').prop('disabled', true);
+            $('#pedido').prop('disabled', true);
+            carrito.api().ajax.reload();
+        }).catch(error => {
+            console.error(error);
+        });
+    }
+    function realizar_pedidos() {
+        const rawData = carrito.api().rows().data().toArray();
+        const filteredData = rawData.map((item) => {
+            const newItem = { ...item };
+            delete newItem.img;
+            return newItem;
+        });
 
+        fetch("realizar_pedidos", {
+            method: 'POST',
+            body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>", total: totalConIva, pedidos: filteredData }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json()).then(async data => {
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
@@ -504,7 +562,7 @@
                 timerProgressBar: true,
                 timer: 3000
             });
-            carrito.ajax.reload();
+            await vaciar_carrito();
         }).catch(error => {
             console.error(error);
         });
@@ -519,29 +577,8 @@
         }
     }
     var provinciasSelect = document.getElementById("provincias");
-    function obtener_cantidad_carrito(params) {
-        fetch("/obtener_cantidad_carrito", {
-            method: "POST",
-            body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>" }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                if (data.data !== null) {
-                    if (data.data[0].cantidad != 0) {
-                        $("#cantidad-carrito").text(data.data[0].cantidad);
-                    }
-                }
-            })
-            .catch(function (error) {
-                console.error("Error:", error);
-            });
-    }
-    obtener_cantidad_carrito();
+
+
     fetch("/obtener_provincias", {
         method: "POST"
     })
@@ -689,22 +726,6 @@
                 }
             })
     });
-    let cantidadActual = 1; // Variable global para el seguimiento de la cantidad actual
 
-    function aumentarCantidad() {
-        cantidadActual++;
-        actualizarCantidad();
-    }
-
-    function disminuirCantidad() {
-        if (cantidadActual > 1) {
-            cantidadActual--;
-            actualizarCantidad();
-        }
-    }
-    function actualizarCantidad() {
-        document.getElementById('var-value2').innerText = cantidadActual;
-        document.getElementById('product-quanity2').value = cantidadActual;
-    }
-
+    obtener_cantidad_carrito();
 </script>

@@ -1,67 +1,81 @@
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span><i
+            <a class="nav-link collapsed" data-bs-target="#reportes" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-file-earmark-text"></i></i><span>Reportes</span><i
                     class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <ul id="reportes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="/kardex">
-                        <span>Kardex</span>
+                        <span><i class="bi bi-file-ruled fs-6"></i>Kardex</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/panel">
-                        <span>Panel</span>
+                    <a href="/dashboard">
+                        <span><i class="bi bi-clipboard-data fs-6"></i>Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/historial">
-                        <span>Historial de pedidos</span>
+                    <a href="/pedidos">
+                        <span><i class="bi bi-clock-history fs-6"></i>Pedidos</span>
                     </a>
                 </li>
             </ul>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-boxes"></i><span>Productos</span><i class="bi bi-chevron-down ms-auto"></i>
+            <a class="nav-link collapsed" data-bs-target="#inventario" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-clipboard2"></i><span>Inventario</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="/inventario">
+            <ul id="inventario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li class="nav-item">
+                    <a class="nav-link " href="/productos">
                         <i class="bi bi-boxes fs-6"></i>
-                        <span>Inventario</span>
+                        <span>Productos</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/inventario">
+                    <a href="#">
+                        <i class="bi bi-back fs-6"></i>
+                        <span>Devoluciones</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#administrar" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-person-gear" style="font-size: 20px;"></i><span>Administrar</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="administrar" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/usuarios">
+                        <i class="bi bi-people fs-6"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="bi bi-people fs-6"></i>
+                        <span>Bodega</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
                         <i class="bi bi-people fs-6"></i>
                         <span>Proveedores</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/escanear">
-                        <i class="bi bi-upc-scan fs-6"></i>
-                        <span>Escanear</span>
-                    </a>
-                </li>
             </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="/escanear">
+                <i class="bi bi-upc-scan fs-6"></i>
+                <span>Escaner RFID</span>
+            </a>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#seguridad" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-shield-lock"></i><span>Seguridad</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="seguridad" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="/usuarios">
-                        <i class="bi bi-people fs-6"></i>
-                        <span>Gestionar usuarios</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
     </ul>
 </aside>
