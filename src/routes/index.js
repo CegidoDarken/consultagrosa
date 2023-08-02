@@ -149,7 +149,7 @@ router.post('/agregar_carrito', async (req, res) => {
           const cantidad_disponible = productResults[0].cantidad;
 
           if (nueva_cantidad > cantidad_disponible) {
-            return res.status(400).json({ type: "error", message: 'La cantidad deseada supera la cantidad disponible', data: null });
+            return res.status(400).json({ type: "error", message: 'Cantidad disponible', data: null });
           }
           if (nueva_cantidad < 1) {
             return res.status(400)
@@ -163,14 +163,13 @@ router.post('/agregar_carrito', async (req, res) => {
                   console.error('Error al insertar el producto en el carrito: ', err);
                   return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
                 }
-                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
+                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito', data: null });
               }
             );
           } else {
             const { cantidad, total } = cartResults[0];
             const newCantidad = parseInt(cantidad) + parseInt(cantidad_deseada);
             const newTotal = parseInt(total) + parseInt(cantidad_deseada) * parseInt(precio);
-
             connection.query(
               'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
               [newCantidad, newTotal, producto_id, usuario_id],
@@ -178,7 +177,6 @@ router.post('/agregar_carrito', async (req, res) => {
                 if (err) {
                   return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
                 }
-                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito exitosamente', data: null });
               }
             );
           }

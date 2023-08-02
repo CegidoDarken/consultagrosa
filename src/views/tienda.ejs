@@ -23,7 +23,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="col-md-6 pb-4">
+                        <div class="col-md-6">
                             <div class="input-group mb-3">
                                 <input type="search" class="form-control" placeholder="Buscar" id="search">
                                 <span class="input-group-text" id="inputGroup-sizing-default">
@@ -60,7 +60,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="row content-elements" style="overflow-y: scroll;height: 800px;">
+                    <div class="row content-elements vh-100" style="overflow-y: scroll;height: 800px;">
                         <% if (productos) { %>
                             <% productos.forEach(value=> { %>
                                 <% const medidaRegex=/(\d+)/; %>
