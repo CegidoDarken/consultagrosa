@@ -328,7 +328,7 @@
 <br><br>
 <script>
     async function obtener_cantidad_carrito() {
-        fetch("/obtener_cantidad_carrito", {
+        await fetch("/obtener_cantidad_carrito", {
             method: "POST",
             body: JSON.stringify({ id_usuario: "<%= (credentials)?credentials.id_usuario:null %>" }),
             headers: {
@@ -342,6 +342,8 @@
                 if (data.data !== null) {
                     if (data.data[0].cantidad != 0) {
                         $("#cantidad-carrito").text(data.data[0].cantidad);
+                    }else{
+                        $("#cantidad-carrito").text("");
                     }
                 }
             })
@@ -377,7 +379,6 @@
                 $('#vaciar').prop('disabled', false);
                 $('#pedido').prop('disabled', false);
             }
-
         },
         searching: false,
         bLengthChange: false,
@@ -504,7 +505,6 @@
                 'Content-Type': 'application/json'
             }
         }).then(response => response.json()).then(async data => {
-            await obtener_cantidad_carrito();
             $('#vaciar').prop('disabled', true);
             $('#pedido').prop('disabled', true);
             Swal.fire({
@@ -516,6 +516,7 @@
                 timerProgressBar: true,
                 timer: 3000
             });
+            await obtener_cantidad_carrito();
             carrito.api().ajax.reload();
         }).catch(error => {
             console.error(error);
