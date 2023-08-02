@@ -472,7 +472,7 @@
                         const file = fileInput.files[0];
                         const formData = new FormData(event.target);
                         if (file) {
-                            var maxSizeInBytes = 1024 * 1024; // 1 MB
+                            var maxSizeInBytes = 124 * 1024;
                             var allowedType = 'image/png';
                             if (file.type !== allowedType) {
                                 Swal.fire({
@@ -491,7 +491,7 @@
                                     toast: true,
                                     position: 'bottom-end',
                                     icon: 'error',
-                                    title: "El tamaño del archivo debe ser menor o igual a 1 MB.",
+                                    title: "El tamaño del archivo debe ser menor o igual a 124 KB.",
                                     showConfirmButton: false,
                                     timerProgressBar: true,
                                     timer: 3000
