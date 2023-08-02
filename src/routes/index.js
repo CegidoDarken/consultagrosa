@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const { connection } = require('../database');
+const util = require('util');
 require('datatables.net-bs5');
 let io;
 function configureSocket(server) {
@@ -24,8 +25,16 @@ const transporter = nodemailer.createTransport({
 
 //TODO: Rutas
 router.get("/tienda", async (req, res) => {
-  res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente :null, productos: await obtener_productos() });
+  try {
+    const credentials = req.session.credentials ? req.session.credentials.cliente : null;
+    const productos = await obtener_productos();
+    res.render("tienda", { credentials, productos });
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ type: "error", message: "Error al obtener productos", data: null });
+  }
 });
+
 
 router.get("/admin", async (req, res) => {
   if (req.session.credentials.administrador) {
@@ -1029,20 +1038,14 @@ router.post("/productos", async (req, res) => {
 });
 //TODO: Funciones
 async function obtener_productos() {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria";
-    connection.query(sql, (error, result) => {
-      if (error) {
-        reject(error);
-      } else {
-        if (result.length > 0) {
-          resolve(result);
-        } else {
-          resolve(null);
-        }
-      }
-    });
-  });
+  const query = "SELECT *FROM productos JOIN categorias ON productos.categoria_id = categorias.id_categoria";
+  const queryAsync = util.promisify(connection.query).bind(connection);
+  try {
+    const result = await queryAsync(query);
+    return result.length > 0 ? result : null;
+  } catch (error) {
+    throw error;
+  }
 }
 async function obtener_producto_id(id_producto) {
   return new Promise((resolve, reject) => {
