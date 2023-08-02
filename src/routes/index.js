@@ -53,19 +53,19 @@ router.get("/validar", async (req, res) => {
 });
 
 router.get("/perfiladministrador", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("perfiladministrador", { credentials });
 });
 router.get("/usuarios", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("usuarios", { credentials });
 });
 router.get("/contactanos", async (req, res) => {
-  credentials = req.session.credentials.cliente;
+  credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("contactanos", { credentials });
 });
 router.get("/detalleproducto", async (req, res) => {
-  credentials = req.session.credentials.cliente;
+  credentials = req.session.credentials ? req.session.credentials.cliente : null;
   const { producto } = req.query;
   let productos_recomendado = [];
   let array = await aprioris(producto);
@@ -194,18 +194,18 @@ router.post('/agregar_carrito', async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  credentials = req.session.credentials.cliente;
+  credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("index", { credentials });
 });
 router.get("/test", async (req, res) => {
   res.render("test");
 });
 router.get("/analisis", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("analisis", { credentials });
 });
 router.get("/escanear", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
   connection.query(sql, (error, productos) => {
     if (error) {
@@ -221,7 +221,7 @@ router.get("/escanear", async (req, res) => {
 });
 
 router.post("/obtener_pedidos", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
   connection.query(sql, (error, results) => {
     if (error) {
@@ -306,11 +306,11 @@ router.post("/obtener_cantidad_carrito", async (req, res) => {
   });
 });
 router.get("/pedidos", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("pedidos", { credentials });
 });
 router.get("/dashboard", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   num_productos = await obtener_num_productos();
   num_clientes = await obtener_num_clientes();
   num_proveedores = await obtener_num_proveedores();
@@ -487,7 +487,7 @@ async function obtener_num_proveedores() {
   });
 }
 router.get("/productos", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
   connection.query(sql, (error, categorias) => {
     if (error) {
@@ -502,7 +502,7 @@ router.get("/productos", async (req, res) => {
   });
 });
 router.get("/kardex", async (req, res) => {
-  credentials = req.session.credentials.administrador;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sql = "SELECT * FROM productos ORDER BY nombre ASC";
   connection.query(sql, (error, productos) => {
     if (error) {
@@ -1108,7 +1108,7 @@ router.post("/validar_cliente", async (req, res) => {
           }
           req.session.credentials = {
             cliente: usuario,
-            administrador: req.session.credentials.administrador
+            administrador: req.session.credentials ? req.session.credentials.administrador : null
           };
           return res.status(200).json({ type: "success", message: "Bienvenido " + usuario.nombre, data: null });
         } else {
@@ -1142,7 +1142,7 @@ router.post("/validar_administrador", async (req, res) => {
         }
         if (match) {
           req.session.credentials = {
-            cliente: req.session.credentials.cliente,
+            cliente: req.session.credentials ? req.session.credentials.cliente : null,
             administrador: usuario
           };
           console.log("Correct user".green);
