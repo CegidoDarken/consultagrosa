@@ -37,16 +37,19 @@ router.get("/admin", async (req, res) => {
 });
 
 router.get("/validar", async (req, res) => {
-  const { correo } = req.query;
-  const updateQuery = `UPDATE usuarios SET estado = 1 WHERE correo = ?`;
-  connection.query(updateQuery, [correo], (error, result) => {
+  const { usuario } = req.query;
+  const updateQuery = `UPDATE usuarios SET estado = 1 WHERE id_usuario = ?`;
+  connection.query(updateQuery, [usuario], (error, result) => {
     if (error) {
       return res.render("validar", { type: "error", message: "Error al actualizar el estado del usuario: " + error, data: null });
     }
     return res.render("validar", { type: "success", message: "Cuenta validada exitosamente", data: null });
   });
 });
-
+router.get("/recuperar", async (req, res) => {
+  const { usuario } = req.query;
+  return res.render("recuperar", usuario);
+});
 router.get("/perfiladministrador", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("perfiladministrador", { credentials });
@@ -71,12 +74,42 @@ router.get("/detalleproducto", async (req, res) => {
   res.render("detalleproducto", { credentials, producto: await obtener_producto_id(producto), recomendados: productos_recomendado });
 });
 
+router.post('/recuperar', async (req, res) => {
+  const { correo } = req.body;
+  const sql = 'SELECT * FROM usuarios WHERE correo = ?';
+  connection.query(sql, [correo], (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ type: 'error', message: 'Error en la base de datos', data: null });
+    } else {
+      if (results.length === 0) {
+        res.status(404).json({ type: 'error', message: 'Usuario no valido', data: null });
+      } else {
+        const enlace = `https://consultagrosa-production.up.railway.app/recuperar?usuario=${encodeURIComponent(results[0].id_usuario)}`;
+        var mailOptions = {
+          form: 'consultagrosaprueba@gmail.com',
+          to: correo,
+          subject: 'Recuperacion de contraseña',
+          text: `Para crear una nueva contraseña, haz clic en el siguiente enlace: ${enlace}`,
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            res.status(500).json({ type: 'error', message: 'Error al enviar el correo', data: null });
+          } else {
+            res.status(200).json({ type: 'success', message: 'Correo enviado correctamente', data: null });
+          }
+        });
+      }
+    }
+  });
+});
+
 async function aprioris(producto) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT GROUP_CONCAT(`detallepedidos`.`producto_id` SEPARATOR ',') AS `productos` FROM `pedidos` INNER JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` WHERE `pedidos`.`id_pedido` IN (SELECT DISTINCT `detallepedidos`.`pedido_id` FROM `detallepedidos` WHERE `detallepedidos`.`producto_id` = ?) GROUP BY `pedidos`.`id_pedido`, `pedidos`.`usuario_id`, `pedidos`.`fecha`, `pedidos`.`total`;";
     connection.query(sql, [producto], (error, results) => {
       if (error) {
-        res.send({ message: error });
+        res.json({ message: error });
       } else {
         if (results) {
           let productos = [];
@@ -594,12 +627,12 @@ router.post('/registrar_cliente', (req, res) => {
           }
         } else {
           if (results) {
-            const enlaceValidacion = `https://consultagrosa-production.up.railway.app/validar?correo=${encodeURIComponent(correo)}`;
+            const enlace = `https://consultagrosa-production.up.railway.app/validar?usuario=${encodeURIComponent(results.insertId)}`;
             var mailOptions = {
               form: 'consultagrosaprueba@gmail.com',
               to: correo,
               subject: 'Confirma tu cuenta',
-              text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlaceValidacion}`,
+              text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlace}`,
             };
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
@@ -629,7 +662,7 @@ router.post('/reenviar_correo', (req, res) => {
     if (error) {
       return res.status(500).json({ type: "error", message: error.message, data: null });
     } else {
-      return res.status(200).json({ type: "success", message: "Se ha enviado un correo de verificacion a " + correo, data: null });
+      return res.status(200).json({ type: "success", message: "Correo enviado correctamente", data: null });
     }
   });
 });

@@ -28,14 +28,12 @@
         background: #336840;
     }
 
-    /* Chrome, Safari, Edge, Opera */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
 
-    /* Firefox */
     input[type=number] {
         -moz-appearance: textfield;
     }
@@ -52,7 +50,7 @@
     <script src="/js/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-1.13.5/datatables.min.js"></script>
 </head>
-<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light shadow">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light-subtle shadow">
     <div class="container-fluid d-flex justify-content-between align-items-center">
 
         <a class="navbar-brand text-success logo align-self-start text-uppercase" href="">
@@ -172,13 +170,17 @@
                                         <label style="color: #59ab6e;" for="password"><i class="bi bi-key"></i>
                                             Contraseña</label>
                                     </div>
+
                                     <div class="form-check form-switch mb-3 ms-2">
                                         <input class="form-check-input" type="checkbox" role="switch"
                                             id="flexSwitchCheckChecked" onchange="showpasswordLogin()">
                                         <label class="form-check-label" for="flexSwitchCheckChecked">Mostrar
                                             contraseña</label>
                                     </div>
-                                    <div class="d-grid mx-auto"><button class="btn btn-primary" type="submit">Iniciar
+                                    <a href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop">¿Olvidaste tu
+                                        contrasesa?</a>
+                                    <div class="d-grid mx-auto mt-2"><button class="btn btn-primary"
+                                            type="submit">Iniciar
                                             Sesión</button>
                                     </div>
                                 </form>
@@ -187,64 +189,78 @@
                     </div>
                     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
                         tabindex="0">
-                        <form id="registrarForm">
+                        <form id="registrarForm" class="needs-validation" novalidate>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder=" "
                                     required>
-                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre</label>
+                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre <font
+                                        class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="usuario-nuevo" placeholder=" "
                                     name="usuario" required>
                                 <label style="color: #59ab6e;" for="usuario-nuevo"><i class="bi bi-person"></i>
-                                    Usuario</label>
+                                    Usuario <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="number" class="form-control" id="identificacion" placeholder=" "
                                     name="identificacion" required>
                                 <label style="color: #59ab6e;" for="identificacion"><i class="bi bi-person-vcard"></i>
-                                    Cédula/RUC</label>
+                                    Cédula/RUC <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="number" class="form-control" id="telefono" placeholder=" " name="telefono"
                                     required>
                                 <label style="color: #59ab6e;" for="telefono"><i class="bi bi-telephone"></i>
-                                    Teléfono</label>
+                                    Teléfono <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="email" class="form-control" id="correo" name="correo" placeholder=" "
                                     required>
-                                <label style="color: #59ab6e;" for="correo"><i class="bi bi-envelope"></i> Email</label>
+                                <label style="color: #59ab6e;" for="correo"><i class="bi bi-envelope"></i> Correo <font
+                                        class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <select class="form-select" id="provincias" required>
                                     <option value="" selected disabled>Selecciona una opción</option>
                                 </select>
-                                <label style="color: #59ab6e;" for="provincias">Provincias</label>
+                                <label style="color: #59ab6e;" for="provincias">Provincias <font class="text-danger">*
+                                    </font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <select class="form-select" id="ciudades" name="ciudad" required>
                                     <option value="" selected disabled>Selecciona una opción</option>
                                 </select>
-                                <label style="color: #59ab6e;" for="ciudades">Ciudades</label>
+                                <label style="color: #59ab6e;" for="ciudades">Ciudades <font class="text-danger">*
+                                    </font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="direccion" placeholder=" " name="direccion"
                                     required>
                                 <label style="color: #59ab6e;" for="direccion"><i class="bi bi-signpost-2"></i>
-                                    Dirección</label>
+                                    Dirección <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="password-nuevo" placeholder=" "
                                     name="contrasena" required>
                                 <label style="color: #59ab6e;" for="password-nuevo"><i class="bi bi-key"></i>
-                                    Contraseña</label>
+                                    Contraseña <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="password-confirm" placeholder=" "
                                     required>
                                 <label style="color: #59ab6e;" for="password-confirm"><i class="bi bi-key"></i> Repita
-                                    su contraseña</label>
+                                    su contraseña <font class="text-danger">*</font></label>
+                                <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="d-grid mx-auto">
                                 <button class="btn btn-primary" type="submit">Registrarme</button>
@@ -323,9 +339,57 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="staticBackdrop" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="recuperarForm" class="needs-validation" novalidate>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Recuperación de contraseña</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="correo" name="correo" placeholder=" " required>
+                        <label style="color: #59ab6e;" for="correo"><i class="bi bi-envelope"></i> Correo <font
+                                class="text-danger">*</font></label>
+                        <div class="invalid-feedback">Campo obligatorio</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 <br><br>
 <script>
+    document.getElementById("recuperarForm").addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var formData = new FormData(event.target);
+        fetch('/recuperar', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+            .then(element => {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: element.type,
+                    text: element.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+
+                if (element.type === "success") {
+                    $("#recuperarForm")[0].reset()
+                }
+            });
+    });
     async function obtener_cantidad_carrito() {
         await fetch("/obtener_cantidad_carrito", {
             method: "POST",
@@ -341,7 +405,7 @@
                 if (data.data !== null) {
                     if (data.data[0].cantidad != 0) {
                         $("#cantidad-carrito").text(data.data[0].cantidad);
-                    }else{
+                    } else {
                         $("#cantidad-carrito").text("");
                     }
                 }
@@ -408,7 +472,7 @@
             {
                 targets: 2,
                 render: function (data, type, row, meta) {
-                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                    return `<img src="${row.img ?? '/img/no-image-icon.png'}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                 }
             },
             {
@@ -665,14 +729,11 @@
                                         timerProgressBar: true,
                                         timer: 3000
                                     });
-                                    if (element.type === "success") {
-                                        $("#registrarForm")[0].reset()
-                                        $('.modal').modal('hide');
-                                    }
                                 })
                         }
                     })
                 } else if (element.type === "success") {
+                    $('.modal').modal('hide');
                     location.reload();
                 } else {
                     return Swal.fire({
@@ -683,13 +744,14 @@
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 3000
-                    }).then((result) => {
-
                     });
                 }
             });
     });
-
+    function validarContrasena(contrasena) {
+        const regex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$/;
+        return regex.test(contrasena);
+    }
     document.getElementById("registrarForm").addEventListener('submit', function (event) {
         event.preventDefault();
         if (document.getElementById('password-nuevo').value != document.getElementById('password-confirm').value) {
@@ -698,6 +760,17 @@
                 position: 'bottom-end',
                 icon: 'error',
                 html: "Contraseñas no coinciden",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+            return;
+        } else if (!validarContrasena(document.getElementById('password-nuevo').value)) {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'error',
+                text: "La contraseña no es válida. Debe contener caracteres especiales, números y tener al menos 8 caracteres de longitud.",
                 showConfirmButton: false,
                 timerProgressBar: true,
                 timer: 3000
@@ -715,17 +788,29 @@
                     toast: true,
                     position: 'bottom-end',
                     icon: element.type,
-                    title: element.message,
+                    text: element.message,
                     showConfirmButton: false,
                     timerProgressBar: true,
                     timer: 3000
                 });
                 if (element.type === "success") {
                     $("#registrarForm")[0].reset()
-                    $('.modal').modal('hide');
                 }
             })
     });
 
     obtener_cantidad_carrito();
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, true)
+        })
+    })()
 </script>
