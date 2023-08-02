@@ -24,14 +24,15 @@ const transporter = nodemailer.createTransport({
 
 //TODO: Rutas
 router.get("/tienda", async (req, res) => {
-  res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente :null, productos: await obtener_productos() });
+  res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
 });
 
 router.get("/admin", async (req, res) => {
-  if (req.session.credentials.administrador) {
-    res.redirect("/dashboard");
-  } else {
-    res.render("admin");
+  if (!req.session.credentials) {
+    return res.render("admin");
+  }
+  else if (req.session.credentials.administrador) {
+    return res.redirect("/dashboard");
   }
 });
 
