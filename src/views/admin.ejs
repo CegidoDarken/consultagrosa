@@ -44,42 +44,43 @@
                     <h5 class="card-title text-center pb-0 fs-4">Ingrese a su cuenta</h5>
                   </div>
 
-                  <form id="administradorForm" class="row g-3 needs-validation" novalidate>
-                    <div class="col-12">
-                      <div class="input-group">
-                        <div class="form-floating mb-3">
-                          <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Usuario"
-                            required>
-                          <label for="usuario">Usuario</label>
-                          <div class="invalid-feedback">Ingrese su nombre de usuario</div>
-                        </div>
+                  <form id="administradorForm" class="needs-validation" novalidate>
+                    <div class="row g-3 ">
+                      <div class="col-12">
+                        <div class="input-group">
+                          <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Usuario"
+                              required>
+                            <label for="usuario">Usuario</label>
+                            <div class="invalid-feedback">Campo obligatorio</div>
+                          </div>
 
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      <div class="input-group">
-                        <div class="form-floating mb-3">
-                          <input type="password" class="form-control" name="contrasena" id="contrasena"
-                            placeholder="Contaseña" required>
-                          <label for="contrasena">Contaseña</label>
-                          <div class="invalid-feedback">Ingrese su contraseña</div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-12">
-                      <div class="form-check form-switch ms-3">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                          onchange="showpassword()">
-                        <label class="form-check-label fw-medium" for="flexSwitchCheckChecked">Mostrar contaseña</label>
+
+                      <div class="col-12">
+                        <div class="input-group">
+                          <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="contrasena" id="contrasena"
+                              placeholder="Contaseña" required>
+                            <label for="contrasena">Contaseña</label>
+                            <div class="invalid-feedback">Campo obligatorio</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12">
+                        <div class="form-check form-switch ms-3">
+                          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
+                            onchange="showpassword()">
+                          <label class="form-check-label fw-medium" for="flexSwitchCheckChecked">Mostrar
+                            contaseña</label>
+                        </div>
+                      </div>
+                      <a href="" class="link-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">¿Olvidaste tu contrasesa?</a>
+                      <div class="col-12">
+                        <button class="btn btn-primary w-100" type="submit">Iniciar Sesión</button>
                       </div>
                     </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Iniciar Sesión</button>
-                    </div>
-                    <!--<div class="col-12">
-                      <p class="small mb-0">Don't have account? <a href="pages-register.html">Create an account</a></p>
-                    </div>-->
                   </form>
 
                 </div>
@@ -141,7 +142,7 @@
           }
 
           form.classList.add('was-validated')
-        }, false)
+        }, true)
       })
     })()
   </script>

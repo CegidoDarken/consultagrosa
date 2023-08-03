@@ -8,7 +8,6 @@
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
-
 <body>
 
     <%- include("partials/_headerpanel") %>
@@ -55,7 +54,6 @@
                                             <table
                                                 class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
                                                 id="datatable">
-                                                <caption>Kardex PEPS</caption>
                                                 <thead>
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th colspan="2"></th>
@@ -89,46 +87,6 @@
                     </div>
                 </section>
             </main>
-            <div class="modal fade" id="tag" tabindex="-1" aria-labelledby="exampleModalLabel" arhide="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Asignar</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form id="formtag">
-                            <div class="modal-body">
-                                <label for="" class="form-label">Producto</label>
-                                <input type="text" class="form-control mb-2" id="productoinput" readonly>
-                                <label for="" class="form-label">Tag</label>
-                                <input id="taginput" type="number" name="tag" class="form-control mb-2"
-                                    placeholder="Ingrese un Tag" readonly>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary" id="asignar">Asignar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="delete_producto" tabindex="-1" aria-labelledby="exampleModalLabel"
-                arhide="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar producto</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">¿Estás seguro de que deseas eiminar este producto?</div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button class="btn btn-danger" id="eliminar">Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
                     $('.js-example-basic-single').select2({ theme: 'bootstrap-5' });

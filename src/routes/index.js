@@ -28,12 +28,10 @@ router.get("/tienda", async (req, res) => {
 });
 
 router.get("/admin", async (req, res) => {
-  if (!req.session.credentials) {
-    return res.render("admin");
-  }
-  else if (req.session.credentials.administrador) {
+  if (req.session.credentials.administrador) {
     return res.redirect("/dashboard");
   }
+  return res.render("admin");
 });
 
 router.get("/validar", async (req, res) => {
@@ -48,7 +46,7 @@ router.get("/validar", async (req, res) => {
 });
 router.get("/recuperar", async (req, res) => {
   const { usuario } = req.query;
-  return res.render("recuperar", usuario);
+  return res.render("recuperar", { usuario });
 });
 router.get("/perfiladministrador", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
@@ -1097,7 +1095,6 @@ router.get("/logoutcliente", async (req, res) => {
   delete req.session.credentials.cliente;
   res.redirect("back");
 });
-
 router.get("/logoutadministrador", async (req, res) => {
   delete req.session.credentials.administrador;
   res.redirect("/admin");
