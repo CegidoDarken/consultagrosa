@@ -32,10 +32,10 @@ router.get("/admin", async (req, res) => {
     if (req.session.credentials && req.session.credentials.administrador) {
       return res.redirect("/dashboard");
     } else {
-      return res.redirect("/admin");
+      return res.render("admin");
     }
   } catch (error) {
-    return res.redirect("/admin");
+    return res.render("admin");
   }
 });
 
