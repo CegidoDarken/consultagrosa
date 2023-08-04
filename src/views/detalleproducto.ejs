@@ -6,7 +6,7 @@
         background-size: 0%;
         position: relative;
         overflow: hidden;
-        cursor: zoom-in;
+        cursor: move;
     }
 
     figure.zoom img:hover {
@@ -26,194 +26,201 @@
 
 <body>
     <%- include("partials/_headerindex") %>
-        <section class="bg-light">
-            <div class="container pb-5">
-                <div class="row">
-                    <div class="col-lg-5 mt-5">
-                        <div class="card mb-3">
-                            <figure class="zoom" onmousemove="zoom(event)"
-                                style="background-image: url('<%= producto.img %>')">
-                                <img class="card-img img-fluid" src="<%= producto.img %>"
-                                    style=" width: 100%;height: 600px;object-fit: contain;object-position: center;">
-                            </figure>
+        <div class="vh-100">
+            <section class="bg-light-subtle">
+                <div class="container pb-5">
+                    <div class="row">
+                        <div class="col-lg-5 mt-5">
+                            <div class="card mb-3">
+                                <figure class="zoom" onmousemove="zoom(event)"
+                                    style="background-image: url('<%= producto.img??`/img/no-image-icon.png` %>')">
+                                    <img class="card-img img-fluid" src="<%= producto.img??'/img/no-image-icon.png' %>"
+                                        style=" width: 100%;height: 600px;object-fit: contain;object-position: center;">
+                                </figure>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-7 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="h2">
-                                    <%= producto.nombre %>
-                                </h1>
-                                <p class="h3 py-2">$<%= producto.precio %>
-                                </p>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">
-                                        <p><strong>Stock:</strong> <span>
-                                                <%= producto.cantidad %>
-                                            </span></p>
-                                    </li>
-                                </ul>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">
-                                        <p><strong>Categoria:</strong> <span
-                                                class="badge btn-success rounded-pill text-bg-success">
-                                                <%= producto.categoria %>
-                                            </span></p>
-                                    </li>
-                                </ul>
+                        <div class="col-lg-7 mt-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="h2">
+                                        <%= producto.nombre %>
+                                    </h1>
+                                    <p class="h2 py-2">$<%= producto.precio %>
+                                    </p>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item">
+                                            <p><strong>Disponibes:</strong> <span>
+                                                    <%= producto.cantidad %>
+                                                </span></p>
+                                        </li>
+                                    </ul>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item">
+                                            <p><strong>Categoria:</strong> <span
+                                                    class="badge btn-success rounded-pill text-bg-success">
+                                                    <%= producto.categoria %>
+                                                </span></p>
+                                        </li>
+                                    </ul>
 
-                                <h6>Descripción:</h6>
-                                <p>
-                                    <%= producto.descripcion %>
-                                </p>
-                                <input type="hidden" name="product-title" value="Activewear">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <ul class="list-inline pb-3">
-                                            <li class="list-inline-item">Medida:</li>
-                                            <span class="badge btn-success rounded-pill text-bg-success">
-                                                <%= producto.medida %>
-                                            </span>
-                                        </ul>
+                                    <h6>Descripción:</h6>
+                                    <p>
+                                        <%= producto.descripcion %>
+                                    </p>
+                                    <input type="hidden" name="product-title" value="Activewear">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <ul class="list-inline pb-3">
+                                                <li class="list-inline-item">Medida:</li>
+                                                <span class="badge btn-success rounded-pill text-bg-success">
+                                                    <%= producto.medida %>
+                                                </span>
+                                            </ul>
+                                        </div>
+                                        <div class="col-auto">
+                                            <ul class="list-inline pb-3">
+                                                <li class="list-inline-item text-right">
+                                                    Cantidad:
+                                                    <input type="hidden" name="product-quanity" id="product-quanity"
+                                                        value="1">
+                                                </li>
+                                                <li class="list-inline-item"><span
+                                                        class="btn btn-sm btn-success text-bg-success"
+                                                        id="btn-minus">-</span></li>
+                                                <li class="list-inline-item"><span class="" id="var-value">1</span></li>
+                                                <li class="list-inline-item"><span
+                                                        class="btn btn-sm btn-success text-bg-success"
+                                                        id="btn-plus">+</span></li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <ul class="list-inline pb-3">
-                                            <li class="list-inline-item text-right">
-                                                Cantidad:
-                                                <input type="hidden" name="product-quanity" id="product-quanity"
-                                                    value="1">
-                                            </li>
-                                            <li class="list-inline-item"><span class="btn btn-sm btn-success text-bg-success"
-                                                    id="btn-minus">-</span></li>
-                                            <li class="list-inline-item"><span class=""
-                                                    id="var-value">1</span></li>
-                                            <li class="list-inline-item"><span class="btn btn-sm btn-success text-bg-success"
-                                                    id="btn-plus">+</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="row pb-3">
-                                    <div class="col d-grid">
-                                        <% if (credentials) { %>
-                                            <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                onclick="agregar_carrito('<%= producto.id_producto %>','<%= producto.precio %>', $('#product-quanity').val())"><i
-                                                    class="bi bi-cart-fill"></i> Añadir al
-                                                carrito</button>
-                                            <% } else { %>
+                                    <div class="row pb-3">
+                                        <div class="col d-grid">
+                                            <% if (credentials) { %>
                                                 <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                    data-bs-toggle="modal" data-bs-target="#login"><i
+                                                    onclick="agregar_carrito('<%= producto.id_producto %>','<%= producto.precio %>', $('#product-quanity').val())"><i
                                                         class="bi bi-cart-fill"></i> Añadir al
                                                     carrito</button>
-                                                <% } %>
+                                                <% } else { %>
+                                                    <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                                        data-bs-toggle="modal" data-bs-target="#login"><i
+                                                            class="bi bi-cart-fill"></i> Añadir al
+                                                        carrito</button>
+                                                    <% } %>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <section class="py-5">
-            <div class="container">
-                <div class="row text-left p-2 pb-3">
-                    <h4>Productos recomendados</h4>
-                </div>
-                <div class="row">
-                    <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
-                            data-bs-slide="prev">
-                            <i class="bi bi-caret-left-fill"></i>
-                        </a>
+            </section>
+            <section>
+                <div class="container">
+                    <div class="row text-left p-2 pb-3">
+                        <h4>Productos recomendados</h4>
                     </div>
-                    <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item"
-                        data-bs-ride="carousel">
-                        <div class="carousel-inner" role="listbox">
-                            <% if (recomendados.length> 0 ) { %>
-                                <% for (let i=0; i < recomendados.length; i +=3) { %>
-                                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                                        <div class="row">
-                                            <% for (let j=i; j < Math.min(i + 3, recomendados.length); j++) { %>
-                                                <div class="col-4">
-                                                    <div class="card mb-4 product-wap rounded-3 shadow border-0">
-                                                        <div class="card rounded-3 border-0">
-                                                            <img class="card-img rounded-3 img-fluid border-0"
-                                                                src="<%= recomendados[j].img? recomendados[j].img : '/img/no-image-icon.png' %>"
-                                                                target="_blank" style=" width: 100%;
+                    <div class="row">
+                        <div class="col-1 align-self-center">
+                            <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
+                                data-bs-slide="prev">
+                                <i class="bi bi-caret-left-fill"></i>
+                            </a>
+                        </div>
+                        <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item"
+                            data-bs-ride="carousel">
+                            <div class="carousel-inner" role="listbox">
+                                <% if (recomendados.length> 0 ) { %>
+                                    <% for (let i=0; i < recomendados.length; i +=3) { %>
+                                        <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                                            <div class="row">
+                                                <% for (let j=i; j < Math.min(i + 3, recomendados.length); j++) { %>
+                                                    <div class="col-4">
+                                                        <div class="card mb-4 product-wap rounded-3 shadow border-0">
+                                                            <div class="card rounded-3 border-0">
+                                                                <img class="card-img rounded-3 img-fluid border-0"
+                                                                    src="<%= recomendados[j].img? recomendados[j].img : '/img/no-image-icon.png' %>"
+                                                                    target="_blank" style=" width: 100%;
                                                             height: 300px;
                                                             object-fit: contain;
                                                             object-position: center;">
-                                                            <div
-                                                                class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                                                <ul class="list-unstyled">
-                                                                    <% if (credentials) { %>
-                                                                        <li><button
-                                                                                class="btn btn-success text-white mt-2"
-                                                                                onclick="agregar_carrito('<%= recomendados[j].id_producto %>','<%= recomendados[j].precio %>', 1)"><i
-                                                                                    class="bi bi-cart-fill"></></i></a>
-                                                                        </li>
-                                                                        <% } else { %>
+                                                                <div
+                                                                    class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                                                    <ul class="list-unstyled">
+                                                                        <% if (credentials) { %>
                                                                             <li><button
                                                                                     class="btn btn-success text-white mt-2"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#login"><i
+                                                                                    onclick="agregar_carrito('<%= recomendados[j].id_producto %>','<%= recomendados[j].precio %>', 1)"><i
                                                                                         class="bi bi-cart-fill"></>
-                                                                                    </i></a></li>
-                                                                            <% } %>
-                                                                                <li><a class="btn btn-success text-white mt-2"
-                                                                                        href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
-                                                                                            class="bi bi-eye-fill"></a></i></a>
-                                                                                </li>
-                                                                </ul>
+                                                                                        </i></a>
+                                                                            </li>
+                                                                            <% } else { %>
+                                                                                <li><button
+                                                                                        class="btn btn-success text-white mt-2"
+                                                                                        data-bs-toggle="modal"
+                                                                                        data-bs-target="#login"><i
+                                                                                            class="bi bi-cart-fill"></>
+                                                                                        </i></a></li>
+                                                                                <% } %>
+                                                                                    <li><a class="btn btn-success text-white mt-2"
+                                                                                            href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
+                                                                                                class="bi bi-eye-fill"></a></i></a>
+                                                                                    </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <a class="h3 text-decoration-none" id="nombre">
+                                                                    <%= recomendados[j].nombre %> <span class="badge"
+                                                                            style="background-color: #59ab6e;">
+                                                                            <%= recomendados[j].categoria %>
+                                                                        </span>
+                                                                </a>
+                                                                <a class="h3 text-decoration-none d-flex text-center">
+                                                                    <p class="m-1 ms-0">Medida:</p>
+                                                                    <span class="badge m-1"
+                                                                        style="background-color: #59ab6e;">
+                                                                        <%= recomendados[j].medida??"Ninguna" %>
+                                                                    </span>
+                                                                </a>
+                                                                <p class="fw-bold mb-0">$<%= recomendados[j].precio %>
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <a class="h3 text-decoration-none" id="nombre">
-                                                                <%= recomendados[j].nombre %> <span class="badge"
-                                                                        style="background-color: #59ab6e;">
-                                                                        <%= recomendados[j].categoria %>
-                                                                    </span>
-                                                            </a>
-                                                            <a class="h3 text-decoration-none d-flex text-center">
-                                                                <p class="m-1 ms-0">Medida:</p>
-                                                                <span class="badge m-1"
-                                                                    style="background-color: #59ab6e;">
-                                                                    <%= recomendados[j].medida??"Ninguna" %>
-                                                                </span>
-                                                            </a>
-                                                            <p class="fw-bold mb-0">$<%= recomendados[j].precio %>
-                                                            </p>
-                                                        </div>
                                                     </div>
-                                                </div>
-                                                <% } %>
+                                                    <% } %>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <% } %>
-                                        <% }else{ %>
-                                            <div class="text-center">No hay productos recomendados</div>
-                                            <% } %>
+                                        <% } %>
+                                            <% }else{ %>
+                                                <div class="text-center">No hay productos recomendados</div>
+                                                <% } %>
+                            </div>
+                        </div>
+                        <div class="col-1 align-self-center">
+                            <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
+                                data-bs-slide="next">
+                                <i class="bi bi-caret-right-fill"></i>
+                            </a>
                         </div>
                     </div>
-                    <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
-                            data-bs-slide="next">
-                            <i class="bi bi-caret-right-fill"></i>
-                        </a>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
+        <div style="height: 300px;"></div>
         <%- include("partials/_fotterindex") %>
 </body>
 <script>
     function zoom(e) {
-        var zoomer = e.currentTarget;
-        e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
-        e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageX
-        x = offsetX / zoomer.offsetWidth * 100
-        y = offsetY / zoomer.offsetHeight * 100
-        zoomer.style.backgroundPosition = x + '% ' + y + '%';
+        if (!e.srcElement.currentSrc.includes('no-image-icon.png')) {
+            var zoomer = e.currentTarget;
+            e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
+            e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageX
+            x = offsetX / zoomer.offsetWidth * 100
+            y = offsetY / zoomer.offsetHeight * 100
+            zoomer.style.backgroundPosition = x + '% ' + y + '%';
+        }
     }
 </script>
 

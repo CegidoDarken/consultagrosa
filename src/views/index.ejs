@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<style>
+    .acerca{ 
+        color: #69bb7e !important;
+    }
+</style>
 <head>
     <title>Acerca de nosotros</title>
 </head>
 
 <body>
     <%- include("partials/_headerindex") %>
+    <div class="vh-100">
         <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog"
             aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -46,14 +51,13 @@
             </div>
         </section>
 
-        <section class="container py-5 vh-100">
+        <section class="container py-5">
             <div class="row text-center pt-5 pb-3">
                 <div class="col-lg-6 m-auto">
                     <h1 class="h1">Nuestros Servicios</h1>
                 </div>
             </div>
             <div class="row">
-
                 <div class="col-md-5 col-lg-4 pb-5">
                     <div class="h-100 py-5 services-icon-wap shadow rounded-2">
                         <div class="h1 text-success text-center"><i class="bi bi-1-circle-fill"></i></div>
@@ -76,6 +80,7 @@
                 </div>
             </div>
         </section>
+    </div>
         <%- include("partials/_fotterindex") %>
 </body>
 

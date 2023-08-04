@@ -68,15 +68,16 @@
             <div class="flex-fill">
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/"><i class="bi bi-question-circle-fill"></i> Acerca de
+                        <a class="nav-link acerca" href="/"><i class="bi bi-question-circle-fill"></i> Acerca de
                             nosotros</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/tienda"><i class="bi bi-bag-fill"></i>
+                        <a class="nav-link tienda" href="/tienda"><i class="bi bi-bag-fill"></i>
                             Tienda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contactanos"><i class="bi bi-telephone-fill"></i> Contactanos</a>
+                        <a class="nav-link contactanos" href="/contactanos"><i class="bi bi-telephone-fill"></i>
+                            Contactanos</a>
                     </li>
                 </ul>
             </div>
@@ -262,6 +263,12 @@
                                     su contraseña <font class="text-danger">*</font></label>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
+                            <div class="form-check form-switch mb-3 ms-2">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    id="flexSwitchCheckChecked2" onchange="showpassword()">
+                                <label class="form-check-label" for="flexSwitchCheckChecked2">Mostrar
+                                    contraseña</label>
+                            </div>
                             <div class="d-grid mx-auto">
                                 <button class="btn btn-primary" type="submit">Registrarme</button>
                             </div>
@@ -428,7 +435,15 @@
         drawCallback: async function (settings, json) {
             $('#vaciar').prop('disabled', true);
             $('#pedido').prop('disabled', true);
-            var iva = 0.12;
+            var iva;
+            await fetch("obtener_iva", {
+                method: 'POST',
+            }).then(response => response.json()).then(async data => {
+                iva= data.iva;
+            }).catch(error => {
+                console.error(error);
+            });
+            console.log(iva);
             var api = this.api();
             var totalGeneral = await api.column(6).data().reduce(function (a, b) {
                 return a + b;
@@ -632,12 +647,23 @@
         });
     }
     function showpasswordLogin() {
-        var icon = document.getElementById('icon-use');
         var password = document.getElementById("password");
         if (password.type === "password") {
             password.type = "text";
         } else {
             password.type = "password";
+        }
+    }
+    function showpassword() {
+        var password = document.getElementById("password-nuevo");
+        var password2 = document.getElementById("password-confirm");
+
+        if (password.type === "password" && password2.type === "password") {
+            password.type = "text";
+            password2.type = "text";
+        } else {
+            password.type = "password";
+            password2.type = "password";
         }
     }
     var provinciasSelect = document.getElementById("provincias");

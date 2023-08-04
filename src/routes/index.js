@@ -771,6 +771,7 @@ router.post("/obtener_productos", async (req, res) => {
 });
 router.post('/obtener_carrito', (req, res) => {
   const id_usuario = req.body.id_usuario;
+  iva = process.env.IVA;
   console.log(id_usuario);
   const sql = "SELECT id_carrito, id_producto, img, nombre, precio, carritos.cantidad, carritos.total FROM carritos, productos WHERE productos.id_producto = carritos.producto_id AND usuario_id = ?";
   connection.query(sql, [id_usuario], (error, result) => {
@@ -782,9 +783,12 @@ router.post('/obtener_carrito', (req, res) => {
           element.img = element.img.toString();
         }
       });
-      res.json({ data: result });
+      res.json({ data: result, iva });
     }
   });
+});
+router.post('/obtener_iva', (req, res) => {
+  res.json({ iva: process.env.IVA });
 });
 
 router.post('/update_producto', (req, res) => {
@@ -1119,7 +1123,7 @@ router.get('/carrito', (req, res) => {
 
 router.post("/validar_cliente", async (req, res) => {
   const { usuario, contrasena } = req.body
-  const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ?;';
+  const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ? AND perfil_id = 2';
   connection.query(query, [usuario], (error, results) => {
     if (error) {
       return res.status(500).json({ type: "error", message: "Error al validar" + error, data: null });
@@ -1150,7 +1154,7 @@ router.post("/validar_cliente", async (req, res) => {
 router.post("/validar_administrador", async (req, res) => {
   console.log("Authentication".yellow);
   const { usuario, contrasena } = req.body
-  const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ?';
+  const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ? AND perfil_id = 1';
   connection.query(query, usuario, (error, results) => {
     if (error) {
       res.send(error.message);
