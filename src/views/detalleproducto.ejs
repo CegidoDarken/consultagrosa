@@ -1,6 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <style>
+    .owl-2-style .owl-nav {
+        display: none;
+    }
+
+    .owl-2-style .owl-dots {
+        text-align: center;
+        position: relative;
+        bottom: -30px;
+    }
+
+    .owl-2-style .owl-dots .owl-dot {
+        display: inline-block;
+    }
+
+    .owl-2-style .owl-dots .owl-dot span {
+        display: inline-block;
+        width: 15px;
+        height: 3px;
+        border-radius: 0px;
+        background: #cccccc;
+        -webkit-transition: 0.3s all cubic-bezier(0.32, 0.71, 0.53, 0.53);
+        -o-transition: 0.3s all cubic-bezier(0.32, 0.71, 0.53, 0.53);
+        transition: 0.3s all cubic-bezier(0.32, 0.71, 0.53, 0.53);
+        margin: 3px;
+    }
+
+    .owl-2-style .owl-dots .owl-dot.active span {
+        background: #59ab6e;
+    }
+
+    .owl-2-style .owl-dots .owl-dot:active,
+    .owl-2-style .owl-dots .owl-dot:focus {
+        outline: none;
+    }
+
     figure.zoom {
         background-position: 50% 50%;
         background-size: 0%;
@@ -22,12 +57,65 @@
         display: block;
         width: 100%;
     }
+
+    .slider {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        margin: auto;
+        overflow-x: scroll;
+        overflow-y: hidden;
+    }
+
+    .slider::-webkit-scrollbar {
+        display: none;
+    }
+
+    .slider .slide {
+        display: flex;
+        position: absolute;
+        left: 0;
+        transition: 0.3s left ease-in-out;
+    }
+
+
+    .slider .item:last-child {
+        margin-right: 0;
+    }
+
+    .ctrl {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .ctrl-btn {
+        padding: 20px 20px;
+        min-width: 50px;
+        background: #fff;
+        border: none;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+
+        position: absolute;
+        top: 50%;
+        margin-top: -27.5px;
+    }
+
+    .ctrl-btn.pro-prev {
+        left: 0;
+    }
+
+    .ctrl-btn.pro-next {
+        right: 0;
+    }
 </style>
 
 <body>
     <%- include("partials/_headerindex") %>
         <section class="bg-light-subtle">
-            <div class="container pb-5">
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-5 mt-5">
                         <div class="card mb-3">
@@ -116,109 +204,102 @@
             </div>
         </section>
         <section>
-            <div class="container">
-                <div class="row text-left p-2 pb-3">
-                    <h4>Productos recomendados</h4>
-                </div>
-                <div class="row">
-                    <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
-                            data-bs-slide="prev">
-                            <i class="bi bi-caret-left-fill"></i>
-                        </a>
-                    </div>
-                    <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item"
-                        data-bs-ride="carousel">
-                        <div class="carousel-inner" role="listbox">
-                            <% if (recomendados.length> 0 ) { %>
-                                <% for (let i=0; i < recomendados.length; i +=3) { %>
-                                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                                        <div class="row">
-                                            <% for (let j=i; j < Math.min(i + 3, recomendados.length); j++) { %>
-                                                <div class="col-4">
-                                                    <div class="card mb-4 product-wap rounded-3 shadow border-0">
-                                                        <div class="card rounded-3 border-0">
-                                                            <img class="card-img rounded-3 img-fluid border-0"
-                                                                src="<%= recomendados[j].img? recomendados[j].img : '/img/no-image-icon.png' %>"
-                                                                target="_blank" style=" width: 100%;
-                                                            height: 300px;
-                                                            object-fit: contain;
-                                                            object-position: center;">
-                                                            <div
-                                                                class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                                                <ul class="list-unstyled">
-                                                                    <% if (credentials) { %>
-                                                                        <li><button
-                                                                                class="btn btn-success text-white mt-2"
-                                                                                onclick="agregar_carrito('<%= recomendados[j].id_producto %>','<%= recomendados[j].precio %>', 1)"><i
-                                                                                    class="bi bi-cart-fill"></>
-                                                                                </i></a>
-                                                                        </li>
-                                                                        <% } else { %>
-                                                                            <li><button
-                                                                                    class="btn btn-success text-white mt-2"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#login"><i
-                                                                                        class="bi bi-cart-fill"></>
-                                                                                    </i></a></li>
-                                                                            <% } %>
-                                                                                <li><a class="btn btn-success text-white mt-2"
-                                                                                        href="/detalleproducto?producto=<%= recomendados[j].id_producto %>"><i
-                                                                                            class="bi bi-eye-fill"></a></i></a>
-                                                                                </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <a class="h3 text-decoration-none" id="nombre">
-                                                                <%= recomendados[j].nombre %> <span class="badge"
-                                                                        style="background-color: #59ab6e;">
-                                                                        <%= recomendados[j].categoria %>
-                                                                    </span>
-                                                            </a>
-                                                            <a class="h3 text-decoration-none d-flex text-center">
-                                                                <p class="m-1 ms-0">Medida:</p>
-                                                                <span class="badge m-1"
-                                                                    style="background-color: #59ab6e;">
-                                                                    <%= recomendados[j].medida??"Ninguna" %>
-                                                                </span>
-                                                            </a>
-                                                            <p class="fw-bold mb-0">$<%= recomendados[j].precio %>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <% } %>
+            <div class="bg-left-half mb-5">
+                <div class="container owl-2-style">
+                    <h3 class="text-success py-5 ">Productos recomendados</h3>
+                    <div class="owl-carousel owl-2">
+                        <% if (recomendados.length> 0) { %>
+                            <% recomendados.forEach(value=> { %>
+                                <div class="card mb-4 product-wap rounded-3 shadow border-0">
+                                    <div class="card rounded-3 border-0">
+                                        <img class="card-img rounded-3 img-fluid border-0 b-lazy"
+                                            src="<%= value.img? value.img : '/img/no-image-icon.png' %>" style=" width: 100%;
+                                            height: 300px;
+                                            object-fit: contain;
+                                            object-position: center;" loading="lazy">
+                                        <div
+                                            class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                            <ul class="list-unstyled">
+                                                <% if (credentials) { %>
+                                                    <li><button class="btn btn-success text-white mt-2"
+                                                            onclick="agregar_carrito('<%= value.id_producto %>','<%= value.precio %>', 1)"><i
+                                                                class="bi bi-cart-fill"></></i></a></li>
+                                                    <% } else { %>
+                                                        <li><button class="btn btn-success text-white mt-2"
+                                                                data-bs-toggle="modal" data-bs-target="#login"><i
+                                                                    class="bi bi-cart-fill"></></i></a></li>
+                                                        <% } %>
+                                                            <li><a class="btn btn-success text-white mt-2"
+                                                                    href="/detalleproducto?producto=<%= value.id_producto %>"><i
+                                                                        class="bi bi-eye-fill"></a></i></a>
+                                                            </li>
+                                            </ul>
                                         </div>
                                     </div>
-                                    <% } %>
-                                        <% }else{ %>
-                                            <div class="text-center">No hay productos recomendados</div>
-                                            <% } %>
-                        </div>
-                    </div>
-                    <div class="col-1 align-self-center">
-                        <a class="btn btn-primary rounded-circle" href="#multi-item-example" role="button"
-                            data-bs-slide="next">
-                            <i class="bi bi-caret-right-fill"></i>
-                        </a>
+                                    <div class="card-body">
+                                        <a class="h3 text-decoration-none" id="nombre">
+                                            <%= value.nombre %> <span class="badge" style="background-color: #59ab6e;">
+                                                    <%= value.categoria %>
+                                                </span>
+                                        </a>
+                                        <a class="h3 text-decoration-none d-flex text-center">
+                                            <p class="m-1 ms-0">Medida:</p>
+                                            <span class="badge m-1" style="background-color: #59ab6e;">
+                                                <%= value.medida??"Ninguna" %>
+                                            </span>
+                                        </a>
+                                        <p class="fw-bold mb-0">$<%= value.precio %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% }else{%>
+                                        <div>No hay productos recomendados.</div>
+                                        <% }; %>
                     </div>
                 </div>
             </div>
         </section>
-        <div style="height: 500px;"></div>
+
         <%- include("partials/_fotterindex") %>
 </body>
 <script>
-    function zoom(e) {
-        if (!e.srcElement.currentSrc.includes('no-image-icon.png')) {
-            var zoomer = e.currentTarget;
-            e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
-            e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageX
-            x = offsetX / zoomer.offsetWidth * 100
-            y = offsetY / zoomer.offsetHeight * 100
-            zoomer.style.backgroundPosition = x + '% ' + y + '%';
+    $(function () {
+        if ($('.owl-2').length > 0) {
+            $('.owl-2').owlCarousel({
+                center: false,
+                items: 1,
+                loop: false,
+                stagePadding: 0,
+                margin: 20,
+                smartSpeed: 1000,
+                autoplay: true,
+                nav: true,
+                dots: true,
+                pauseOnHover: false,
+                responsive: {
+                    600: {
+                        margin: 20,
+                        nav: true,
+                        items: 2
+                    },
+                    1000: {
+                        margin: 20,
+                        stagePadding: 0,
+                        nav: true,
+                        items: 3
+                    }
+                }
+            });
         }
+    });
+    function zoom(e) {
+        var zoomer = e.currentTarget;
+        e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX
+        e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageX
+        x = offsetX / zoomer.offsetWidth * 100
+        y = offsetY / zoomer.offsetHeight * 100
+        zoomer.style.backgroundPosition = x + '% ' + y + '%';
     }
 </script>
 
