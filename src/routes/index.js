@@ -26,6 +26,9 @@ const transporter = nodemailer.createTransport({
 router.get("/tienda", async (req, res) => {
   res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
 });
+router.get("/perfilcliente", async (req, res) => {
+  res.render("perfilcliente ", { credentials: req.session.credentials ? req.session.credentials.cliente : null});
+});
 
 router.get("/admin", async (req, res) => {
   try {
