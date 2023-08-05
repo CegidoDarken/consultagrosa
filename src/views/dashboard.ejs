@@ -92,7 +92,7 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Registro de actividades <span class="anio">| 2023</span></h5>
+                      <h5 class="card-title">Registro de actividades <span class="anio"></span></h5>
                       <div id="reportsChart"></div>
                     </div>
 
@@ -101,7 +101,7 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Actividades pedidos <span class="anio">| 2023</span></h5>
+                      <h5 class="card-title">Actividades pedidos <span class="anio"></span></h5>
                       <div id="reportsChart2"></div>
                     </div>
 
@@ -112,7 +112,7 @@
                   <div class="card top-selling overflow-auto">
 
                     <div class="card-body pb-0">
-                      <h5 class="card-title">Productos más pedidos <span class="anio">| 2023</span></h5>
+                      <h5 class="card-title">Productos más pedidos <span class="anio"></span></h5>
                       <table class="table table-borderless" id="mas_pedidos">
                         <thead>
                           <tr>
@@ -143,8 +143,8 @@
     let year_satart = 2017;
     let year_end = (new Date).getFullYear(); // current year
     let year_selected = (new Date).getFullYear();
-    $(".anio").each(function() {
-      $(this).text(year_selected);
+    $(".anio").each(function () {
+      $(this).text("| " + year_selected);
     });
     let option;
     for (let i = year_satart; i <= year_end; i++) {
@@ -349,9 +349,9 @@
     actividades_registros(anio);
     actividades_pedidos(anio);
     pedidos.settings()[0].ajax.data.anio = anio;
-    pedidos.ajax.reload();  
-    $(".anio").each(function() {
-      $(this).text(anio);
+    pedidos.ajax.reload();
+    $(".anio").each(function () {
+      $(this).text("| " + anio);
     });
   });
 
