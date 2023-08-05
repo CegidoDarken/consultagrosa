@@ -289,6 +289,15 @@
                                 }
                             },
                             {
+                                targets: 9,
+                                render: function (data, type, row, meta) {
+                                    if (type === 'display' || type === 'filter') {
+                                        return new Date(data).toLocaleDateString();
+                                    }
+                                    return data;
+                                }
+                            },
+                            {
                                 targets: 10,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();

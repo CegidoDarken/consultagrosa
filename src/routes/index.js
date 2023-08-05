@@ -36,9 +36,18 @@ router.get("/perfilcliente", async (req, res) => {
   } catch (error) {
     return res.redirect("/");
   }
-
 });
-
+router.get("/pedidoscliente", async (req, res) => {
+  try {
+    if (req.session.credentials && req.session.credentials.cliente) {
+      return res.render("pedidoscliente", { credentials: req.session.credentials ? req.session.credentials.cliente : null });
+    } else {
+      return res.redirect("/");
+    }
+  } catch (error) {
+    return res.redirect("/");
+  }
+});
 router.get("/admin", async (req, res) => {
   try {
     if (req.session.credentials && req.session.credentials.administrador) {
@@ -172,16 +181,11 @@ router.post('/agregar_carrito', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
 
   try {
-    // Check if the required fields are provided in the request
     if (!usuario_id || !producto_id || !cantidad_deseada || !precio) {
       return res.status(400).json({ type: "error", message: 'Faltan campos requeridos en la solicitud', data: null });
     }
-
-    // Convert the quantities to integers
     const cantidadDeseadaInt = parseInt(cantidad_deseada);
     const precioInt = parseInt(precio);
-
-    // Check if the product exists in the database
     const productResults = await new Promise((resolve, reject) => {
       connection.query(
         'SELECT cantidad FROM productos WHERE id_producto = ?',
@@ -198,13 +202,9 @@ router.post('/agregar_carrito', async (req, res) => {
     }
 
     const cantidadDisponible = productResults[0].cantidad;
-
-    // Check if the desired quantity is available
     if (cantidadDeseadaInt > cantidadDisponible) {
       return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
     }
-
-    // Check if the product is already in the user's cart
     const cartResults = await new Promise((resolve, reject) => {
       connection.query(
         'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
@@ -224,14 +224,12 @@ router.post('/agregar_carrito', async (req, res) => {
       isNewCartItem = false;
     }
 
-    // Calculate the new quantity and total price
     const nuevaCantidad = cantidadActual + cantidadDeseadaInt;
     const nuevoTotal = nuevaCantidad * precioInt;
     if (nuevaCantidad > cantidadDisponible || nuevaCantidad === 0) {
       return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
     }
     if (isNewCartItem) {
-      // Insert the new item into the cart
       await new Promise((resolve, reject) => {
         connection.query(
           'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
@@ -243,7 +241,7 @@ router.post('/agregar_carrito', async (req, res) => {
         );
       });
     } else {
-      // Update the existing item in the cart
+
       await new Promise((resolve, reject) => {
         connection.query(
           'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
@@ -293,12 +291,33 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, p.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
+  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
     } else {
       if (results) {
+        res.json({ data: results });
+      } else {
+        res.json({ message: "Producto no reconocido" });
+      }
+    }
+  });
+});
+router.post("/obtener_pedidos_cliente", async (req, res) => {
+  const id_usuario = req.body.id_usuario;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  const sql = "SELECT pr.`img`, dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` WHERE u.`id_usuario` = " + id_usuario + " ORDER BY dp.`id_detalle_pedido` DESC;";
+  connection.query(sql, (error, results) => {
+    if (error) {
+      res.send({ message: error });
+    } else {
+      if (results) {
+        results.forEach(element => {
+          if (element.img) {
+            element.img = element.img.toString();
+          }
+        });
         res.json({ data: results });
       } else {
         res.json({ message: "Producto no reconocido" });
@@ -328,6 +347,12 @@ router.post("/realizar_pedidos", async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
+    const updateCantidadProductoQuery = `
+      UPDATE railway.productos
+      SET cantidad = cantidad - ?
+      WHERE id_producto = ?
+    `;
+
     const pedidoResult = await new Promise((resolve, reject) => {
       connection.query(insertPedidoQuery, [id_usuario, formattedDate, total], (error, results) => {
         if (error) {
@@ -343,20 +368,30 @@ router.post("/realizar_pedidos", async (req, res) => {
     for (const pedido of pedidos) {
       const { id_producto, precio, cantidad } = pedido;
       await new Promise((resolve, reject) => {
-        connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], (error) => {
+        connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], async (error) => {
           if (error) {
             reject(error);
           } else {
+            // Restar la cantidad vendida al producto
+            await new Promise((resolve, reject) => {
+              connection.query(updateCantidadProductoQuery, [cantidad, id_producto], (error) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve();
+                }
+              });
+            });
             resolve();
           }
         });
       });
     }
 
-    res.status(200).json({ message: 'Pedidos creados exitosamente.' });
+    res.status(200).json({ type: "success", message: 'Pedidos realizados exitosamente', data: null });
   } catch (error) {
     console.error('Error creating orders:', error);
-    res.status(500).json({ error: 'Error al crear los pedidos.' });
+    res.status(500).json({ type: "error", message: 'Error al crear pedidos', data: null });
   }
 });
 

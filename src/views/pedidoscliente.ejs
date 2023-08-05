@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .profile .profile-card img {
+        max-width: 120px;
+    }
+
+    .profile .profile-card h2 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c384e;
+        margin: 10px 0 0 0;
+    }
+
+    .profile .profile-card h3 {
+        font-size: 18px;
+    }
+
+    .profile .profile-card .social-links a {
+        font-size: 20px;
+        display: inline-block;
+        color: rgba(1, 41, 112, 0.5);
+        line-height: 0;
+        margin-right: 10px;
+        transition: 0.3s;
+    }
+
+    .profile .profile-card .social-links a:hover {
+        color: #59ab6e;
+    }
+
+    .profile .profile-overview .row {
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .profile .profile-overview .card-title {
+        color: #59ab6e !important;
+    }
+
+    .profile .profile-overview .label {
+        font-weight: 600;
+        color: rgba(1, 41, 112, 0.6);
+    }
+
+    .profile .profile-edit label {
+        font-weight: 600;
+        color: rgba(1, 41, 112, 0.6);
+    }
+
+    .profile .profile-edit img {
+        max-width: 120px !important;
+    }
+
+    .nav-tabs-bordered {
+        border-bottom: 2px solid #ebeef4 !important;
+    }
+
+    .nav-tabs-bordered .nav-link {
+        margin-bottom: -2px !important;
+        border: none !important;
+        color: #2c384e !important;
+    }
+
+    .nav-tabs-bordered .nav-link:hover,
+    .nav-tabs-bordered .nav-link:focus {
+        color: #59ab6e !important;
+    }
+
+    .nav-tabs-bordered .nav-link.active {
+        background-color: #fff !important;
+        color: #59ab6e !important;
+        border-bottom: 2px solid #59ab6e !important;
+    }
+</style>
+
+<head>
+    <title>Acerca de nosotros</title>
+</head>
+
+<body>
+    <%- include("partials/_headerindex") %>
+        <div class="p-3">
+            <section class="section profile mt-5">
+                <h2 class="text-center m-3" style="color: #59ab6e;"><i class="bi bi-bag"></i> Mis pedidos</h2>
+                <div class="row">
+                    <div class="col-xl-3 mb-3">
+                        <div class="card">
+                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                                <h1><i class="bi bi-person-circle" style="color: #59ab6e;"></i></h1>
+                                <h2>
+                                    <%= credentials.nombre %>
+                                </h2>
+                                <h3>
+                                    <%= credentials.perfil %>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="search" placeholder="Buscar"
+                                                value="">
+                                            <span class="input-group-text" id="basic-addon1"><i
+                                                    class="bi bi-search"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group mb-3">
+                                            <input type="date" class="form-control" id="date" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body pt-3">
+                                <section class="section">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+
+                                            <div class="container-fluid mt-2 p-0">
+                                                <div class="table-wrapper">
+                                                    <table
+                                                        class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                                        id="datatable">
+                                                        <thead>
+                                                            <tr class="text-light" style="background-color: #59ab6e;">
+                                                                <th>FECHA</th>
+                                                                <th>IMAGEN</th>
+                                                                <th>PRODUCTO</th>
+                                                                <th>CANTIDAD</th>
+                                                                <th>PRECIO PRODUCTO</th>
+                                                                <th>TOTAL</th>
+                                                                <th>ESTADOS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="height: 800px;"></div>
+        <script>
+            $(document).ready(function () {
+                var tabla = $('#datatable').DataTable({
+                    ajax: {
+                        url: '/obtener_pedidos_cliente',
+                        type: 'POST',
+                        data: {
+                            id_usuario: "<%= (credentials)?credentials.id_usuario:null %>",
+                        }
+                    },
+                    dom: 'Bfrtip',
+                    columns: [
+                        { data: 'fecha', defaultContent: "-" },
+                        { data: 'img' },
+                        { data: 'nombre_producto', defaultContent: "-" },
+                        { data: 'cantidad', defaultContent: "-" },
+                        {
+                            data: 'precio',
+                            render: function (data) {
+                                return (data !== null) ? "$" + data : "-";
+                            }
+                        },
+                        {
+                            data: 'total_pedido',
+                            render: function (data) {
+                                return (data !== null) ? "$" + data : "-";
+                            }
+                        },
+                        { data: 'estado', defaultContent: "-" },
+                    ],
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            text: '<i class="bi bi-clipboard"></i> Copiar',
+                            className: 'btn btn-primary btn-sm text-light'
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="bi bi-file-excel"></i>Exportar Excel',
+                            className: 'btn btn-primary btn-sm text-light'
+                        }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: "_all",
+                            className: "dt-center",
+                        },
+                        {
+                            targets: 0,
+                            render: function (data, type, row, meta) {
+                                if (type === 'display' || type === 'filter') {
+                                    return new Date(data).toLocaleDateString();
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            targets: 1,
+                            render: function (data, type, row, meta) {
+                                return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data, type, row, meta) {
+                                var estado = row.estado;
+                                var badgeClass = '';
+                                switch (estado) {
+                                    case 'Aprobado':
+                                        badgeClass = 'badge bg-success';
+                                        break;
+                                    case 'Cancelado':
+                                        badgeClass = 'badge bg-danger';
+                                        break;
+                                    case 'Pendiente':
+                                        badgeClass = 'badge bg-warning';
+                                        break;
+                                    default:
+                                        badgeClass = 'badge bg-secondary';
+                                }
+
+                                return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                            }
+                        },
+                    ],
+                    "language": {
+                        "sEmptyTable": "No hay datos disponibles en la tabla",
+                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                        "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                        "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ",",
+                        "sLengthMenu": "Mostrar _MENU_ entradas",
+                        "sLoadingRecords": "Cargando...",
+                        "sProcessing": "Procesando...",
+                        "sSearch": "Buscar:",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        },
+                        "buttons": {
+                            "copy": "Copiar",
+                            "colvis": "Visibilidad"
+                        }
+                    }
+                });
+                $("#datatable_filter").hide();
+                $('#search').keyup(function () {
+                    table = $('.tablesort').DataTable();
+                    table.search($(this).val()).draw();
+                });
+                $('#date').change(function () {
+                    table = $('.tablesort').DataTable();
+                    table.search($(this).val()).draw();
+                });
+                $('#actualizar').click(async function () {
+                    await table.ajax.reload()
+                });
+                $('#productos').change(function () {
+                    tabla.ajax.reload();
+                });
+            });
+
+        </script>
+        <%- include("partials/_fotterindex") %>
+</body>
+
+</html>
