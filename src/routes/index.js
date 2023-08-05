@@ -185,7 +185,7 @@ router.post('/agregar_carrito', async (req, res) => {
           const cantidad_disponible = productResults[0].cantidad;
 
           if (nueva_cantidad > cantidad_disponible) {
-            return res.status(400).json({ type: "error", message: 'Cantidad disponible', data: null });
+            return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
           }
           if (nueva_cantidad < 1) {
             return res.status(400)
@@ -251,7 +251,7 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
+  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, p.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -360,13 +360,24 @@ router.get("/dashboard", async (req, res) => {
     }
   });
 });
-router.post("/obtener_productos_count", async (req, res) => {
+router.post("/actividades_registros", async (req, res) => {
   let anio = req.body.anio;
-  res.json({ productos: await obtener_productos_count(anio), usuarios: null, proveedores: await obtener_proveedores_count() });
+  res.json({ productos: await actividades_productos(anio), usuarios: await actividades_usuarios(anio) });
 });
-async function obtener_productos_count(anio) {
+router.post("/actividades_pedidos", async (req, res) => {
+  let anio = req.body.anio;
+  res.json({ pedidos: await actividades_pedidos(anio) });
+});
+
+router.post("/mas_pedidos", async (req, res) => {
+  let anio = req.body.anio;
+  console.log(anio);
+  res.json({ data: await mas_pedidos(anio) });
+});
+
+async function actividades_pedidos(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT 2023 AS `year`, 1 AS `month` UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
+    const sql = "SELECT calendar.year, calendar.month, COUNT(detallepedidos.producto_id) AS product_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) LEFT JOIN detallepedidos ON pedidos.id_pedido = detallepedidos.pedido_id GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -381,15 +392,15 @@ async function obtener_productos_count(anio) {
     });
   });
 }
-async function obtener_proveedores_count() {
+async function actividades_productos(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT calendar.year, calendar.month, COUNT(proveedores.id_proveedor) AS provider_count FROM ( SELECT 2023 AS year, 1 AS month UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS calendar LEFT JOIN proveedores ON calendar.year = YEAR(proveedores.fecha) AND calendar.month = MONTH(proveedores.fecha) GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
+    const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT " + anio + " AS `year`, 1 AS `month` UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
         if (result.length > 0) {
-          const productCounts = result.map(item => item.provider_count);
+          const productCounts = result.map(item => item.product_count);
           resolve(productCounts);
         } else {
           resolve(null);
@@ -398,9 +409,10 @@ async function obtener_proveedores_count() {
     });
   });
 }
-async function obtener_usuarios_count() {
+
+async function actividades_usuarios(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT calendar.year, calendar.month, COUNT(usuarios.id_usuario) AS user_count FROM (SELECT 2023 AS year, 1 AS month UNION SELECT 2023, 2 UNION SELECT 2023, 3 UNION SELECT 2023, 4 UNION SELECT 2023, 5 UNION SELECT 2023, 6 UNION SELECT 2023, 7 UNION SELECT 2023, 8 UNION SELECT 2023, 9 UNION SELECT 2023, 10 UNION SELECT 2023, 11 UNION SELECT 2023, 12) AS calendar LEFT JOIN usuarios ON calendar.year = YEAR(usuarios.fecha) AND calendar.month = MONTH(usuarios.fecha) AND usuarios.perfil_id = 2 GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
+    const sql = "SELECT calendar.year, calendar.month, COUNT(usuarios.id_usuario) AS user_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN usuarios ON calendar.year = YEAR(usuarios.fecha) AND calendar.month = MONTH(usuarios.fecha) AND usuarios.perfil_id = 2 GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -410,6 +422,28 @@ async function obtener_usuarios_count() {
           resolve(userCounts);
         } else {
           resolve(null);
+        }
+      }
+    });
+  });
+}
+
+async function mas_pedidos(anio) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT pr.img, pr.nombre, dp.precio, SUM(dp.cantidad) AS vendidos, (SUM(dp.cantidad) * dp.precio) AS ganancias FROM railway.detallepedidos AS dp JOIN railway.pedidos AS p ON dp.pedido_id = p.id_pedido JOIN railway.productos AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(p.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY vendidos DESC LIMIT 10;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          result.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          resolve(result);
+        } else {
+          resolve([]);
         }
       }
     });

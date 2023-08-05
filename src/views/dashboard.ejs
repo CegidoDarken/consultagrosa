@@ -21,12 +21,12 @@
 
         <section class="section dashboard">
           <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
               <div class="row">
-                <div class="col-xxl-4 col-md-6">
+                <a class="col-xxl-4 col-md-6" href="">
                   <div class="card info-card sales-card">
                     <div class="card-body">
-                      <h5 class="card-title">Proveedores <span></span></h5>
+                      <h5 class="card-title">Pedidos <span></span></h5>
                       <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                           <i class="bi bi-people"></i>
@@ -40,12 +40,12 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </a>
 
-                <a class="col-xxl-4 col-md-6" href="/inventario">
+                <a class="col-xxl-4 col-md-6" href="/productos">
                   <div class="card info-card revenue-card">
                     <div class="card-body">
-                      <h5 class="card-title">Inventario <span></span></h5>
+                      <h5 class="card-title">Productos <span></span></h5>
                       <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                           <i class="bi bi-boxes"></i>
@@ -92,7 +92,7 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Registro de actividades <span>| 2023</span></h5>
+                      <h5 class="card-title">Registro de actividades <span class="anio">| 2023</span></h5>
                       <div id="reportsChart"></div>
                     </div>
 
@@ -101,7 +101,7 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Actividades pedidos <span>| 2023</span></h5>
+                      <h5 class="card-title">Actividades pedidos <span class="anio">| 2023</span></h5>
                       <div id="reportsChart2"></div>
                     </div>
 
@@ -112,7 +112,7 @@
                   <div class="card top-selling overflow-auto">
 
                     <div class="card-body pb-0">
-                      <h5 class="card-title">Productos más pedidos <span>| 2023</span></h5>
+                      <h5 class="card-title">Productos más pedidos <span class="anio">| 2023</span></h5>
                       <table class="table table-borderless" id="mas_pedidos">
                         <thead>
                           <tr>
@@ -133,119 +133,150 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-4">
-              <div class="col-12">
-                <div class="card recent-sales overflow-auto">
-
-                  <div class="card-body">
-                    <h5 class="card-title">Pedidos recientes <span></span></h5>
-
-                    <table class="table table-borderless datatable">
-                      <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Cliente</th>
-                          <th scope="col">Producto</th>
-                          <th scope="col">Precio</th>
-                          <th scope="col">Estado</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbody">
-                      </tbody>
-                    </table>
-
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
           </div>
         </section>
       </main>
       <%- include("partials/_fotterpanel") %>
 </body>
 <script>
-
-  function productos_count(anio) {
-    document.addEventListener("DOMContentLoaded", async () => {
-      await fetch("/obtener_productos_count", {
-        method: 'POST',
-        body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(response => response.json()).then(data => {
-        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        const chart = new ApexCharts(document.querySelector("#reportsChart"), {
-          series: [{
-            name: 'Productos',
-            data: data.productos
-          }, {
-            name: 'Clientes',
-            data: data.usuarios
-          }],
-          chart: {
-            height: 350,
-            type: 'area',
-            toolbar: {
-              show: false
-            },
-          },
-          markers: {
-            size: 4
-          },
-          colors: ['#4154f1', '#2eca6a', '#ff771d'],
-          fill: {
-            type: "gradient",
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 0.3,
-              opacityTo: 0.4,
-              stops: [0, 90, 100]
-            }
-          },
-          dataLabels: {
-            enabled: false
-          },
-          stroke: {
-            curve: 'smooth',
-            width: 2
-          },
-          xaxis: {
-            categories: meses,
-          },
-          tooltip: {
-            x: {
-              format: 'dd/MM/yy HH:mm'
-            },
-          }
-        });
-        chart.render();
-      });
-    }).catch(error => {
-      console.error(error);
-    });
-
-  }
-  productos_count();
-  (() => {
+  (async () => {
     let year_satart = 2017;
     let year_end = (new Date).getFullYear(); // current year
     let year_selected = (new Date).getFullYear();
+    $(".anio").each(function() {
+      $(this).text(year_selected);
+    });
     let option;
     for (let i = year_satart; i <= year_end; i++) {
       let selected = (i === year_selected ? ' selected' : '');
-      option += '<option value="' + i + '"' + selected + '>' + i + '</option>';
+      option += await '<option value="' + i + '"' + selected + '>' + i + '</option>';
     }
     document.getElementById("year").innerHTML = option;
   })();
-  var carrito = $('#mas_pedidos').DataTable({
+  async function actividades_registros(anio) {
+    await fetch("/actividades_registros", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const chart = new ApexCharts(document.querySelector("#reportsChart"), {
+        series: [{
+          name: 'Productos',
+          data: data.productos
+        }, {
+          name: 'Clientes',
+          data: data.usuarios
+        }],
+        chart: {
+          height: 350,
+          type: 'area',
+          toolbar: {
+            show: false
+          },
+        },
+        markers: {
+          size: 4
+        },
+        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 2
+        },
+        xaxis: {
+          categories: meses,
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+  async function actividades_pedidos(anio) {
+    await fetch("/actividades_pedidos", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const chart = new ApexCharts(document.querySelector("#reportsChart2"), {
+        series: [{
+          name: 'Pedidos',
+          data: data.pedidos
+        }],
+        chart: {
+          height: 350,
+          type: 'area',
+          toolbar: {
+            show: false
+          },
+        },
+        markers: {
+          size: 4
+        },
+        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 2
+        },
+        xaxis: {
+          categories: meses,
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+  actividades_registros();
+  actividades_pedidos();
+  var selectedAnio = $("#anioSelect").val();
+  var pedidos = $('#mas_pedidos').DataTable({
     ajax: {
-      url: "/obtener_mas_pedidos",
+      url: "/mas_pedidos",
       type: "POST",
       data: {
-        anio: 2023,
+        anio: (new Date).getFullYear(),
       }
     },
     searching: false,
@@ -256,8 +287,8 @@
       { data: "img" },
       { data: "nombre", defaultContent: "-" },
       { data: "precio", defaultContent: "-" },
-      { data: "cantidad", defaultContent: "-" },
-      { data: "total", defaultContent: "-" },
+      { data: "vendidos", defaultContent: "-" },
+      { data: "ganancias", defaultContent: "-" },
     ],
     columnDefs: [
       {
@@ -266,51 +297,20 @@
       },
       {
         targets: 0,
-        visible: false,
-      },
-      {
-        targets: 1,
-        visible: false,
+        render: function (data, type, row, meta) {
+          return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+        }
       },
       {
         targets: 2,
         render: function (data, type, row, meta) {
-          var data = carrito.row(meta.row).data();
-          return `<img src="${data.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+          return "$ " + row.precio;
         }
       },
       {
         targets: 4,
         render: function (data, type, row, meta) {
-          var data = carrito.row(meta.row).data();
-          return `$${data.precio}`;
-        }
-      },
-      {
-        targets: 5,
-        render: function (data, type, row, meta) {
-          return `
-          <div class="quantity-control input-group" >
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
-            <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
-          </div>
-        `;
-        }
-      },
-      {
-        targets: 6,
-        render: function (data, type, row, meta) {
-          var data = carrito.row(meta.row).data();
-          total += row.total;
-          return `$${data.total}`;
-        }
-      },
-      {
-        targets: 7,
-        render: function (data, type, row, meta) {
-          var data = carrito.row(meta.row).data();
-          return `<button type="button" class="btn btn-sm btn-primary me-1"  onclick="location.href='/detalleproducto?producto=${data.id_producto}';"><i class="bi bi-eye-fill"></i></button><button class="btn btn-sm btn-danger" onclick="eliminar_carrito(${data.id_carrito})"><i class="bi bi-trash-fill"></i></button>`;
+          return "$ " + row.ganancias;
         }
       }
     ],
@@ -342,18 +342,20 @@
       }
     }
   });
-  function obtener_mas_pedidos(anio) {
 
-  }
-  obtener_mas_pedidos();
-  document.addEventListener('DOMContentLoaded', function () {
-    var yearSelect = document.getElementById('year');
-    yearSelect.addEventListener('change', function () {
-      alert(yearSelect.value);
-      var anio = yearSelect.value;
-      obtener_mas_pedidos(anio);
+  var yearSelect = document.getElementById('year');
+  yearSelect.addEventListener('change', function () {
+    var anio = yearSelect.value;
+    actividades_registros(anio);
+    actividades_pedidos(anio);
+    pedidos.settings()[0].ajax.data.anio = anio;
+    pedidos.ajax.reload();  
+    $(".anio").each(function() {
+      $(this).text(anio);
     });
   });
+
+
 </script>
 
 </html>
