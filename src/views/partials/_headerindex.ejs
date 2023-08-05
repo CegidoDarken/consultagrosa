@@ -437,14 +437,7 @@
         drawCallback: async function (settings, json) {
             $('#vaciar').prop('disabled', true);
             $('#pedido').prop('disabled', true);
-            var iva;
-            await fetch("obtener_iva", {
-                method: 'POST',
-            }).then(response => response.json()).then(async data => {
-                iva = data.iva;
-            }).catch(error => {
-                console.error(error);
-            });
+            var iva= 0.12;
             var api = this.api();
             var totalGeneral = await api.column(6).data().reduce(function (a, b) {
                 return a + b;
