@@ -27,7 +27,16 @@ router.get("/tienda", async (req, res) => {
   res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
 });
 router.get("/perfilcliente", async (req, res) => {
-  res.render("perfilcliente ", { credentials: req.session.credentials ? req.session.credentials.cliente : null});
+  try {
+    if (req.session.credentials && req.session.credentials.cliente) {
+      return res.render("perfilcliente ", { credentials: req.session.credentials ? req.session.credentials.cliente : null });
+    } else {
+      return res.redirect("/");
+    }
+  } catch (error) {
+    return res.redirect("/");
+  }
+
 });
 
 router.get("/admin", async (req, res) => {
@@ -161,69 +170,99 @@ async function aprioris(producto) {
 
 router.post('/agregar_carrito', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
-  connection.query(
-    'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
-    [producto_id, usuario_id],
-    async (err, cartResults) => {
-      if (err) {
-        return res.status(500).json({ type: "error", message: 'Error al obtener la información del carrito: ' + err, data: null });
-      }
-      let cantidad_actual = 0;
-      if (cartResults.length !== 0) {
-        cantidad_actual = cartResults[0].cantidad;
-      }
-      const nueva_cantidad = parseInt(cantidad_actual) + parseInt(cantidad_deseada);
+
+  try {
+    // Check if the required fields are provided in the request
+    if (!usuario_id || !producto_id || !cantidad_deseada || !precio) {
+      return res.status(400).json({ type: "error", message: 'Faltan campos requeridos en la solicitud', data: null });
+    }
+
+    // Convert the quantities to integers
+    const cantidadDeseadaInt = parseInt(cantidad_deseada);
+    const precioInt = parseInt(precio);
+
+    // Check if the product exists in the database
+    const productResults = await new Promise((resolve, reject) => {
       connection.query(
         'SELECT cantidad FROM productos WHERE id_producto = ?',
         [producto_id],
-        (err, productResults) => {
-          if (err) {
-            return res.status(500).json({ type: "error", message: 'Error al obtener la información del producto: ' + err, data: null });
-          }
-
-          if (productResults.length === 0) {
-            return res.status(404).json({ type: "error", message: 'Producto no encontrado', data: null });
-          }
-
-          const cantidad_disponible = productResults[0].cantidad;
-
-          if (nueva_cantidad > cantidad_disponible) {
-            return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
-          }
-          if (nueva_cantidad < 1) {
-            return res.status(400)
-          }
-          if (cartResults.length === 0) {
-            connection.query(
-              'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
-              [producto_id, usuario_id, cantidad_deseada, cantidad_deseada * precio],
-              (err, insertResult) => {
-                if (err) {
-                  console.error('Error al insertar el producto en el carrito: ', err);
-                  return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
-                }
-                return res.status(200).json({ type: "success", message: 'Producto agregado al carrito', data: null });
-              }
-            );
-          } else {
-            const { cantidad, total } = cartResults[0];
-            const newCantidad = parseInt(cantidad) + parseInt(cantidad_deseada);
-            const newTotal = parseInt(total) + parseInt(cantidad_deseada) * parseInt(precio);
-            connection.query(
-              'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
-              [newCantidad, newTotal, producto_id, usuario_id],
-              (err, updateResult) => {
-                if (err) {
-                  return res.status(500).json({ type: "error", message: 'Error al insertar el producto en el carrito: ' + err, data: null });
-                }
-              }
-            );
-          }
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
         }
       );
+    });
+
+    if (productResults.length === 0) {
+      return res.status(404).json({ type: "error", message: 'Producto no encontrado', data: null });
     }
-  );
+
+    const cantidadDisponible = productResults[0].cantidad;
+
+    // Check if the desired quantity is available
+    if (cantidadDeseadaInt > cantidadDisponible) {
+      return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
+    }
+
+    // Check if the product is already in the user's cart
+    const cartResults = await new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
+        [producto_id, usuario_id],
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    let cantidadActual = 0;
+    let isNewCartItem = true;
+
+    if (cartResults.length !== 0) {
+      cantidadActual = cartResults[0].cantidad;
+      isNewCartItem = false;
+    }
+
+    // Calculate the new quantity and total price
+    const nuevaCantidad = cantidadActual + cantidadDeseadaInt;
+    const nuevoTotal = nuevaCantidad * precioInt;
+    if (nuevaCantidad > cantidadDisponible || nuevaCantidad === 0) {
+      return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
+    }
+    if (isNewCartItem) {
+      // Insert the new item into the cart
+      await new Promise((resolve, reject) => {
+        connection.query(
+          'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
+          [producto_id, usuario_id, nuevaCantidad, nuevoTotal],
+          (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          }
+        );
+      });
+    } else {
+      // Update the existing item in the cart
+      await new Promise((resolve, reject) => {
+        connection.query(
+          'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
+          [nuevaCantidad, nuevoTotal, producto_id, usuario_id],
+          (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          }
+        );
+      });
+    }
+
+    return res.status(200).json({ type: "success", message: 'Producto agregado al carrito', data: null });
+  } catch (error) {
+    console.error('Error en el servidor:', error);
+    return res.status(500).json({ type: "error", message: 'Error en el servidor', data: null });
+  }
 });
+
 
 router.get("/", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;

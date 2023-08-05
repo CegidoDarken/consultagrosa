@@ -441,11 +441,10 @@
             await fetch("obtener_iva", {
                 method: 'POST',
             }).then(response => response.json()).then(async data => {
-                iva= data.iva;
+                iva = data.iva;
             }).catch(error => {
                 console.error(error);
             });
-            console.log(iva);
             var api = this.api();
             var totalGeneral = await api.column(6).data().reduce(function (a, b) {
                 return a + b;
@@ -510,9 +509,9 @@
                     pedidos = row;
                     return `
           <div class="quantity-control input-group" >
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, -1)" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, ${-1})" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
             <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, 1)">+</button>
+            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, ${1})">+</button>
           </div>
         `;
                 }

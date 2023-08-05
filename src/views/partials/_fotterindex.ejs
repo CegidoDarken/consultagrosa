@@ -73,7 +73,7 @@
         formData.append('precio', precio);
         formData.append('cantidad_deseada', cantidad);
         formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
-        await fetch("/agregar_carrito", {
+       await fetch("/agregar_carrito", {
             method: "POST",
             body: formData
         })
