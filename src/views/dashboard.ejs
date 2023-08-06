@@ -23,7 +23,7 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="row">
-                <a class="col-xxl-4 col-md-6" href="">
+                <a class="col-xxl-4 col-md-6" href="/proveedores">
                   <div class="card info-card sales-card">
                     <div class="card-body">
                       <h5 class="card-title">Proveedores <span></span></h5>
@@ -65,7 +65,7 @@
                 <a class="col-xxl-4 col-xl-12" href="/usuarios">
                   <div class="card info-card customers-card">
                     <div class="card-body">
-                      <h5 class="card-title">Clientes <span></span></h5>
+                      <h5 class="card-title">Usuarios <span></span></h5>
                       <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                           <i class="bi bi-people"></i>
@@ -80,14 +80,6 @@
                     </div>
                   </div>
                 </a>
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="card-title">Abastecimiento</h5>
-                      <div id="reportsChart3"></div>
-                    </div>
-                  </div>
-                </div>
 
                 <div class="col-12">
                   <div class="card">
@@ -176,7 +168,7 @@
           name: 'Productos',
           data: data.productos
         }, {
-          name: 'Clientes',
+          name: 'Usuarios',
           data: data.usuarios
         }],
         chart: {
@@ -214,66 +206,6 @@
             format: 'dd/MM/yy HH:mm'
           },
         }
-      });
-      chart.render();
-      chart.update();
-    }).catch(error => {
-      console.error(error);
-    });
-  }
-  async function abastecimiento() {
-    await fetch("/abastecimiento", {
-      method: 'POST',
-    }).then(response => response.json()).then(data => {
-      console.log(data.data);
-      let meses = [];
-      let result = [];
-      let colors = [];
-      let mins = [];
-      data.data.forEach(element => {
-        meses.push(element.nombre);
-      });
-      data.data.forEach(element => {
-        result.push(element.cantidad);
-      });
-      data.data.forEach(element => {
-        mins.push(element.min);
-      });
-      data.data.forEach(element => {
-        if (element.cantidad === 1) {
-          colors.push('#27AE60');
-        } else if (element.cantidad < element.min) {
-          colors.push('#ff771d');
-        } else {
-          colors.push('#27AE60');
-        }
-      });
-      console.log(meses);
-      const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
-        series: [{
-          name: 'Minimo',
-          data: mins,
-        },
-        {
-          name: 'Cantidad',
-          data: result,
-        }],
-        chart: {
-          height: 600,
-          type: 'bar',
-          toolbar: {
-            show: false
-          },
-        },
-        markers: {
-          size: 4
-        },
-        dataLabels: {
-          enabled: false
-        },
-        xaxis: {
-          categories: meses,
-        },
       });
       chart.render();
       chart.update();
@@ -339,7 +271,6 @@
   }
   actividades_registros();
   actividades_pedidos();
-  abastecimiento();
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
     ajax: {

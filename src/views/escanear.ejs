@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Inventario</title>
+    <title>Escanear RFID</title>
 </head>
 
 <body>
@@ -10,12 +10,11 @@
         <%- include("partials/_sidebarpanel") %>
             <main id="main" class="main">
                 <div class="pagetitle">
-                    <h1>Inventario</h1>
+                    <h1>Escanear RFID</h1>
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
-                            <li class="breadcrumb-item">Productos</li>
-                            <li class="breadcrumb-item active">Escanear</li>
+                            <li class="breadcrumb-item active">Escanear RFID</li>
                         </ol>
                     </nav>
                 </div>
@@ -27,9 +26,9 @@
                                 <div id="connected" class="row g-0" style="display: none;">
                                     <div class="col">
                                         <div class="card-body">
-                                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2">
+                                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
                                                 <div class="col">
-                                                    <div class="card text-center mb-3 shadow">
+                                                    <div class="card text-center mb-3 shadow-lg">
                                                         <div class="card-body">
                                                             <svg class="icon m-3" width="100" height="100"
                                                                 fill="#1f6f40">
@@ -47,7 +46,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="card text-center mb-3 shadow">
+                                                    <div class="card text-center mb-3 shadow-lg">
                                                         <div class="card-body">
                                                             <svg class="icon m-3" width="100" height="100"
                                                                 fill="#1f6f40">
@@ -204,8 +203,8 @@
     let producto;
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-        var cantidad = $('#cantidad').val();
-        var cantidades = $('#cantidades').val();
+        var cantidad = parseInt($('#cantidad').val());
+        var cantidades = parseInt($('#cantidades').val());;
 
         var valorSeleccionado = $('#tipo_movimiento').val();
         const formData = new FormData(event.target);
@@ -269,7 +268,9 @@
                 });
             }
         } else if (valorSeleccionado == '3') {
-            if (cantidad <= cantidades || cantidad != 0) {
+            console.log(cantidad, cantidades);
+            if (cantidad <= cantidades && cantidad != 0) {
+                console.log(cantidad, cantidades);
                 console.log('Modo seleccionado: Salida');
                 const response = await fetch('kardex_salida', {
                     method: 'POST',
@@ -298,12 +299,12 @@
                         timer: 3000
                     });
                 }
-            } else if (data.error) {
+            } else {
                 Swal.fire({
                     toast: true,
                     position: 'bottom-end',
                     icon: 'error',
-                    title: data.error,
+                    text: 'Cantidad no disponible',
                     showConfirmButton: false,
                     timerProgressBar: true,
                     timer: 3000
@@ -395,14 +396,17 @@
         Swal.fire({
             title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
             icon: 'info',
-            text: ' ',
-            showCloseButton: true,
-            showCancelButton: false,
+            text: '',
+            showCloseButton: false,
+            showCancelButton: true,
             showConfirmButton: false,
-            focusConfirm: false,
-            width: '800px'
+            confirmButtonColor: "#198754",
+            cancelButtonText: 'CANCELAR',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            width: '800px',
         }).then(async (result) => {
-            if (reader) {
+            if (result.isDenied) {
                 await reader.cancel();
                 reader.releaseLock();
                 reader = null;
@@ -425,11 +429,10 @@
                 const receivedData = textDecoder.decode(value);
                 message += receivedData;
                 if (receivedData.includes("\n")) {
-                    if (message.includes("Type First name, ending with #")) {
-                        await setTimeout(async () => {
-                            await sendData(data + "#");
-                        }, 1000);
-                    } else if (message.includes("PCD_Authenticate() failed: Timeout in communication.") || message.includes("PCD_Authenticate() failed:: Error in communication.")) {
+                    console.log(message);
+                    if (message.includes("#")) {
+                        await sendData(data + "#");
+                    } else if (message.includes("failed")) {
                         Swal.fire({
                             toast: true,
                             position: 'bottom-end',
@@ -445,30 +448,43 @@
                         document.getElementById("connected").style.display = "none";
                         document.getElementById("disconnected").style.display = "block";
                         console.log('Desconectado del puerto serie.');
-                    } else if (message.includes("MIFARE_Write() success:")) {
+                    } else if (message.includes("success")) {
                         fetch('/buscarproductotag', {
                             method: 'POST',
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ tag: data }),
                         }).then(response => response.json()).then(async data => {
                             snd.play();
-                            await sendData("null");
-                            await sendData("null");
                             Swal.fire({
-                                title: '¡PRODUCTO ASIGNADO CORRECTAMENTE!',
                                 icon: 'success',
-                                html: `<div class="card mb-3 border-0" ><div class="row g-0"><div class="col-md-2"><img src="${data.img}" alt="${data.nombre}" class="img-fluid rounded-start"/></div><div class="col-md-8"><div class="card-body"><h5 class="card-title text-uppercase">${data.nombre} <span class="badge bg-success rounded-pill">${data.categoria}</span></h5><p class="card-text">${data.descripcion}</p><p class="card-text"><div class="text-body-secondary">Código: ${data.codigo}</div></p></div></div></div></div>`,
-                                showCloseButton: true,
-                                showCancelButton: false,
+                                title: '¡ASIGNADO CORRECTAMENTE!',
                                 showConfirmButton: false,
-                                focusConfirm: false,
-                                width: '800px'
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                timerProgressBar: true,
+                                timer: 3000
                             }).then(async (result) => {
-                                if (reader) {
-                                    await reader.cancel();
-                                    reader.releaseLock();
-                                    reader = null;
-                                }
+                                await sendData("e");
+                                await sendData("e");
+                                Swal.fire({
+                                    title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
+                                    icon: 'info',
+                                    text: '',
+                                    showCloseButton: false,
+                                    showCancelButton: true,
+                                    showConfirmButton: false,
+                                    confirmButtonColor: "#198754",
+                                    cancelButtonText: 'CANCELAR',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    width: '800px',
+                                }).then(async (result) => {
+                                    if (result.isDenied) {
+                                        await reader.cancel();
+                                        reader.releaseLock();
+                                        reader = null;
+                                    }
+                                });
                             });
                         });
                     }
@@ -508,7 +524,8 @@
                 const receivedData = textDecoder.decode(value);
                 message += receivedData;
                 if (receivedData.includes("\n")) {
-                    if (message.includes("MIFARE_Read() failed: The CRC_A does not match.") || message.includes("MIFARE_Read() failed: Error in communication.") || message.includes("PCD_Authenticate() failed: Timeout in communication.")) {
+                    console.log(message);
+                    if (message.includes("failed")) {
                         Swal.fire({
                             toast: true,
                             position: 'bottom-end',
@@ -530,7 +547,7 @@
                     fetch('/buscarproductotag', {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ tag: message.trim() }),
+                        body: JSON.stringify({ tag: message.trim().replace('l', '') }),
                     }).then(response => response.json()).then(async data => {
                         if (data.message) {
                             Swal.fire({

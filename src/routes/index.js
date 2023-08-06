@@ -461,6 +461,25 @@ router.post("/mas_pedidos", async (req, res) => {
 router.post("/abastecimiento", async (req, res) => {
   res.json({ data: await abastecimiento() });
 });
+router.post("/count_abastecimiento", async (req, res) => {
+  res.json({ data: await count_abastecimiento() });
+});
+async function count_abastecimiento() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT COUNT(*) AS cantidad  FROM `productos` WHERE `cantidad` < `min`;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          resolve(result[0]);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function abastecimiento() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT `img`,`nombre`,`cantidad`, `min` FROM `railway`.`productos` WHERE `cantidad` < `min`;";
@@ -558,7 +577,7 @@ async function mas_pedidos(anio) {
 }
 async function obtener_num_clientes() {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT count(*) AS num_clientes FROM usuarios where usuarios.perfil_id = 2;";
+    const sql = "SELECT count(*) AS num_clientes FROM usuarios";
     connection.query(sql, (error, productos) => {
       if (error) {
         reject(error);
@@ -1128,7 +1147,7 @@ router.post("/kardex_entrada", async (req, res) => {
             res.status(500).json({ error: "Error al obtener el resultado de la suma" });
           } else {
             sql = "INSERT INTO `kardex` (`producto_id`, `fecha`, `detalle`, `ecantidad`, `eunidad`, `etotal`, `icantidad`, `iunidad`, `itotal`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], precio, selectResult[0]['total']], (error, insertResult) => {
+            connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], precio, (selectResult[0]['cantidad'] * precio)], (error, insertResult) => {
               if (error) {
                 console.log('Error al insertar en el kardex:', error);
                 res.status(500).json({ error: "Error al insertar en el kardex" });
@@ -1168,7 +1187,7 @@ router.post("/kardex_salida", async (req, res) => {
             res.status(500).json({ error: "Error al obtener el resultado de la suma" });
           } else {
             sql = "INSERT INTO `kardex` (`producto_id`, `fecha`, `detalle`, `scantidad`, `sunidad`, `stotal`, `icantidad`, `iunidad`, `itotal`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], precio, selectResult[0]['total']], (error, insertResult) => {
+            connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], (cantidad * selectResult[0]['cantidad'])], (error, insertResult) => {
               if (error) {
                 console.log('Error al insertar en el kardex:', error);
                 res.status(500).json({ error: "Error al insertar en el kardex" });

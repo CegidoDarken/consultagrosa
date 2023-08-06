@@ -25,8 +25,7 @@
                 <li>
                     <a href="/abastecimiento">
                         <span><i class="bi bi-arrow-clockwise fs-6"></i>Abastecimiento</span>
-                        <span class="position-relative translate-middle badge rounded-pill bg-danger">
-                            99+
+                        <span class="position-relative translate-middle badge rounded-pill bg-danger" id="abas">
                         </span>
                     </a>
                 </li>
@@ -84,6 +83,25 @@
                 <span>Escaner RFID</span>
             </a>
         </li>
-
     </ul>
 </aside>
+<script>
+    fetch("/count_abastecimiento", {
+        method: "POST"
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            if (data.data !== null) {
+                if (data.data.cantidad >= 100) {
+                    $("#abas").text("+99");
+                } else {
+                    $("#abas").text(data.data.cantidad);
+                }
+            }
+        })
+        .catch(function (error) {
+            console.error("Error:", error);
+        }); 
+</script>
