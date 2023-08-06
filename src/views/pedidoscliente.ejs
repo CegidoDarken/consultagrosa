@@ -84,21 +84,8 @@
             <section class="section profile mt-5">
                 <h2 class="text-center m-3" style="color: #59ab6e;"><i class="bi bi-bag"></i> Mis pedidos</h2>
                 <div class="row">
-                    <div class="col-xl-3 mb-3">
-                        <div class="card">
-                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                                <h1><i class="bi bi-person-circle" style="color: #59ab6e;"></i></h1>
-                                <h2>
-                                    <%= credentials.nombre %>
-                                </h2>
-                                <h3>
-                                    <%= credentials.perfil %>
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-xl-8">
+                    <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -121,14 +108,13 @@
                                 <section class="section">
                                     <div class="row">
                                         <div class="col-lg-12">
-
                                             <div class="container-fluid mt-2 p-0">
-                                                <div class="table-wrapper">
+                                                <div class="table-wrapper overflow-x-scroll">
                                                     <table
                                                         class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
                                                         id="datatable">
                                                         <thead>
-                                                            <tr class="text-light" style="background-color: #59ab6e;">
+                                                            <tr class="text-white" style="background-color: #59ab6e;">
                                                                 <th>FECHA</th>
                                                                 <th>IMAGEN</th>
                                                                 <th>PRODUCTO</th>
@@ -136,6 +122,7 @@
                                                                 <th>PRECIO PRODUCTO</th>
                                                                 <th>TOTAL</th>
                                                                 <th>ESTADOS</th>
+                                                                <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -237,6 +224,28 @@
                                 return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
                             }
                         },
+                        {
+                            targets: 7,
+                            render: function (data, type, row, meta) {
+                                var estado = row.estado;
+                                var badgeClass = '';
+                                switch (estado) {
+                                    case 'Aprobado':
+                                        acciones = `<div class="dropdown"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button><ul class="dropdown-menu"><li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle"></i> Cancelar</a></li></ul></div>`;
+                                        break;
+                                    case 'Cancelado':
+                                        acciones = `<div class="dropdown"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>Acciones</button><ul class="dropdown-menu"></ul></div>`;
+                                        break;
+                                    case 'Pendiente':
+                                        acciones = `<div class="dropdown"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button><ul class="dropdown-menu"><li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle"></i> Cancelar</a></li></ul></div>`;
+                                        break;
+                                    default:
+                                        acciones = 'badge bg-secondary';
+                                }
+
+                                return acciones;
+                            }
+                        },
                     ],
                     "language": {
                         "sEmptyTable": "No hay datos disponibles en la tabla",
@@ -267,7 +276,7 @@
                     }
                 });
                 $("#datatable_filter").hide();
-                $('#search').keyup(function () {
+                $("#search").keyup(function () {
                     table = $('.tablesort').DataTable();
                     table.search($(this).val()).draw();
                 });

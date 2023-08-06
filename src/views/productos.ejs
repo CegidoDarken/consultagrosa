@@ -30,15 +30,18 @@
                                                 class="bi bi-plus"></i>Nuevo producto</button>
                                     </div>
                                 </div>
-                                <div class="card-header row">
-                                    <div class="col-md-3">
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control" id="search" placeholder="Buscar"
-                                                value="">
-                                            <span class="input-group-text" id="basic-addon1"><i
-                                                    class="bi bi-search"></i></span>
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" id="search" placeholder="Buscar"
+                                                    value="">
+                                                <span class="input-group-text" id="basic-addon1"><i
+                                                        class="bi bi-search"></i></span>
+                                            </div>
                                         </div>
                                     </div>
+
                                     <div class="col-md-2">
                                         <div class="input-group mb-3">
                                             <input type="date" class="form-control" id="date" value="">
@@ -259,8 +262,7 @@
                             {
                                 targets: 0,
                                 render: function (data, type, row, meta) {
-                                    var data = table.row(meta.row).data();
-                                    return (data.img) ? `<button data-img="${data.img}" data-nombre="${data.nombre}" class="btn btn-primary btn-sm m-1" onclick="view_img(this)" ><i class="bi bi-eye-fill"></i></button>` : "-";
+                                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                                 }
                             },
                             {

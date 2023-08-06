@@ -82,6 +82,10 @@ router.get("/usuarios", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("usuarios", { credentials });
 });
+router.get("/proveedores", async (req, res) => {
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  res.render("proveedores", { credentials });
+});
 router.get("/contactanos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("contactanos", { credentials });
@@ -415,6 +419,10 @@ router.get("/pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("pedidos", { credentials });
 });
+router.get("/abastecimiento", async (req, res) => {
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  res.render("abastecimiento", { credentials });
+});
 router.get("/dashboard", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   num_productos = await obtener_num_productos();
@@ -448,10 +456,32 @@ router.post("/actividades_pedidos", async (req, res) => {
 
 router.post("/mas_pedidos", async (req, res) => {
   let anio = req.body.anio;
-  console.log(anio);
   res.json({ data: await mas_pedidos(anio) });
 });
-
+router.post("/abastecimiento", async (req, res) => {
+  res.json({ data: await abastecimiento() });
+});
+async function abastecimiento() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT `img`,`nombre`,`cantidad`, `min` FROM `railway`.`productos` WHERE `cantidad` < `min`;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          result.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function actividades_pedidos(anio) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT calendar.year, calendar.month, COUNT(detallepedidos.producto_id) AS product_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) LEFT JOIN detallepedidos ON pedidos.id_pedido = detallepedidos.pedido_id GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
@@ -797,6 +827,20 @@ router.post("/obtener_inventario_total", async (req, res) => {
 });
 router.post("/obtener_usuarios", async (req, res) => {
   const sql = "SELECT * FROM usuarios INNER JOIN perfiles ON usuarios.perfil_id = perfiles.id_perfil LEFT JOIN ciudades ON usuarios.ciudad_id = ciudades.id_ciudad LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
+router.post("/obtener_proveedores", async (req, res) => {
+  const sql = "SELECT * FROM `proveedores` LEFT JOIN `ciudades` ON `proveedores`.`ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
   connection.query(sql, (error, result) => {
     if (error) {
       res.json({ data: error.message });

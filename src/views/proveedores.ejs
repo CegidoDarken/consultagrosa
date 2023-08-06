@@ -4,7 +4,6 @@
 <head>
     <title>Inventario</title>
 </head>
-
 <body>
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
@@ -15,7 +14,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
                             <li class="breadcrumb-item">Administrar</li>
-                            <li class="breadcrumb-item active">Usuarios</li>
+                            <li class="breadcrumb-item active">Proveedores</li>
                         </ol>
                     </nav>
                 </div>
@@ -24,13 +23,6 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <div class="d-grid gap-2 d-md-block">
-                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#nuevoModal"><i class="bi bi-plus"></i>Nuevo
-                                            usuario</button>
-                                    </div>
-                                </div>
                                 <div class="card-header">
                                     <div class="input-group mb-3">
                                         <form class="form-floating">
@@ -51,14 +43,12 @@
                                                 <thead class="text-light" style="background-color: #59ab6e;">
                                                     <tr>
                                                         <th>Nombre</th>
-                                                        <th>Usuario</th>
                                                         <th>Identificacion</th>
                                                         <th>Correo</th>
                                                         <th>Teléfono</th>
                                                         <th>Provincia</th>
                                                         <th>Ciudad</th>
                                                         <th>Dirección</th>
-                                                        <th>Perfil</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -73,96 +63,7 @@
                     </div>
                 </section>
             </main>
-            <div class="modal fade" id="nuevoModal" tabindex="-1" aria-labelledby="nuevoModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="nuevoModalLabel">Nuevo usuario</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formulario">
-                                <div class="card mb-3 border-0">
-                                    <div class="row g-0">
-                                        <div class="col-md-12">
-                                            <div class="card-body">
-                                                <div class="row g-3">
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="nombre"
-                                                                placeholder="Ingese su nombre" required>
-                                                            <label for="nombre">Nombre</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="usuario"
-                                                                placeholder="Ingese su nombre de usuario" required>
-                                                            <label for="usuario">Usuario</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="number" class="form-control"
-                                                                id="identificacion"
-                                                                placeholder="Ingese su número de Cédula/RUC" required>
-                                                            <label for="identificacion">Cédula/RUC</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <input type="email" class="form-control" id="correo"
-                                                                placeholder="Ingese su correo" required>
-                                                            <label for="correo">Correo</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select"
-                                                                id="provincias">
-                                                                <option selected disabled>Selecione una opción
-                                                                </option>
-                                                            </select>
-                                                            <label for="floatingSelect">Provincias</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="ciudades">
-                                                                <option selected disabled>Selecione una opción</option>
-                                                            </select>
-                                                            <label for="floatingSelect">Ciudades</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="direccion"
-                                                                placeholder="Ingese su direccion" required>
-                                                            <label for="direccion">Dirección</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="perfiles">
-                                                                <option selected disabled>Selecione una opción</option>
-                                                            </select>
-                                                            <label for="floatingSelect">Perfiles</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+
             <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -193,8 +94,7 @@
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
-                                                            <input type="number" class="form-control"
-                                                                id="identificacion"
+                                                            <input type="number" class="form-control" id="identificacion"
                                                                 placeholder="Ingese su número de Cédula/RUC" required>
                                                             <label for="identificacion">Cédula/RUC</label>
                                                         </div>
@@ -209,8 +109,8 @@
                                                     <div class="col-12">
                                                         <div class="form-floating">
                                                             <select name="categoria" class="form-select"
-                                                                id="provincias2">
-                                                                <option selected disabled>Provincias</option>
+                                                                id="provincias">
+                                                                <option selected disabled >Provincias</option>
                                                             </select>
                                                             <label for="floatingSelect">Selecione una provincia</label>
                                                         </div>
@@ -218,8 +118,8 @@
                                                     <div class="col-12">
                                                         <label for="editcategoria" class="form-label">Ciudad</label>
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="ciudades2">
-                                                                <option selected disabled>Ciudades</option>
+                                                            <select name="categoria" class="form-select" id="ciudades">
+                                                                <option selected disabled >Ciudades</option>
                                                             </select>
                                                             <label for="floatingSelect">Selecione una ciudad</label>
                                                         </div>
@@ -233,7 +133,7 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="perfiles2">
+                                                            <select name="categoria" class="form-select" id="perfiles">
                                                             </select>
                                                             <label for="floatingSelect">Selecione un perfil</label>
                                                         </div>
@@ -290,7 +190,6 @@
                 <script>
                     $(document).ready(function () {
                         var provinciasSelect = document.getElementById("provincias");
-                        var provinciasSelect2 = document.getElementById("provincias2");
                         fetch("/obtener_provincias", {
                             method: "POST"
                         })
@@ -304,12 +203,6 @@
                                         option.value = provincia.id_provincia;
                                         option.text = provincia.provincia;
                                         provinciasSelect.appendChild(option);
-                                    });
-                                    data.data.forEach(function (provincia) {
-                                        var option = document.createElement("option");
-                                        option.value = provincia.id_provincia;
-                                        option.text = provincia.provincia;
-                                        provinciasSelect2.appendChild(option);
                                     });
                                 }
                             })
@@ -332,7 +225,6 @@
                                 })
                                 .then(function (data) {
                                     if (data.data !== null) {
-                                        ciudadesSelect.innerHTML = "<option value='' selected disabled>Selecciona una opción</option>";
                                         data.data.forEach(function (ciudad) {
                                             var option = document.createElement("option");
                                             option.value = ciudad.id_ciudad;
@@ -345,37 +237,7 @@
                                     console.error("Error:", error);
                                 });
                         });
-                        var ciudadesSelect2 = document.getElementById("ciudades2");
-                        provinciasSelect2.addEventListener("change", function () {
-                            var provinciaId = this.value;
-                            ciudadesSelect2.innerHTML = "";
-                            fetch("/obtener_ciudades", {
-                                method: "POST",
-                                body: JSON.stringify({ provinciaId: provinciaId }),
-                                headers: {
-                                    "Content-Type": "application/json"
-                                }
-                            })
-                                .then(function (response) {
-                                    return response.json();
-                                })
-                                .then(function (data) {
-                                    if (data.data !== null) {
-                                        ciudadesSelect2.innerHTML = "<option value='' selected disabled>Selecciona una opción</option>";
-                                        data.data.forEach(function (ciudad) {
-                                            var option = document.createElement("option");
-                                            option.value = ciudad.id_ciudad;
-                                            option.text = ciudad.ciudad;
-                                            ciudadesSelect2.appendChild(option);
-                                        });
-                                    }
-                                })
-                                .catch(function (error) {
-                                    console.error("Error:", error);
-                                });
-                        });
                         var perfilesSelect = document.getElementById("perfiles");
-                        var perfilesSelect2 = document.getElementById("perfiles2");
                         fetch("/obtener_perfiles", {
                             method: "POST"
                         })
@@ -390,21 +252,14 @@
                                         option.text = provincia.perfil;
                                         perfilesSelect.appendChild(option);
                                     });
-                                    data.data.forEach(function (provincia) {
-                                        var option = document.createElement("option");
-                                        option.value = provincia.id_perfil;
-                                        option.text = provincia.perfil;
-                                        perfilesSelect2.appendChild(option);
-                                    });
                                 }
                             })
                             .catch(function (error) {
                                 console.error("Error:", error);
                             });
-
                         var table = $('#datatable').DataTable({
                             ajax: {
-                                url: "/obtener_usuarios",
+                                url: "/obtener_proveedores",
                                 "type": "POST",
                                 "dataSrc": "data",
                             },
@@ -412,14 +267,12 @@
                             info: true,
                             paging: true, columns: [
                                 { data: "nombre", defaultContent: "-" },
-                                { data: "usuario", defaultContent: "-" },
                                 { data: "identificacion", defaultContent: "-" },
                                 { data: "correo", defaultContent: "-" },
                                 { data: "telefono", defaultContent: "-" },
                                 { data: "provincia", defaultContent: "-" },
                                 { data: "ciudad", defaultContent: "-" },
-                                { data: "direccion", defaultContent: "-" },
-                                { data: "perfil", defaultContent: "-" },
+                                { data: "direccion", defaultContent: "-" }
                             ],
                             columnDefs: [
                                 {
@@ -427,11 +280,11 @@
                                     className: "dt-center",
                                 },
                                 {
-                                    targets: 9,
+                                    targets: 7,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button><button type="button" class="btn btn-warning text-light btn-sm m-1" data-bs-toggle="modal" data-bs-target="#cambiar_contasena_modal"  title="Cambiar contraseña"><i class="bi bi-key"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
                                     }
                                 }
                             ],
