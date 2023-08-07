@@ -56,6 +56,7 @@
                                                         <th>PRECIO PRODUCTO</th>
                                                         <th>TOTAL</th>
                                                         <th>ESTADOS</th>
+                                                        <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -112,8 +113,9 @@
             </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
+                    var tabla;
                     $(document).ready(function () {
-                        var tabla = $('#datatable').DataTable({
+                        tabla = $('#datatable').DataTable({
                             ajax: {
                                 url: '/obtener_pedidos',
                                 type: 'POST',
@@ -171,13 +173,34 @@
                                                 badgeClass = 'badge bg-danger';
                                                 break;
                                             case 'Pendiente':
-                                                badgeClass = 'badge bg-warning text-dark';
+                                                badgeClass = 'badge bg-warning';
                                                 break;
                                             default:
                                                 badgeClass = 'badge bg-secondary';
                                         }
 
                                         return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                                    }
+                                },
+                                {
+                                    targets: 8,
+                                    render: function (data, type, row, meta) {
+                                        var estado = row.estado;
+                                        var opciones = '';
+                                        switch (estado) {
+                                            case 'Aprobado':
+                                                opciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="#"><i class="bi bi-back"></i>Devolución</a></li></ul></div>`;
+                                                break;
+                                            case 'Cancelado':
+                                                opciones = ``;
+                                                break;
+                                            case 'Pendiente':
+                                                opciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><button class="dropdown-item text-success" onclick="aprobar(${row.id_detalle_pedido})"><i class="bi bi-check"></i> Aprobar</button></li><li><button class="dropdown-item text-danger" onclick="cancelar(${row.id_detalle_pedido})"><i class="bi bi-x"></i>Cancelar</button></li></ul></div>`;
+                                                break;
+                                            default:
+                                                opciones = '';
+                                        }
+                                        return opciones;
                                     }
                                 },
                             ],
@@ -219,13 +242,57 @@
                             table.search($(this).val()).draw();
                         });
                         $('#actualizar').click(async function () {
-                            await table.ajax.reload()
+                            await tabla.ajax.reload()
                         });
                         $('#productos').change(function () {
                             tabla.ajax.reload();
                         });
                     });
+                    function aprobar(id_detalle_pedido) {
+                        fetch("/aprobar_pedido", {
+                            method: 'POST',
+                            body: JSON.stringify({ id_detalle_pedido: id_detalle_pedido }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json()).then(data => {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: data.type,
+                                text: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            tabla.ajax.reload();
+                        }).catch(error => {
+                            console.error(error);
+                        });
+                    }
 
+                    function cancelar(id_detalle_pedido) {
+                        fetch("/cancelar_pedido", {
+                            method: 'POST',
+                            body: JSON.stringify({ id_detalle_pedido: id_detalle_pedido }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json()).then(data => {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: data.type,
+                                text: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            tabla.ajax.reload();
+                        }).catch(error => {
+                            console.error(error);
+                        });
+                    }
                 </script>
 
 </body>

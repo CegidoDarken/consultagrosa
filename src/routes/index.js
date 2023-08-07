@@ -351,12 +351,6 @@ router.post("/realizar_pedidos", async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-    const updateCantidadProductoQuery = `
-      UPDATE railway.productos
-      SET cantidad = cantidad - ?
-      WHERE id_producto = ?
-    `;
-
     const pedidoResult = await new Promise((resolve, reject) => {
       connection.query(insertPedidoQuery, [id_usuario, formattedDate, total], (error, results) => {
         if (error) {
@@ -376,16 +370,6 @@ router.post("/realizar_pedidos", async (req, res) => {
           if (error) {
             reject(error);
           } else {
-            // Restar la cantidad vendida al producto
-            await new Promise((resolve, reject) => {
-              connection.query(updateCantidadProductoQuery, [cantidad, id_producto], (error) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve();
-                }
-              });
-            });
             resolve();
           }
         });
@@ -677,19 +661,28 @@ async function obtener_num_proveedores() {
 }
 router.get("/productos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT * FROM categorias ORDER BY categoria ASC";
-  connection.query(sql, (error, categorias) => {
+  const sqlCategorias = "SELECT * FROM categorias ORDER BY categoria ASC";
+  const sqlProveedores = "SELECT * FROM proveedores"; // Replace 'proveedores' with the actual table name
+
+  connection.query(sqlCategorias, (error, categorias) => {
     if (error) {
       res.render("productos", { credentials, categorias: error.message });
     } else {
-      if (categorias.length > 0) {
-        res.render("productos", { credentials, categorias });
-      } else {
-        res.render("productos", { credentials, categorias: null });
-      }
+      connection.query(sqlProveedores, (error, proveedores) => {
+        if (error) {
+          res.render("productos", { credentials, categorias, proveedores: error.message });
+        } else {
+          if (categorias.length > 0) {
+            res.render("productos", { credentials, categorias, proveedores });
+          } else {
+            res.render("productos", { credentials, categorias: null, proveedores });
+          }
+        }
+      });
     }
   });
 });
+
 router.get("/kardex", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sql = "SELECT * FROM productos ORDER BY nombre ASC";
@@ -706,7 +699,7 @@ router.get("/kardex", async (req, res) => {
   });
 });
 router.post("/obtener_inventario", async (req, res) => {
-  const sql = "SELECT * FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria  ORDER BY nombre ASC";
+  const sql = "SELECT id_producto, proveedor_id, categoria_id, img, codigo, productos.nombre AS producto, proveedores.nombre AS proveedor, categoria, tag, medida, precio, descripcion, cantidad, total, productos.fecha FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id_proveedor;";
   connection.query(sql, (error, productos) => {
     if (error) {
       res.json({ data: error.message });
@@ -765,6 +758,78 @@ router.post("/asignar_producto", async (req, res) => {
       }
     }
   });
+});
+router.post("/aprobar_pedido", async (req, res) => {
+  const { id_detalle_pedido } = req.body;
+
+  try {
+    // Get the pedido details from the database
+    connection.query(
+      `SELECT dp.cantidad AS pedido_cantidad, p.cantidad AS producto_cantidad, dp.producto_id
+      FROM detallepedidos dp
+      INNER JOIN productos p ON dp.producto_id = p.id_producto
+      WHERE dp.id_detalle_pedido = ?`,
+      [id_detalle_pedido],
+      (error, results) => {
+        if (error) {
+          return res.status(500).json({ type: "error", error: error.message });
+        } else if (results.length === 0) {
+          return res.status(404).json({ type: "error", message: "Pedido not found." });
+        } else {
+          const pedido = results[0];
+          if (pedido.pedido_cantidad > pedido.producto_cantidad) {
+            return res.status(400).json({ type: "error", message: "Pedido cantidad exceeds product cantidad." });
+          }
+          const updatedQuantity = pedido.producto_cantidad - pedido.pedido_cantidad;
+          connection.query(
+            `UPDATE detallepedidos SET estado = 'Aprobado', cantidad = ? WHERE id_detalle_pedido = ?`,
+            [pedido.pedido_cantidad, id_detalle_pedido],
+            (error, results) => {
+              if (error) {
+                return res.status(500).json({ type: "error", error: error.message });
+              } else {
+                connection.query(
+                  `UPDATE productos SET cantidad = ? WHERE id_producto = ?`,
+                  [updatedQuantity, pedido.producto_id],
+                  (error, results) => {
+                    if (error) {
+                      return res.status(500).json({ type: "error", error: error.message });
+                    } else {
+                      return res.status(200).json({ type: "success", message: "Pedido approved and product quantity updated." });
+                    }
+                  }
+                );
+              }
+            }
+          );
+        }
+      }
+    );
+  } catch (err) {
+    console.error("Error approving pedido:", err);
+    return res.status(500).json({ type: "error", error: "An error occurred while approving the pedido." });
+  }
+});
+
+router.post("/cancelar_pedido", async (req, res) => {
+  const { id_detalle_pedido } = req.body;
+
+  try {
+    connection.query(
+      `UPDATE detallepedidos SET estado = 'Cancelado' WHERE id_detalle_pedido = ?`,
+      [id_detalle_pedido], (error, results) => {
+        if (error) {
+          return res.status(404).json({ type: "error", error: error.message });
+        } else {
+          if (results) {
+            return res.status(200).json({ type: "success", message: "Pedido aprobado" });
+          }
+        }
+      });
+  } catch (err) {
+    console.error("Error approving pedido:", err);
+    return res.status(500).json({ error: "An error occurred while approving the pedido." });
+  }
 });
 
 router.post('/registrar_cliente', (req, res) => {
@@ -966,15 +1031,15 @@ router.post('/obtener_iva', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
+  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
   let sql;
   let values;
   if (img) {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
-    values = [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
+    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
   } else {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
-    values = [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?, `categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
+    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, id_producto];
   }
 
   connection.query(sql, values, (error, results) => {
@@ -999,9 +1064,9 @@ router.post('/insertar_producto', (req, res) => {
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const { codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
-  const sql = "INSERT INTO `productos`(`codigo`, `tag`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-  connection.query(sql, [codigo, tag, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
+  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  const sql = "INSERT INTO `productos`(`codigo`, `tag`,`proveedor_id`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+  connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
@@ -1243,7 +1308,7 @@ router.post("/productos", async (req, res) => {
 //TODO: Funciones
 async function obtener_productos() {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria";
+    const sql = "SELECT * FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id_proveedor;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);

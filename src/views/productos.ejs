@@ -59,6 +59,7 @@
                                                         <th>Imagen</th>
                                                         <th>Código</th>
                                                         <th>Nombre</th>
+                                                        <th>Proveedor</th>
                                                         <th>Categoría</th>
                                                         <th>Tag</th>
                                                         <th>Medidas</th>
@@ -131,6 +132,23 @@
                                                                 name="nombre"
                                                                 placeholder="Ingrese un nombre de producto" required>
                                                             <label for="nombre">Nombre</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-floating mb-3">
+                                                            <select name="proveedor" class="form-select" id="proveedores"
+                                                                required>
+                                                                <option value="" selected disabled>Selecciona una opción
+                                                                </option>
+                                                                <% if (proveedores) { %>
+                                                                    <% proveedores.forEach(row=> { %><option
+                                                                            value="<%= row.id_proveedor %>" }>
+                                                                            <%= row.nombre %>
+                                                                        </option>
+                                                                        <% }); %>
+                                                                            <% } %>
+                                                            </select>
+                                                            <label for="floatingSelect">Proveedores</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
@@ -245,7 +263,8 @@
                         paging: true, columns: [
                             { data: "img" },
                             { data: "codigo", defaultContent: "-" },
-                            { data: "nombre", defaultContent: "-" },
+                            { data: "producto", defaultContent: "-" },
+                            { data: "proveedor", defaultContent: "-" },
                             { data: "categoria", defaultContent: "-" },
                             { data: "tag", defaultContent: "-" },
                             { data: "medida", defaultContent: "-" },
@@ -266,7 +285,7 @@
                                 }
                             },
                             {
-                                targets: 4,
+                                targets: 5,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     if (data.tag) {
@@ -277,21 +296,21 @@
                                 }
                             },
                             {
-                                targets: 6,
+                                targets: 7,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     return "$" + data.precio;
                                 }
                             },
                             {
-                                targets: 8,
+                                targets: 9,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     return "$" + data.total;
                                 }
                             },
                             {
-                                targets: 9,
+                                targets: 10,
                                 render: function (data, type, row, meta) {
                                     if (type === 'display' || type === 'filter') {
                                         return new Date(data).toLocaleDateString();
@@ -300,11 +319,11 @@
                                 }
                             },
                             {
-                                targets: 10,
+                                targets: 11,
                                 render: function (data, type, row, meta) {
                                     var data = table.row(meta.row).data();
                                     var dataAsString = JSON.stringify(data);
-                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.nombre}" data-tag="${data.tag}" data-tag="${data.tag}" data-descripcion="${data.descripcion}" data-cantidad="${data.cantidad}" data-descuento="${data.descuento}" data-precio="${data.precio}" data-preciodesc="${data.preciodesc}" data-medida="${data.medida}" data-tag="${data.tag}" data-total="${data.total}" data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.producto}" data-tag="${data.tag}" data-descripcion="${data.descripcion??""}" data-cantidad="${data.cantidad}" data-precio="${data.precio}" data-medida="${data.medida}" data-total="${data.total}" data-proveedor="${data.proveedor_id} data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                 }
                             }
                         ],
@@ -369,6 +388,7 @@
                         var precio = button.getAttribute('data-precio');
                         var total = button.getAttribute('data-total');
                         var medida = button.getAttribute('data-medida');
+                        var proveedor = button.getAttribute('data-proveedor');
                         $("#titulo").text("Editar Producto");
                         $("#productoForm")[0].reset();
                         $('#img').attr('src', img);
@@ -381,6 +401,7 @@
                         $("#total").val(total);
                         $('#categorias option[value="' + categoria + '"]').prop('selected', true);
                         $('#medidas option[value="' + medida + '"]').prop('selected', true);
+                        $('#proveedores option[value="' + proveedor + '"]').prop('selected', true);
                         $('#producto').modal('show');
                     }
                     function nuevo(button) {
