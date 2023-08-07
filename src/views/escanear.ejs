@@ -441,13 +441,8 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        await reader.cancel();
-                        await reader.releaseLock();
-                        reader = null;
-                        await port.close();
-                        document.getElementById("connected").style.display = "none";
-                        document.getElementById("disconnected").style.display = "block";
-                        console.log('Desconectado del puerto serie.');
+                        location.reload();
+                        return;
                     } else if (message.includes("success")) {
                         fetch('/buscarproductotag', {
                             method: 'POST',
@@ -534,14 +529,7 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        await reader.cancel();
-                        await reader.releaseLock();
-                        reader = null;
-                        await port.close();
-                        document.getElementById("connected").style.display = "none";
-                        document.getElementById("disconnected").style.display = "block";
-                        console.log('Desconectado del puerto serie.');
-                        $('.modal').modal('hide');
+                        location.reload();
                         return;
                     }
                     fetch('/buscarproductotag', {
