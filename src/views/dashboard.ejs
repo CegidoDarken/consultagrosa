@@ -102,7 +102,7 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Actividades pedidos <span class="anio"></span></h5>
+                      <h5 class="card-title">Historial pedidos <span class="anio"></span></h5>
                       <div id="reportsChart2"></div>
                     </div>
                   </div>
@@ -116,11 +116,19 @@
                   </div>
                 </div>
                 <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Ganancias productos <span class="anio"></span></h5>
+                      <div id="reportsChart4"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
                   <div class="card top-selling overflow-auto">
 
                     <div class="card-body pb-0">
                       <h5 class="card-title">Productos más pedidos <span class="anio"></span></h5>
-                      <table class="table table-borderless" id="mas_pedidos">
+                      <table class="table table-borderless w-100" id="mas_pedidos">
                         <thead>
                           <tr>
                             <th scope="col">Imagen</th>
@@ -173,6 +181,9 @@
 
       const chart = new ApexCharts(document.querySelector("#reportsChart"), {
         series: [{
+          name: 'Proveedores',
+          data: data.proveedores
+        }, {
           name: 'Productos',
           data: data.productos
         }, {
@@ -189,7 +200,7 @@
         markers: {
           size: 4
         },
-        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+        colors: ['#5d5aab', '#2eca6a', '#ff771d'],
         fill: {
           type: "gradient",
           gradient: {
@@ -225,30 +236,23 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(data => {
-      console.log(data);
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
       const chart = new ApexCharts(document.querySelector("#reportsChart2"), {
         series: [{
-          name: 'Aprobados',
-          data: data.pedidos[0]
-        }, {
-          name: 'Cancelados',
-          data: data.pedidos[1]
-        }, {
-          name: 'Pendientes',
-          data: data.pedidos[2]
+          name: 'Pedidos',
+          data: data.pedidos
         }],
         chart: {
           height: 350,
           type: 'area',
           toolbar: {
-            show: true
+            show: false
           },
         },
         markers: {
           size: 4
         },
-        colors: ['#2eca6a', '#e74a3b', '#f6c23e'],
+        colors: ['#4154f1', '#2eca6a', '#ff771d'],
         fill: {
           type: "gradient",
           gradient: {
@@ -259,7 +263,11 @@
           }
         },
         dataLabels: {
-          enabled: true
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 2
         },
         xaxis: {
           categories: meses,
@@ -284,7 +292,6 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(data => {
-      console.log(data.ganancias);
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
       const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
         series: [{
@@ -316,7 +323,9 @@
             formatter: function (value) {
               return "$" + value; // Agregar el símbolo $ antes del valor
             }
-          }
+          },
+          min: 0,
+          max: Math.max(...data.ganancias)
         },
         tooltip: {
           x: {
@@ -330,9 +339,53 @@
       console.error(error);
     });
   }
+  async function ganancias_productos(anio) {
+    await fetch("/ganancias_productos", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(async data => {
+      let nombresProductos = await data.ganancias.map(item => item.producto);
+      nombresProductos = nombresProductos.filter(nombre => nombre !== null);
+      let ganancias = await data.ganancias.map(item => item.ganancias);
+      const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
+        series: [{
+          name: 'Ganancia Total',
+          data: ganancias
+        }],
+        chart: {
+          type: 'area',
+          height: 350,
+          toolbar: {
+            show: true
+          },
+        },
+        markers: {
+          size: 4
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (value) {
+            return "$" + value;
+          }
+        },
+        xaxis: {
+          categories: nombresProductos
+        },
+        colors: ['#2eca6a'],
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
   actividades_registros();
   actividades_pedidos();
   ganancias_pedidos();
+  ganancias_productos();
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
     ajax: {
@@ -353,6 +406,7 @@
       { data: "vendidos", defaultContent: "-" },
       { data: "ganancias", defaultContent: "-" },
     ],
+    order: [[3, 'desc']],
     columnDefs: [
       {
         targets: "_all",
@@ -412,6 +466,7 @@
     actividades_registros(anio);
     actividades_pedidos(anio);
     ganancias_pedidos(anio);
+    ganancias_productos(anio);
     pedidos.settings()[0].ajax.data.anio = anio;
     pedidos.ajax.reload();
     $(".anio").each(function () {

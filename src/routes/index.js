@@ -431,7 +431,7 @@ router.get("/dashboard", async (req, res) => {
 });
 router.post("/actividades_registros", async (req, res) => {
   let anio = req.body.anio;
-  res.json({ productos: await actividades_productos(anio), usuarios: await actividades_usuarios(anio) });
+  res.json({ productos: await actividades_productos(anio), usuarios: await actividades_usuarios(anio), proveedores: await actividades_proveedores(anio) });
 });
 router.post("/actividades_pedidos", async (req, res) => {
   let anio = req.body.anio;
@@ -440,6 +440,10 @@ router.post("/actividades_pedidos", async (req, res) => {
 router.post("/ganancias_pedidos", async (req, res) => {
   let anio = req.body.anio;
   res.json({ ganancias: await ganancias_pedidos(anio) });
+});
+router.post("/ganancias_productos", async (req, res) => {
+  let anio = req.body.anio;
+  res.json({ ganancias: await ganancias_productos(anio) });
 });
 router.post("/mas_pedidos", async (req, res) => {
   let anio = req.body.anio;
@@ -489,67 +493,49 @@ async function abastecimiento() {
   });
 }
 async function actividades_pedidos(anio) {
-  const sqlAprobados = "SELECT calendar.year, calendar.month, COALESCE(COUNT(detallepedidos.producto_id), 0) AS product_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) LEFT JOIN detallepedidos ON pedidos.id_pedido = detallepedidos.pedido_id AND detallepedidos.estado = 'Aprobado' GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
-
-  const sqlCancelados = "SELECT calendar.year, calendar.month, COALESCE(COUNT(detallepedidos.producto_id), 0) AS product_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) LEFT JOIN detallepedidos ON pedidos.id_pedido = detallepedidos.pedido_id AND detallepedidos.estado = 'Cancelado' GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
-
-  const sqlPendientes = "SELECT calendar.year, calendar.month, COALESCE(COUNT(detallepedidos.producto_id), 0) AS product_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) LEFT JOIN detallepedidos ON pedidos.id_pedido = detallepedidos.pedido_id AND detallepedidos.estado = 'Pendiente' GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
-
   return new Promise((resolve, reject) => {
-    const aprobadosPromise = new Promise((resolveAprobados, rejectAprobados) => {
-      connection.query(sqlAprobados, (error, result) => {
-        if (error) {
-          rejectAprobados(error);
-        } else {
-          const aprobados = result.map(item => item.product_count);
-          resolveAprobados(aprobados);
-        }
-      });
-    });
-
-    const canceladosPromise = new Promise((resolveCancelados, rejectCancelados) => {
-      connection.query(sqlCancelados, (error, result) => {
-        if (error) {
-          rejectCancelados(error);
-        } else {
-          const cancelados = result.map(item => item.product_count);
-          resolveCancelados(cancelados);
-        }
-      });
-    });
-
-    const pendientesPromise = new Promise((resolvePendientes, rejectPendientes) => {
-      connection.query(sqlPendientes, (error, result) => {
-        if (error) {
-          rejectPendientes(error);
-        } else {
-          const pendientes = result.map(item => item.product_count);
-          resolvePendientes(pendientes);
-        }
-      });
-    });
-
-    Promise.all([aprobadosPromise, canceladosPromise, pendientesPromise])
-      .then(([aprobados, cancelados, pendientes]) => {
-        resolve([aprobados, pendientes, cancelados]);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
-}
-
-
-async function ganancias_pedidos(anio) {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT calendar.year, calendar.month, SUM(pedidos.total) AS ganancias FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN pedidos ON calendar.year = YEAR(pedidos.fecha) AND calendar.month = MONTH(pedidos.fecha) GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
+    const sql = "SELECT meses.mes AS mes, IFNULL(COUNT(pedidos.id_pedido), 0) AS product_count FROM (SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) AS meses LEFT JOIN `railway`.`pedidos` ON meses.mes = MONTH(`pedidos`.`fecha`) AND YEAR(`pedidos`.`fecha`) = " + anio + " GROUP BY meses.mes ORDER BY meses.mes;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
         if (result.length > 0) {
-          const productCounts = result.map(item => item.ganancias ?? 0);
+          const productCounts = result.map(item => item.product_count);
           resolve(productCounts);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+
+async function ganancias_pedidos(anio) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT meses.mes AS mes, IFNULL(SUM(pedidos.total), 0) AS product_count FROM (SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) AS meses LEFT JOIN `railway`.`pedidos` ON meses.mes = MONTH(`pedidos`.`fecha`) AND YEAR(`pedidos`.`fecha`) = " + anio + " GROUP BY meses.mes ORDER BY meses.mes;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          const productCounts = result.map(item => item.product_count);
+          resolve(productCounts);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+async function ganancias_productos(anio) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT pr.img, pr.nombre as producto, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY ganancias DESC";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          resolve(result);
         } else {
           resolve(null);
         }
@@ -559,7 +545,7 @@ async function ganancias_pedidos(anio) {
 }
 async function actividades_productos(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT `all_dates`.`year`, `all_dates`.`month`, COUNT(`productos`.`id_producto`) AS `product_count` FROM ( SELECT " + anio + " AS `year`, 1 AS `month` UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12) AS `all_dates` LEFT JOIN `productos` ON `all_dates`.`year` = YEAR(`productos`.`fecha`) AND `all_dates`.`month` = MONTH(`productos`.`fecha`) GROUP BY `all_dates`.`year`, `all_dates`.`month` ORDER BY `all_dates`.`year`, `all_dates`.`month`;";
+    const sql = "SELECT meses.mes AS mes, IFNULL(COUNT(productos.id_producto), 0) AS product_count FROM (SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) AS meses LEFT JOIN `railway`.`productos` ON meses.mes = MONTH(`productos`.`fecha`) AND YEAR(`productos`.`fecha`) = " + anio + " GROUP BY meses.mes ORDER BY meses.mes;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -577,14 +563,14 @@ async function actividades_productos(anio) {
 
 async function actividades_usuarios(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT calendar.year, calendar.month, COUNT(usuarios.id_usuario) AS user_count FROM (SELECT " + anio + " AS year, 1 AS month UNION SELECT " + anio + ", 2 UNION SELECT " + anio + ", 3 UNION SELECT " + anio + ", 4 UNION SELECT " + anio + ", 5 UNION SELECT " + anio + ", 6 UNION SELECT " + anio + ", 7 UNION SELECT " + anio + ", 8 UNION SELECT " + anio + ", 9 UNION SELECT " + anio + ", 10 UNION SELECT " + anio + ", 11 UNION SELECT " + anio + ", 12) AS calendar LEFT JOIN usuarios ON calendar.year = YEAR(usuarios.fecha) AND calendar.month = MONTH(usuarios.fecha) AND usuarios.perfil_id = 2 GROUP BY calendar.year, calendar.month ORDER BY calendar.year, calendar.month;";
+    const sql = "SELECT meses.mes AS mes, IFNULL(COUNT(usuarios.id_usuario), 0) AS product_count FROM (SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) AS meses LEFT JOIN `railway`.`usuarios` ON meses.mes = MONTH(`usuarios`.`fecha`) AND YEAR(`usuarios`.`fecha`) = " + anio + " GROUP BY meses.mes ORDER BY meses.mes;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
         if (result.length > 0) {
-          const userCounts = result.map(item => item.user_count);
-          resolve(userCounts);
+          const product_count = result.map(item => item.product_count);
+          resolve(product_count);
         } else {
           resolve(null);
         }
@@ -592,10 +578,26 @@ async function actividades_usuarios(anio) {
     });
   });
 }
-
+async function actividades_proveedores(anio) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT meses.mes AS mes, IFNULL(COUNT(proveedores.id_proveedor), 0) AS product_count FROM (SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) AS meses LEFT JOIN `railway`.`proveedores` ON meses.mes = MONTH(`proveedores`.`fecha`) AND YEAR(`proveedores`.`fecha`) = " + anio + " GROUP BY meses.mes ORDER BY meses.mes;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          const product_count = result.map(item => item.product_count);
+          resolve(product_count);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function mas_pedidos(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT pr.img, pr.nombre, dp.precio, SUM(dp.cantidad) AS vendidos, (SUM(dp.cantidad) * dp.precio) AS ganancias FROM railway.detallepedidos AS dp JOIN railway.pedidos AS p ON dp.pedido_id = p.id_pedido JOIN railway.productos AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(p.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY vendidos DESC LIMIT 10;";
+    const sql = "SELECT pr.img, pr.nombre, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY vendidos DESC LIMIT 10;"
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);

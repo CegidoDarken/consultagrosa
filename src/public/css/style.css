@@ -808,18 +808,18 @@ h6 {
 }
 
 .dashboard .sales-card .card-icon {
-  color: #59ab6e;
-  background: #f6f6fe;
+  color: #595aab;
+  background: #2222b12c;
 }
 
 .dashboard .revenue-card .card-icon {
   color: #2eca6a;
-  background: #e0f8e9;
+  background: #18b8553b;
 }
 
 .dashboard .customers-card .card-icon {
   color: #ff771d;
-  background: #ffecdf;
+  background: #e6640d41;
 }
 
 /* Activity */
