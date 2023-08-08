@@ -136,8 +136,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button class="btn btn-primary" id="eliminar">Aprobar</button>
+                            <input type="checkbox" class="btn-check" id="example-select-all" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="example-select-all">Seleccionar
+                                todos</label><br>
+                            <button class="btn btn-primary" onclick="aprobar()">Aprobar</button>
                         </div>
                     </div>
                 </div>
@@ -243,6 +245,18 @@
                             tabla.ajax.reload();
                         });
                     });
+
+                    $('#example-select-all').on('click', function () {
+                        var rows = pedidos.rows({
+                            'search': 'applied'
+                        }).nodes();
+                        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                        if (this.checked) {
+                            pedidos.rows().select();
+                        } else {
+                            pedidos.rows().deselect();
+                        }
+                    });
                     pedidos = $('#datatablepedidos').DataTable({
                         ajax: {
                             url: '/obtener_detalle_pedidos',
@@ -296,12 +310,12 @@
                                 className: "dt-center",
                             },
                             {
-                                'targets': 0,
-                                'searchable': false,
-                                'orderable': false,
-                                'className': 'dt-body-center',
+                                targets: 0,
+                                searchable: false,
+                                orderable: false,
+                                className: 'dt-body-center',
                                 'render': function (data, type, full, meta) {
-                                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                                    return '<input type="checkbox" class="form-check-input border-success" style="width:15px;height:15px;">';
                                 }
                             },
                             {
@@ -324,7 +338,7 @@
                                             badgeClass = 'badge bg-danger';
                                             break;
                                         case 'Pendiente':
-                                            badgeClass = 'badge bg-warning';
+                                            badgeClass = 'badge bg-warning text-black';
                                             break;
                                         default:
                                             badgeClass = 'badge bg-secondary';
@@ -362,6 +376,18 @@
                             }
                         }
                     });
+                    pedidos.on('select', function () {
+                        var selectedRows = pedidos.rows({ selected: true }).count();
+                        var totalRows = pedidos.rows().count();
+                        if (selectedRows === totalRows) {
+                            $("#example-select-all").prop('checked', true);
+                        }
+                    });
+                    pedidos.on('deselect', function (e, dt, type, indexes) {
+                        if (type === 'row' && indexes.length == 1) {
+                            $("#example-select-all").prop('checked', false);
+                        }
+                    });
                     $("#datatable_filter").hide();
                     $('#search').keyup(function () {
                         table = $('.tablesort').DataTable();
@@ -378,27 +404,20 @@
                         tabla.ajax.reload();
                     });
 
-                    function aprobar(id_detalle_pedido) {
-                        fetch("/aprobar_pedido", {
-                            method: 'POST',
-                            body: JSON.stringify({ id_detalle_pedido: id_detalle_pedido }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(response => response.json()).then(data => {
-                            Swal.fire({
-                                toast: true,
-                                position: 'bottom-end',
-                                icon: data.type,
-                                text: data.message,
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
-                            });
-                            tabla.ajax.reload();
-                        }).catch(error => {
-                            console.error(error);
+                    function aprobar() {
+                        var actividades = [];
+                        var actividadesNoSeleccionadas = [];
+                        pedidos.rows({
+                            selected: true
+                        }).every(function () {
+                            actividades.push(this.data());
                         });
+                        pedidos.rows().every(function () {
+                            if (!this.nodes().to$().hasClass('selected')) {
+                                actividadesNoSeleccionadas.push(this.data());
+                            }
+                        });
+                        console.log(actividades, actividadesNoSeleccionadas);
                     }
 
                     function cancelar(id_detalle_pedido) {

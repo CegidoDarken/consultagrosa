@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<style>.loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: url('img/logo.png') 50% 50% no-repeat rgb(249,249,249);
+}</style>
 <head>
   <title>dashboard</title>
 </head>
 
 <body>
+  <div class="loader"></div>
   <%- include("partials/_headerpanel") %>
     <%- include("partials/_sidebarpanel") %>
       <main id="main" class="main">
@@ -192,7 +201,7 @@
         }],
         chart: {
           height: 350,
-          type: 'area',
+          type: 'line',
           toolbar: {
             show: true
           },
@@ -201,15 +210,6 @@
           size: 4
         },
         colors: ['#5d5aab', '#2eca6a', '#ff771d'],
-        fill: {
-          type: "gradient",
-          gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.3,
-            opacityTo: 0.4,
-            stops: [0, 90, 100]
-          }
-        },
         dataLabels: {
           enabled: true
         },
@@ -293,10 +293,11 @@
       }
     }).then(response => response.json()).then(data => {
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      var ganancias = data.ganancias.map(valor => Math.round(valor * 100) / 100);
       const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
         series: [{
           name: 'Ganancia Total',
-          data: data.ganancias
+          data: ganancias
         }],
         chart: {
           height: 350,
@@ -321,7 +322,7 @@
         yaxis: {
           labels: {
             formatter: function (value) {
-              return "$" + value; // Agregar el símbolo $ antes del valor
+              return "$" + Math.round(value * 100) / 100;
             }
           },
           min: 0,
@@ -339,6 +340,7 @@
       console.error(error);
     });
   }
+
   async function ganancias_productos(anio) {
     await fetch("/ganancias_productos", {
       method: 'POST',
@@ -347,34 +349,39 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(async data => {
-      let nombresProductos = await data.ganancias.map(item => item.producto);
-      nombresProductos = nombresProductos.filter(nombre => nombre !== null);
-      let ganancias = await data.ganancias.map(item => item.ganancias);
       const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
         series: [{
           name: 'Ganancia Total',
-          data: ganancias
+          data: data.ganancias.map(item => item.ganancias)
         }],
         chart: {
-          type: 'area',
-          height: 350,
+          type: 'line',
+          height: 500,
           toolbar: {
-            show: true
-          },
+            autoSelected: 'pan',
+            show: false
+          }
         },
-        markers: {
-          size: 4
+        stroke: {
+          width: 3
         },
         dataLabels: {
-          enabled: true,
-          formatter: function (value) {
-            return "$" + value;
+          enabled: false
+        },
+        fill: {
+          opacity: 1,
+        },
+        markers: {
+          size: 0
+        },
+        yaxis: {
+          labels: {
+            show: false
           }
         },
         xaxis: {
-          categories: nombresProductos
+          categories: data.ganancias.map(item => item.producto)
         },
-        colors: ['#2eca6a'],
       });
       chart.render();
       chart.update();
@@ -382,10 +389,11 @@
       console.error(error);
     });
   }
-  actividades_registros();
-  actividades_pedidos();
-  ganancias_pedidos();
-  ganancias_productos();
+   actividades_registros();
+   actividades_pedidos();
+   ganancias_pedidos();
+   ganancias_productos();
+  $(".loader").fadeOut("slow");
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
     ajax: {
@@ -406,7 +414,6 @@
       { data: "vendidos", defaultContent: "-" },
       { data: "ganancias", defaultContent: "-" },
     ],
-    order: [[3, 'desc']],
     columnDefs: [
       {
         targets: "_all",
@@ -461,17 +468,19 @@
   });
 
   var yearSelect = document.getElementById('year');
-  yearSelect.addEventListener('change', function () {
+  yearSelect.addEventListener('change', async function () {
+    $(".loader").fadeIn("slow");
     var anio = yearSelect.value;
-    actividades_registros(anio);
-    actividades_pedidos(anio);
-    ganancias_pedidos(anio);
-    ganancias_productos(anio);
+    await actividades_registros(anio);
+    await actividades_pedidos(anio);
+    await ganancias_pedidos(anio);
+    await ganancias_productos(anio);
     pedidos.settings()[0].ajax.data.anio = anio;
     pedidos.ajax.reload();
     $(".anio").each(function () {
       $(this).text("| " + anio);
     });
+    $(".loader").fadeOut("slow");
   });
 
 
