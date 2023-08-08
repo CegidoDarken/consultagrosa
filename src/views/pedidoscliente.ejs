@@ -237,7 +237,7 @@
                                         acciones = ``;
                                         break;
                                     case 'Pendiente':
-                                        acciones = `<div class="dropdown"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button><ul class="dropdown-menu"><li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle"></i> Cancelar</a></li></ul></div>`;
+                                        acciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><button class="dropdown-item text-danger" onclick="cancelar(${row.id_detalle_pedido})"><i class="bi bi-x"></i>Cancelar</button></li></ul></div>`;
                                         break;
                                     default:
                                         acciones = 'badge bg-secondary';
@@ -291,7 +291,28 @@
                     tabla.ajax.reload();
                 });
             });
-
+            function cancelar(id_detalle_pedido) {
+                        fetch("/cancelar_pedido", {
+                            method: 'POST',
+                            body: JSON.stringify({ id_detalle_pedido: id_detalle_pedido }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json()).then(data => {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: data.type,
+                                text: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            tabla.ajax.reload();
+                        }).catch(error => {
+                            console.error(error);
+                        });
+                    }
         </script>
         <%- include("partials/_fotterindex") %>
 </body>

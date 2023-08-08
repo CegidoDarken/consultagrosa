@@ -242,11 +242,15 @@
                                                     <%= value.categoria %>
                                                 </span>
                                         </a>
-                                        <a class="h3 text-decoration-none d-flex text-center">
+                                        <a class="h3 text-decoration-none d-flex text-center m-0">
                                             <p class="m-1 ms-0">Medida:</p>
                                             <span class="badge m-1" style="background-color: #59ab6e;">
                                                 <%= value.medida??"Ninguna" %>
                                             </span>
+                                        </a>
+                                        <a class="h3 text-decoration-none d-flex text-center m-0">
+                                            <p class="m-1 ms-0">Disponibles: <%= value.cantidad %>
+                                            </p>
                                         </a>
                                         <p class="fw-bold mb-0">$<%= value.precio %>
                                         </p>

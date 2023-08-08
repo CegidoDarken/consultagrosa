@@ -107,7 +107,14 @@
                     </div>
                   </div>
                 </div>
-
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Ganancias pedidos <span class="anio"></span></h5>
+                      <div id="reportsChart3"></div>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="card top-selling overflow-auto">
 
@@ -163,6 +170,7 @@
       }
     }).then(response => response.json()).then(data => {
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
       const chart = new ApexCharts(document.querySelector("#reportsChart"), {
         series: [{
           name: 'Productos',
@@ -175,7 +183,7 @@
           height: 350,
           type: 'area',
           toolbar: {
-            show: false
+            show: true
           },
         },
         markers: {
@@ -192,11 +200,7 @@
           }
         },
         dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          curve: 'smooth',
-          width: 2
+          enabled: true
         },
         xaxis: {
           categories: meses,
@@ -221,23 +225,30 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(data => {
+      console.log(data);
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
       const chart = new ApexCharts(document.querySelector("#reportsChart2"), {
         series: [{
-          name: 'Pedidos',
-          data: data.pedidos
+          name: 'Aprobados',
+          data: data.pedidos[0]
+        }, {
+          name: 'Cancelados',
+          data: data.pedidos[1]
+        }, {
+          name: 'Pendientes',
+          data: data.pedidos[2]
         }],
         chart: {
           height: 350,
           type: 'area',
           toolbar: {
-            show: false
+            show: true
           },
         },
         markers: {
           size: 4
         },
-        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+        colors: ['#2eca6a', '#e74a3b', '#f6c23e'],
         fill: {
           type: "gradient",
           gradient: {
@@ -248,11 +259,7 @@
           }
         },
         dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          curve: 'smooth',
-          width: 2
+          enabled: true
         },
         xaxis: {
           categories: meses,
@@ -269,8 +276,63 @@
       console.error(error);
     });
   }
+  async function ganancias_pedidos(anio) {
+    await fetch("/ganancias_pedidos", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      console.log(data.ganancias);
+      const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
+        series: [{
+          name: 'Ganancia Total',
+          data: data.ganancias
+        }],
+        chart: {
+          height: 350,
+          type: 'bar',
+          toolbar: {
+            show: true
+          },
+        },
+        markers: {
+          size: 4
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (value) {
+            return "$" + value;
+          }
+        },
+        xaxis: {
+          categories: meses,
+        },
+        colors: ['#2eca6a'],
+        yaxis: {
+          labels: {
+            formatter: function (value) {
+              return "$" + value; // Agregar el símbolo $ antes del valor
+            }
+          }
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
   actividades_registros();
   actividades_pedidos();
+  ganancias_pedidos();
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
     ajax: {
@@ -349,6 +411,7 @@
     var anio = yearSelect.value;
     actividades_registros(anio);
     actividades_pedidos(anio);
+    ganancias_pedidos(anio);
     pedidos.settings()[0].ajax.data.anio = anio;
     pedidos.ajax.reload();
     $(".anio").each(function () {
