@@ -295,7 +295,7 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` ORDER BY dp.`id_detalle_pedido` DESC;";
+  const sql = "SELECT pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.pedidos JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -307,6 +307,31 @@ router.post("/obtener_pedidos", async (req, res) => {
       }
     }
   });
+});
+router.post("/obtener_detalle_pedidos", async (req, res) => {
+  const { id_pedido } = req.body;
+  console.log(id_pedido);
+  if (id_pedido) {
+    credentials = req.session.credentials ? req.session.credentials.administrador : null;
+    const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ?;";
+    connection.query(sql, [id_pedido], (error, results) => {
+      if (error) {
+        res.send({ message: error });
+        console.log(error);
+      } else {
+        if (results) {
+          results.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          res.json({ data: results });
+        } else {
+          res.json({ message: "Producto no reconocido" });
+        }
+      }
+    });
+  }
 });
 router.post("/obtener_pedidos_cliente", async (req, res) => {
   const id_usuario = req.body.id_usuario;

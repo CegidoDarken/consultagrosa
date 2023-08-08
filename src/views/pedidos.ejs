@@ -51,11 +51,7 @@
                                                         <th>#</th>
                                                         <th>FECHA</th>
                                                         <th>CLIENTE</th>
-                                                        <th>PRODUCTO</th>
-                                                        <th>CANTIDAD</th>
-                                                        <th>PRECIO PRODUCTO</th>
                                                         <th>TOTAL</th>
-                                                        <th>ESTADOS</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -111,9 +107,46 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="detalle_producto" tabindex="-1" aria-labelledby="pedido" arhide="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="pedido">Pedido #</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-wrapper">
+                                <table class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                    id="datatablepedidos">
+                                    <thead>
+                                        <tr class="text-light" style="background-color: #59ab6e;">
+                                            <th></th>
+                                            <th>IMAGEN</th>
+                                            <th>PRODUCTO</th>
+                                            <th>PRECIO</th>
+                                            <th>CANTIDAD</th>
+                                            <th>TOTAL</th>
+                                            <th>ESTADO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-primary" id="eliminar">Aprobar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
                     var tabla;
+                    var pedidos;
+                    var id_pedido;
                     $(document).ready(function () {
                         tabla = $('#datatable').DataTable({
                             ajax: {
@@ -122,24 +155,15 @@
                             },
                             dom: 'Bfrtip',
                             columns: [
-                                { data: 'id_detalle_pedido', defaultContent: "-" },
+                                { data: 'id_pedido', defaultContent: "-" },
                                 { data: 'fecha', defaultContent: "-" },
                                 { data: 'nombre_usuario', defaultContent: "-" },
-                                { data: 'nombre_producto', defaultContent: "-" },
-                                { data: 'cantidad', defaultContent: "-" },
                                 {
-                                    data: 'precio',
+                                    data: 'total',
                                     render: function (data) {
                                         return (data !== null) ? "$" + data : "-";
                                     }
-                                },
-                                {
-                                    data: 'total_pedido',
-                                    render: function (data) {
-                                        return (data !== null) ? "$" + data : "-";
-                                    }
-                                },
-                                { data: 'estado', defaultContent: "-" },
+                                }
                             ],
                             order: [[0, 'desc']],
                             buttons: [
@@ -160,47 +184,18 @@
                                     className: "dt-center",
                                 },
                                 {
-                                    targets: 7,
+                                    targets: 1,
                                     render: function (data, type, row, meta) {
-                                        var estado = row.estado;
-                                        var badgeClass = '';
-
-                                        switch (estado) {
-                                            case 'Aprobado':
-                                                badgeClass = 'badge bg-success';
-                                                break;
-                                            case 'Cancelado':
-                                                badgeClass = 'badge bg-danger';
-                                                break;
-                                            case 'Pendiente':
-                                                badgeClass = 'badge bg-warning';
-                                                break;
-                                            default:
-                                                badgeClass = 'badge bg-secondary';
+                                        if (type === 'display' || type === 'filter') {
+                                            return new Date(data).toLocaleDateString();
                                         }
-
-                                        return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                                        return data;
                                     }
                                 },
                                 {
-                                    targets: 8,
+                                    targets: 4,
                                     render: function (data, type, row, meta) {
-                                        var estado = row.estado;
-                                        var opciones = '';
-                                        switch (estado) {
-                                            case 'Aprobado':
-                                                opciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="#"><i class="bi bi-back"></i>Devolución</a></li></ul></div>`;
-                                                break;
-                                            case 'Cancelado':
-                                                opciones = ``;
-                                                break;
-                                            case 'Pendiente':
-                                                opciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><button class="dropdown-item text-success" onclick="aprobar(${row.id_detalle_pedido})"><i class="bi bi-check"></i> Aprobar</button></li><li><button class="dropdown-item text-danger" onclick="cancelar(${row.id_detalle_pedido})"><i class="bi bi-x"></i>Cancelar</button></li></ul></div>`;
-                                                break;
-                                            default:
-                                                opciones = '';
-                                        }
-                                        return opciones;
+                                        return `<button class="btn btn-primary btn-sm" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button>`;
                                     }
                                 },
                             ],
@@ -248,6 +243,141 @@
                             tabla.ajax.reload();
                         });
                     });
+                    pedidos = $('#datatablepedidos').DataTable({
+                        ajax: {
+                            url: '/obtener_detalle_pedidos',
+                            type: 'POST',
+                            data: {
+                                id_pedido: id_pedido,
+                            }
+                        },
+                        searching: false,
+                        bLengthChange: false,
+                        info: false,
+                        paging: false,
+                        select: {
+                            style: 'multi',
+                            selector: 'td:first-child input[type="checkbox"]'
+                        },
+                        autoWidth: true,
+                        columns: [
+                            { data: 'img', defaultContent: "-" },
+                            { data: 'id_pedido', defaultContent: "-" },
+                            { data: 'nombre_producto', defaultContent: "-" },
+                            {
+                                data: 'precio', render: function (data) {
+                                    return (data !== null) ? "$" + data : "-";
+                                }
+                            },
+                            { data: 'cantidad', defaultContent: "-" },
+                            {
+                                data: 'total',
+                                render: function (data) {
+                                    return (data !== null) ? "$" + data : "-";
+                                }
+                            },
+                            { data: 'estado', defaultContent: "-" },
+                        ],
+                        buttons: [
+                            {
+                                extend: 'copy',
+                                text: '<i class="bi bi-clipboard"></i> Copiar',
+                                className: 'btn btn-primary btn-sm text-light'
+                            },
+                            {
+                                extend: 'excel',
+                                text: '<i class="bi bi-file-excel"></i>Exportar Excel',
+                                className: 'btn btn-primary btn-sm text-light'
+                            }
+                        ],
+                        columnDefs: [
+                            {
+                                targets: "_all",
+                                className: "dt-center",
+                            },
+                            {
+                                'targets': 0,
+                                'searchable': false,
+                                'orderable': false,
+                                'className': 'dt-body-center',
+                                'render': function (data, type, full, meta) {
+                                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                                }
+                            },
+                            {
+                                targets: 1,
+                                render: function (data, type, row, meta) {
+                                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                                }
+                            },
+                            {
+                                targets: 6,
+                                render: function (data, type, row, meta) {
+                                    var estado = row.estado;
+                                    var badgeClass = '';
+
+                                    switch (estado) {
+                                        case 'Aprobado':
+                                            badgeClass = 'badge bg-success';
+                                            break;
+                                        case 'Cancelado':
+                                            badgeClass = 'badge bg-danger';
+                                            break;
+                                        case 'Pendiente':
+                                            badgeClass = 'badge bg-warning';
+                                            break;
+                                        default:
+                                            badgeClass = 'badge bg-secondary';
+                                    }
+
+                                    return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                                }
+                            }
+                        ],
+                        "language": {
+                            "sEmptyTable": "No hay datos disponibles en la tabla",
+                            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                            "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                            "sInfoPostFix": "",
+                            "sInfoThousands": ",",
+                            "sLengthMenu": "Mostrar _MENU_ entradas",
+                            "sLoadingRecords": "Cargando...",
+                            "sProcessing": "Procesando...",
+                            "sSearch": "Buscar:",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            },
+                            "buttons": {
+                                "copy": "Copiar",
+                                "colvis": "Visibilidad"
+                            }
+                        }
+                    });
+                    $("#datatable_filter").hide();
+                    $('#search').keyup(function () {
+                        table = $('.tablesort').DataTable();
+                        table.search($(this).val()).draw();
+                    });
+                    $('#date').change(function () {
+                        table = $('.tablesort').DataTable();
+                        table.search($(this).val()).draw();
+                    });
+                    $('#actualizar').click(async function () {
+                        await tabla.ajax.reload()
+                    });
+                    $('#productos').change(function () {
+                        tabla.ajax.reload();
+                    });
+
                     function aprobar(id_detalle_pedido) {
                         fetch("/aprobar_pedido", {
                             method: 'POST',
@@ -292,6 +422,17 @@
                         }).catch(error => {
                             console.error(error);
                         });
+                    }
+                    async function detalle_pedidos(params) {
+                        var configuracionPedidos = pedidos.settings();
+                        $("#detalle_producto").modal("show");
+                        $("#pedido").text("Pedido #" + params);
+                        if (configuracionPedidos) {
+                            configuracionPedidos[0].ajax.data.id_pedido = params;
+                            pedidos.ajax.reload();
+                        }
+                        console.log(pedidos.ajax.data);
+                        pedidos.ajax.reload();
                     }
                 </script>
 
