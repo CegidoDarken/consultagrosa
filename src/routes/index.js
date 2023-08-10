@@ -1368,7 +1368,7 @@ router.post("/productos", async (req, res) => {
 //TODO: Funciones
 async function obtener_productos() {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT id_producto, img, productos.nombre , medida, categoria, cantidad, precio FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id_proveedor;";
+    const sql = "SELECT id_producto, img, productos.nombre , medida, categoria, cantidad, precio, descripcion FROM productos LEFT JOIN categorias ON productos.categoria_id = categorias.id_categoria LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id_proveedor;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -1384,7 +1384,7 @@ async function obtener_productos() {
 }
 async function obtener_producto_id(id_producto) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT id_producto, img, productos.nombre , medida, categoria, cantidad, precio FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND id_producto = ?";
+    const sql = "SELECT id_producto, img, productos.nombre , medida, categoria, cantidad, precio, descripcion FROM productos,categorias WHERE productos.categoria_id= categorias.id_categoria AND id_producto = ?";
     connection.query(sql, [id_producto], (error, result) => {
       if (error) {
         reject(error);

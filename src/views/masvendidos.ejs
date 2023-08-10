@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .tienda {
+        color: #59ab6e !important;
+    }
+</style>
+
+<head>
+    <title>Consultagro S.A</title>
+</head>
+<script src="https://rawgithub.com/dinbror/blazy/master/blazy.min.js"></script>
+
+<body>
+    <%- include("partials/_headerindex") %>
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="list-inline shop-top-menu pb-3 pt-1">
+                                <li class="list-inline-item">
+                                    <a class="h3 text-dark text-decoration-none mr-3" href="#"
+                                        style="color: #59ab6e !important;">Todos</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="h3 text-dark text-decoration-none mr-3" href="#">Más vendidos</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input type="search" class="form-control" placeholder="Buscar" id="search">
+                                <span class="input-group-text" id="inputGroup-sizing-default">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="dropdown col-lg-1 col-md-2">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Tipos
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-item filter-button active" data-filter="all">Todos</button>
+                                </li>
+                                <li><button class="dropdown-item filter-button"
+                                        data-filter="Nutriente">Nutrientes</button></li>
+                                <li><button class="dropdown-item filter-button"
+                                        data-filter="Fungicida">Fungicidas</button></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown col-lg-1 col-md-2">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Medidas
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-item filter-button2 active" data-filter="all">Todos</button>
+                                </li>
+                                <li><button class="dropdown-item filter-button2" data-filter="L">Litros</button>
+                                </li>
+                                <li><button class="dropdown-item filter-button2" data-filter="Kg">Kilogramos</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row content-elements vh-100" style="overflow-y: scroll;height: 800px;">
+                        <% if (productos) { %>
+                            <% productos.forEach(value=> { %>
+                                <% const medidaRegex=/(\d+)/; %>
+                                    <% const medida=value.medida.replace(medidaRegex, '' ); %>
+                                        <div class="col-md-3 content filter <%= value.categoria %> <%= medida %>">
+                                            <div class="card mb-4 product-wap rounded-3 shadow border-0">
+                                                <div class="card rounded-3 border-0">
+                                                    <img class="card-img rounded-3 img-fluid border-0 b-lazy"
+                                                        data-src="<%= value.img? value.img : '/img/no-image-icon.png' %>"
+                                                        src="/img/placeholder.gif" style=" width: 100%;
+                                            height: 300px;
+                                            object-fit: contain;
+                                            object-position: center;" loading="lazy">
+                                                    <div
+                                                        class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                                        <ul class="list-unstyled">
+                                                            <% if (credentials) { %>
+                                                                <li><button class="btn btn-success text-white mt-2"
+                                                                        onclick="agregar_carrito('<%= value.id_producto %>','<%= value.precio %>', 1)"><i
+                                                                            class="bi bi-cart-fill"></></i></a></li>
+                                                                <% } else { %>
+                                                                    <li><button class="btn btn-success text-white mt-2"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#login"><i
+                                                                                class="bi bi-cart-fill"></></i></a></li>
+                                                                    <% } %>
+                                                                        <li><a class="btn btn-success text-white mt-2"
+                                                                                href="/detalleproducto?producto=<%= value.id_producto %>"><i
+                                                                                    class="bi bi-eye-fill"></a></i></a>
+                                                                        </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <a class="h3 text-decoration-none m-0" id="nombre">
+                                                        <%= value.nombre %> <span class="badge"
+                                                                style="background-color: #59ab6e;">
+                                                                <%= value.categoria %>
+                                                            </span>
+                                                    </a>
+                                                    <a class="h3 text-decoration-none d-flex text-center m-0">
+                                                        <p class="m-1 ms-0">Medida:</p>
+                                                        <span class="badge m-1" style="background-color: #59ab6e;">
+                                                            <%= value.medida??"Ninguna" %>
+                                                        </span>
+                                                    </a>
+                                                    <a class="h3 text-decoration-none d-flex text-center m-0">
+                                                        <p class="m-1 ms-0">Disponibles: <%= value.cantidad %>
+                                                        </p>
+                                                    </a>
+                                                    <p class="fw-bold mb-0">$<%= value.precio %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                            <% }; %>
+                                                <div id="noResultsMessage" style="display: none;">No se han encontrado
+                                                    resultados.
+                                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("partials/_fotterindex") %>
+            <script>
+                $(document).ready(function () {
+                    $(".content").slice(0, 4).show();
+                    $("#loadMore").on("click", function (e) {
+                        e.preventDefault();
+                        $(".content:hidden").slice(0, 4).slideDown();
+                        if ($(".content:hidden").length == 0) {
+                            $("#loadMore").text("No Content").addClass("noContent");
+                        }
+                    });
+                })
+                $('#search').on('input', filterRows);
+                if ("IntersectionObserver" in window) {
+                    const images = document.querySelectorAll("img");
+                    let observer = new IntersectionObserver(
+                        (entries, observer) => {
+                            entries.forEach((entry) => {
+                                if (!entry.isIntersecting) return;
+                                const image = entry.target;
+                                const newURL = image.getAttribute("data-src");
+                                image.src = newURL;
+                                observer.unobserve(image);
+                            });
+                        },
+                        {
+                            threshold: [0.2]
+                        }
+                    );
+
+                    images.forEach((image) => {
+                        observer.observe(image);
+                    });
+                }
+                function filterRows() {
+                    let query = $.trim($('#search').val().toUpperCase());
+                    let found = false;
+                    $('div.content').each(async function () {
+                        let nombre = $(this).closest('.content').find('#nombre').text().trim().toUpperCase();
+                        if (nombre.indexOf(query) !== -1) {
+                            $(this).closest('div.content').fadeIn();
+                            found = true;
+                        } else {
+                            $(this).closest('div.content').fadeOut();
+                        }
+                    });
+
+                    if (!found) {
+                        $('#noResultsMessage').fadeIn();
+                    } else {
+                        $('#noResultsMessage').fadeOut();
+                    }
+                }
+                var value1 = "all";
+                $(".filter-button").click(function () {
+                    if ($(".filter-button").removeClass("active")) {
+                        $(this).removeClass("active");
+                    }
+                    $(this).addClass("active");
+                    let found = false;
+                    value1 = $(this).attr('data-filter');
+                    if (value1 == "all" && value2 === "all") {
+                        $('.filter').fadeIn();
+                    } else if (value1 === "all") {
+                        $(".filter").not("." + value2).fadeOut();
+                        $(".filter").filter("." + value2).fadeIn();
+                    } else if (value2 === "all") {
+                        $(".filter").not("." + value1).fadeOut();
+                        $(".filter").filter("." + value1).fadeIn();
+                    } else {
+                        $(".filter").not("." + value1 + "." + value2).fadeOut();
+                        $(".filter").filter("." + value1 + "." + value2).fadeIn();
+                    }
+                });
+                var value2 = "all";
+                $(".filter-button2").click(function () {
+                    if ($(".filter-button2").removeClass("active")) {
+                        $(this).removeClass("active");
+                    }
+                    $(this).addClass("active");
+                    let found = false;
+                    value2 = $(this).attr('data-filter');
+                    if (value1 == "all" && value2 === "all") {
+                        $('.filter').fadeIn();
+                    } else if (value1 === "all") {
+                        $(".filter").not("." + value2).fadeOut();
+                        $(".filter").filter("." + value2).fadeIn();
+                    } else if (value2 === "all") {
+                        $(".filter").not("." + value1).fadeOut();
+                        $(".filter").filter("." + value1).fadeIn();
+                    } else {
+                        $(".filter").not("." + value1 + "." + value2).fadeOut();
+                        $(".filter").filter("." + value1 + "." + value2).fadeIn();
+                    }
+                });
+
+            </script>
+</body>
+
+</html>
