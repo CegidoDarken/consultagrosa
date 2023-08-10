@@ -174,7 +174,7 @@
             </div>
 
             <div class="modal fade" id="detalle_producto" tabindex="-1" aria-labelledby="pedido" arhide="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-xl modal-fullscreen-sm-down">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="pedido">Pedido #</h1>
@@ -206,11 +206,29 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <input type="checkbox" class="btn-check" id="example-select-all" autocomplete="off">
-                            <label class="btn btn-outline-secondary" for="example-select-all">Seleccionar
-                                todos</label><br>
-                            <button class="btn btn-danger" id="cancelar" onclick="cancelar()">Cancelar pedidos</button>
-                            <button class="btn btn-primary" id="aprobar" onclick="aprobar()">Aprobar pedidos</button>
+                            <div class="container-fluid text-start ps-5 row">
+                                <h5>Subtotal: <span id="subtotal">$0</span></h5>
+                                <h5>IVA: <span id="iva">$0</span></h5>
+                                <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
+                                <div class="d-flex justify-content-start">
+                                    <i class="bi bi-arrow-90deg-up align-self-center"></i>
+                                    <div class="form-check m-1 align-self-center col-md-2 me-3">
+                                        <input class="form-check-input border-success border-1" type="checkbox" value=""
+                                            id="example-select-all">
+                                        <label class="form-check-label link-underline-primary" for="example-select-all">
+                                            Seleccionar todo
+                                        </label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="align-self-center m-1">Para los elementos que están
+                                            marcados:</label>
+                                        <button class="btn btn-primary m-1 btn-sm" id="aprobar"
+                                            onclick="aprobar()"><i class="bi bi-check-lg"></i> Aprobar</button>
+                                        <button class="btn btn-danger m-1 btn-sm" id="cancelar"
+                                            onclick="cancelar()"><i class="bi bi-x-lg"></i> Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -334,6 +352,17 @@
                         },
                         drawCallback: async function (settings, json) {
                             $('#loader').css('display', 'none');
+                            var iva = 0.12;
+                            var api = this.api();
+                            var totalGeneral = await api.column(5).data().reduce(function (a, b) {
+                                return a + b;
+                            }, 0);
+                            var montoIva = totalGeneral * iva;
+                            totalConIva = totalGeneral + montoIva;
+                            $("#subtotal").text("$" + totalGeneral.toFixed(2));
+                            $("#iva").text("$" + montoIva.toFixed(2));
+                            $("#total").text("$" + totalConIva.toFixed(2));
+
                         },
                         autoWidth: true,
                         columns: [
