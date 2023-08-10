@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Inventario</title>
+    <title>Productos</title>
 </head>
 
 <body>
@@ -32,19 +32,18 @@
                                 </div>
                                 <div class="card-header">
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="input-group mb-3">
+                                        <div class="col-md-4">
+                                            <div class="input-group mb-3 disabled">
                                                 <input type="text" class="form-control" id="search" placeholder="Buscar"
-                                                    value="">
+                                                    value="" disabled>
                                                 <span class="input-group-text" id="basic-addon1"><i
                                                         class="bi bi-search"></i></span>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <div class="input-group mb-3">
-                                            <input type="date" class="form-control" id="date" value="">
+                                        <div class="col-md-2">
+                                            <div class="input-group mb-3 disabled">
+                                                <input type="date" class="form-control" id="date" value="" disabled>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -124,7 +123,8 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary control mt-2" type="button"
-                                                            onclick="asignar_tag()">Generar</button>
+                                                            onclick="asignar_tag()"><i class="bi bi-hash"></i>
+                                                            Generar</button>
                                                     </div>
                                                     <div class=" col-12 text-start">
                                                         <div class="form-floating mb-3">
@@ -272,6 +272,10 @@
                             { data: "total", defaultContent: "-" },
                             { data: "fecha", defaultContent: "-" }
                         ],
+                        initComplete: function (settings, json) {
+                            $('#search').prop('disabled', false);
+                            $('#date').prop('disabled', false);
+                        },
                         columnDefs: [
                             {
                                 targets: "_all",
@@ -360,6 +364,20 @@
                     $('#search').keyup(function () {
                         table = $('.tablesort').DataTable();
                         table.search($(this).val()).draw();
+                    });
+                    $('#date').change(function () {
+
+                        var inputValue = $(this).val();
+                        var selectedDate = new Date(inputValue);
+                        selectedDate.setDate(selectedDate.getDate() + 1);
+                        var formattedDate = selectedDate.toLocaleDateString();
+                        console.log(formattedDate);
+                        if (formattedDate != "Invalid Date") {
+                            table = $('.tablesort').DataTable();
+                            table.search(formattedDate).draw();
+                        } else {
+                            table.search('').draw();
+                        }
                     });
                     $('#actualizar').click(async function () {
                         await table.ajax.reload()

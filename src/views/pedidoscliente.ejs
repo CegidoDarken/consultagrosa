@@ -72,7 +72,70 @@
         color: #59ab6e !important;
         border-bottom: 2px solid #59ab6e !important;
     }
+
+    .loader {
+        width: 100%;
+        position: absolute;
+        z-index: 9999;
+        background-color: #ffffff;
+        height: 100%;
+        border-radius: 5%;
+    }
+
+    .loader-wheel {
+        animation: spin 1s infinite linear;
+        border: 2px solid rgba(30, 30, 30, 0.5);
+        border-left: 4px solid #59ab6e;
+        border-radius: 50%;
+        height: 50px;
+        width: 50px;
+        position: relative;
+        left: 47%;
+        top: 47%;
+    }
+
+    .loader-text {
+        color: #59ab6e;
+        font-family: arial, sans-serif;
+        position: relative;
+        left: 46%;
+        top: 47%;
+    }
+
+    .loader-text:after {
+        content: 'Cargando';
+        animation: load 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes load {
+        0% {
+            content: 'Cargando';
+        }
+
+        33% {
+            content: 'Cargando.';
+        }
+
+        67% {
+            content: 'Cargando..';
+        }
+
+        100% {
+            content: 'Cargando...';
+        }
+    }
 </style>
+
 
 <head>
     <title>Acerca de nosotros</title>
@@ -135,9 +198,168 @@
                 </div>
             </section>
         </div>
+        <div class="modal fade" id="detalle_producto" tabindex="-1" aria-labelledby="pedidoscliente" arhide="true">
+            <div class="modal-dialog modal-xl modal-fullscreen-sm-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="pedidoscliente">Pedido #</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="loader" id="loader">
+                        <div class="loader-wheel"></div>
+                        <div class="loader-text"></div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-wrapper">
+                            <table class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                id="datatablepedidos">
+                                <thead>
+                                    <tr style="background-color: #59ab6e; color: #ffffff;">
+                                        <th></th>
+                                        <th>IMAGEN</th>
+                                        <th>PRODUCTO</th>
+                                        <th>PRECIO</th>
+                                        <th>CANTIDAD</th>
+                                        <th>TOTAL</th>
+                                        <th>ESTADO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="container-fluid text-start ps-5 row">
+                            <h5>Subtotal: <span id="subtotal2">$0</span></h5>
+                            <h5>IVA: <span id="iva2">$0</span></h5>
+                            <h2 class="fw-bold">Total: <span id="total2">$0</span></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div style="height: 800px;"></div>
         <script>
+            var pedidos
             $(document).ready(function () {
+                pedidos = $('#datatablepedidos').DataTable({
+                    ajax: {
+                        url: '/obtener_detalle_pedidos',
+                        type: 'POST',
+                        data: {
+                            id_pedido: null,
+                        }
+                    },
+                    searching: false,
+                    bLengthChange: false,
+                    info: false,
+                    paging: false,
+                    select: {
+                        style: 'multi',
+                        selector: 'td:first-child input[type="checkbox"]'
+                    },
+                    drawCallback: async function (settings, json) {
+                        $('#loader').css('display', 'none');
+                        var iva = 0.12;
+                        var api = this.api();
+                        var totalGeneral = await api.column(5).data().reduce(function (a, b) {
+                            return a + b;
+                        }, 0);
+                        var montoIva = totalGeneral * iva;
+                        totalConIva = totalGeneral + montoIva;
+
+                        $("#subtotal2").text("$" + totalGeneral.toFixed(2));
+                        $("#iva2").text("$" + montoIva.toFixed(2));
+                        $("#total2").text("$" + totalConIva.toFixed(2));
+                        console.log(totalConIva);
+                    },
+                    autoWidth: true,
+                    columns: [
+                        { data: 'img', defaultContent: "-" },
+                        { data: 'id_pedido', defaultContent: "-" },
+                        { data: 'nombre_producto', defaultContent: "-" },
+                        {
+                            data: 'precio', render: function (data) {
+                                return (data !== null) ? "$" + data : "-";
+                            }
+                        },
+                        { data: 'cantidad', defaultContent: "-" },
+                        {
+                            data: 'total',
+                            render: function (data) {
+                                return (data !== null) ? "$" + data : "-";
+                            }
+                        },
+                        { data: 'estado', defaultContent: "-" },
+                    ],
+                    columnDefs: [
+                        {
+                            targets: "_all",
+                            className: "dt-center",
+                        },
+                        {
+                            targets: 0,
+                            searchable: false,
+                            orderable: false,
+                            visible:false,
+                            render: function (data, type, full, meta) {
+                                return '<input type="checkbox" class="form-check-input border-success" style="width:15px;height:15px;">';
+                            }
+                        },
+                        {
+                            targets: 1,
+                            render: function (data, type, row, meta) {
+                                return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data, type, row, meta) {
+                                var estado = row.estado;
+                                var badgeClass = '';
+
+                                switch (estado) {
+                                    case 'Aprobado':
+                                        badgeClass = 'badge bg-success';
+                                        break;
+                                    case 'Cancelado':
+                                        badgeClass = 'badge bg-danger';
+                                        break;
+                                    case 'Pendiente':
+                                        badgeClass = 'badge bg-warning text-black';
+                                        break;
+                                    default:
+                                        badgeClass = 'badge bg-secondary';
+                                }
+                                return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                            }
+                        }
+                    ],
+                    "language": {
+                        "sEmptyTable": "No hay datos disponibles en la tabla",
+                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                        "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                        "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ",",
+                        "sLengthMenu": "Mostrar _MENU_ entradas",
+                        "sLoadingRecords": "Cargando...",
+                        "sProcessing": "Procesando...",
+                        "sSearch": "Buscar:",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+                });
                 var tabla = $('#datatable').DataTable({
                     ajax: {
                         url: '/obtener_pedidos_cliente',
@@ -148,36 +370,36 @@
                     },
                     dom: 'Bfrtip',
                     columns: [
-                                { data: 'id_pedido', defaultContent: "-" },
-                                { data: 'fecha', defaultContent: "-" },
-                                {
-                                    data: 'total',
-                                    render: function (data) {
-                                        return (data !== null) ? "$" + data : "-";
-                                    }
+                        { data: 'id_pedido', defaultContent: "-" },
+                        { data: 'fecha', defaultContent: "-" },
+                        {
+                            data: 'total',
+                            render: function (data) {
+                                return (data !== null) ? "$" + data : "-";
+                            }
+                        }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: "_all",
+                            className: "dt-center",
+                        },
+                        {
+                            targets: 1,
+                            render: function (data, type, row, meta) {
+                                if (type === 'display' || type === 'filter') {
+                                    return new Date(data).toLocaleDateString();
                                 }
-                            ],
-                            columnDefs: [
-                                {
-                                    targets: "_all",
-                                    className: "dt-center",
-                                },
-                                {
-                                    targets: 1,
-                                    render: function (data, type, row, meta) {
-                                        if (type === 'display' || type === 'filter') {
-                                            return new Date(data).toLocaleDateString();
-                                        }
-                                        return data;
-                                    }
-                                },
-                                {
-                                    targets: 3,
-                                    render: function (data, type, row, meta) {
-                                        return `<button class="btn btn-primary btn-sm" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button>`;
-                                    }
-                                },
-                            ],
+                                return data;
+                            }
+                        },
+                        {
+                            targets: 3,
+                            render: function (data, type, row, meta) {
+                                return `<button class="btn btn-primary btn-sm" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button>`;
+                            }
+                        },
+                    ],
                     "language": {
                         "sEmptyTable": "No hay datos disponibles en la tabla",
                         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
@@ -206,46 +428,38 @@
                         }
                     }
                 });
+
                 $("#datatable_filter").hide();
                 $("#search").keyup(function () {
-                    table = $('.tablesort').DataTable();
-                    table.search($(this).val()).draw();
+                    table = $('#datatable').DataTable();
+                    tabla.search($(this).val()).draw();
                 });
                 $('#date').change(function () {
-                    table = $('.tablesort').DataTable();
-                    table.search($(this).val()).draw();
+                    table = $('#datatable').DataTable();
+                    tabla.search($(this).val()).draw();
                 });
                 $('#actualizar').click(async function () {
-                    await table.ajax.reload()
+                    await pedidos.ajax.reload()
                 });
                 $('#productos').change(function () {
                     tabla.ajax.reload();
                 });
             });
-            function cancelar(id_detalle_pedido) {
-                        fetch("/cancelar_pedido", {
-                            method: 'POST',
-                            body: JSON.stringify({ id_detalle_pedido: id_detalle_pedido }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(response => response.json()).then(data => {
-                            Swal.fire({
-                                toast: true,
-                                position: 'bottom-end',
-                                icon: data.type,
-                                text: data.message,
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
-                            });
-                            tabla.ajax.reload();
-                        }).catch(error => {
-                            console.error(error);
-                        });
-                    }
-        </script>
-        <%- include("partials/_fotterindex") %>
-</body>
 
+            function detalle_pedidos(params) {
+                pedidos.clear().draw();
+                $('#loader').css('display', 'block');
+                var configuracionPedidos = pedidos.settings();
+                $("#detalle_producto").modal("show");
+                $("#pedidoscliente").text("Pedido #" + params);
+                if (configuracionPedidos) {
+                    configuracionPedidos[0].ajax.data.id_pedido = params;
+                    pedidos.ajax.reload();
+                }
+                console.log(pedidos.ajax.data);
+                pedidos.ajax.reload();
+            }
+        </script>
+</body>
+      <%- include("partials/_fotterindex") %>
 </html>

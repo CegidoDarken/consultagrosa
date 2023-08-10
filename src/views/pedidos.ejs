@@ -30,7 +30,7 @@
         color: #59ab6e;
         font-family: arial, sans-serif;
         position: relative;
-        left: 47%;
+        left: 46%;
         top: 47%;
     }
 
@@ -383,18 +383,6 @@
                             },
                             { data: 'estado', defaultContent: "-" },
                         ],
-                        buttons: [
-                            {
-                                extend: 'copy',
-                                text: '<i class="bi bi-clipboard"></i> Copiar',
-                                className: 'btn btn-primary btn-sm text-light'
-                            },
-                            {
-                                extend: 'excel',
-                                text: '<i class="bi bi-file-excel"></i>Exportar Excel',
-                                className: 'btn btn-primary btn-sm text-light'
-                            }
-                        ],
                         columnDefs: [
                             {
                                 targets: "_all",
@@ -581,7 +569,7 @@
                             })
                         }
                     }
-                    async function detalle_pedidos(params) {
+                     function detalle_pedidos(params) {
                         pedidos.clear().draw();
                         $('#loader').css('display', 'block');
                         var configuracionPedidos = pedidos.settings();
