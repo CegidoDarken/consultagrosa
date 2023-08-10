@@ -25,6 +25,9 @@ const transporter = nodemailer.createTransport({
 //TODO: Rutas
 router.get("/tienda", async (req, res) => {
   res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
+}); 
+router.get("/masvendidos", async (req, res) => {
+  res.render("masvendidos", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_mas_pedidos2() });
 });
 router.get("/perfilcliente", async (req, res) => {
   try {
@@ -684,6 +687,27 @@ router.post("/obtener_mas_pedidos", async (req, res) => {
   const anio = req.body.anio;
   res.json({ productos: await obtener_mas_pedidos(anio) });
 });
+async function obtener_mas_pedidos2() {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria GROUP BY p.id_producto ORDER BY vendidos DESC;";
+    connection.query(sql, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (result.length > 0) {
+          result.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 async function obtener_mas_pedidos(anio) {
 
   return new Promise((resolve, reject) => {
