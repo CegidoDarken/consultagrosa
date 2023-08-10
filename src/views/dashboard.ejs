@@ -201,7 +201,7 @@
         }],
         chart: {
           height: 350,
-          type: 'line',
+          type: 'area',
           toolbar: {
             show: true
           },
@@ -210,6 +210,15 @@
           size: 4
         },
         colors: ['#5d5aab', '#2eca6a', '#ff771d'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
         dataLabels: {
           enabled: true
         },
@@ -355,11 +364,11 @@
           data: data.ganancias.map(item => item.ganancias)
         }],
         chart: {
-          type: 'line',
+          type: 'area',
           height: 500,
           toolbar: {
             autoSelected: 'pan',
-            show: false
+            show: true
           }
         },
         stroke: {
@@ -369,7 +378,13 @@
           enabled: false
         },
         fill: {
-          opacity: 1,
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
         },
         markers: {
           size: 0

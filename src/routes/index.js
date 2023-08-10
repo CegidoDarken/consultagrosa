@@ -86,6 +86,10 @@ router.get("/proveedores", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("proveedores", { credentials });
 });
+router.get("/bodegas", async (req, res) => {
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  res.render("bodegas", { credentials });
+});
 router.get("/contactanos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("contactanos", { credentials });
@@ -336,10 +340,11 @@ router.post("/obtener_detalle_pedidos", async (req, res) => {
 router.post("/obtener_pedidos_cliente", async (req, res) => {
   const id_usuario = req.body.id_usuario;
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT pr.`img`, dp.`id_detalle_pedido`, dp.`pedido_id`, dp.`estado`, dp.`producto_id`, dp.`cantidad`, dp.`total` AS 'total_detalle', p.`id_pedido`, p.`usuario_id`, p.`fecha`, p.`total` AS 'total_pedido', pr.`nombre` AS 'nombre_producto', dp.`precio`, u.`nombre` AS 'nombre_usuario', u.`correo` AS 'email_usuario' FROM `detallepedidos` AS dp JOIN `pedidos` AS p ON dp.`pedido_id` = p.`id_pedido` JOIN `productos` AS pr ON dp.`producto_id` = pr.`id_producto` JOIN `usuarios` AS u ON p.`usuario_id` = u.`id_usuario` WHERE u.`id_usuario` = " + id_usuario + " ORDER BY dp.`id_detalle_pedido` DESC;";
+  const sql = "SELECT pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.pedidos JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario WHERE usuarios.`id_usuario` = " + id_usuario + ";";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
+      console.log(error);
     } else {
       if (results) {
         results.forEach(element => {
@@ -347,6 +352,7 @@ router.post("/obtener_pedidos_cliente", async (req, res) => {
             element.img = element.img.toString();
           }
         });
+        console.log(results);
         res.json({ data: results });
       } else {
         res.json({ message: "Producto no reconocido" });
@@ -841,77 +847,36 @@ router.post("/asignar_producto", async (req, res) => {
     }
   });
 });
-router.post("/aprobar_pedido", async (req, res) => {
-  const { id_detalle_pedido } = req.body;
-
-  try {
-    // Get the pedido details from the database
-    connection.query(
-      `SELECT dp.cantidad AS pedido_cantidad, p.cantidad AS producto_cantidad, dp.producto_id
-      FROM detallepedidos dp
-      INNER JOIN productos p ON dp.producto_id = p.id_producto
-      WHERE dp.id_detalle_pedido = ?`,
-      [id_detalle_pedido],
-      (error, results) => {
+router.post("/aprobar_pedidos", async (req, res) => {
+  const { seleccionados } = req.body;
+  if (seleccionados.length > 0) {
+    seleccionados.forEach(id_detalle_pedido => {
+      const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Aprobado' WHERE id_detalle_pedido = ?`;
+      connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
         if (error) {
-          return res.status(500).json({ type: "error", error: error.message });
-        } else if (results.length === 0) {
-          return res.status(404).json({ type: "error", message: "Pedido no encontrado." });
-        } else {
-          const pedido = results[0];
-          if (pedido.pedido_cantidad > pedido.producto_cantidad) {
-            return res.status(400).json({ type: "error", message: "Pedido cantidad exceeds product cantidad." });
-          }
-          const updatedQuantity = pedido.producto_cantidad - pedido.pedido_cantidad;
-          connection.query(
-            `UPDATE detallepedidos SET estado = 'Aprobado', cantidad = ? WHERE id_detalle_pedido = ?`,
-            [pedido.pedido_cantidad, id_detalle_pedido],
-            (error, results) => {
-              if (error) {
-                return res.status(500).json({ type: "error", error: error.message });
-              } else {
-                connection.query(
-                  `UPDATE productos SET cantidad = ? WHERE id_producto = ?`,
-                  [updatedQuantity, pedido.producto_id],
-                  (error, results) => {
-                    if (error) {
-                      return res.status(500).json({ type: "error", error: error.message });
-                    } else {
-                      return res.status(200).json({ type: "success", message: "Pedido aprobado" });
-                    }
-                  }
-                );
-              }
-            }
-          );
-        }
-      }
-    );
-  } catch (err) {
-    console.error("Error approving pedido:", err);
-    return res.status(500).json({ type: "error", error: "Error: " + err });
-  }
-});
-
-router.post("/cancelar_pedido", async (req, res) => {
-  const { id_detalle_pedido } = req.body;
-
-  try {
-    connection.query(
-      `UPDATE detallepedidos SET estado = 'Cancelado' WHERE id_detalle_pedido = ?`,
-      [id_detalle_pedido], (error, results) => {
-        if (error) {
-          return res.status(404).json({ type: "error", error: error.message });
-        } else {
-          if (results) {
-            return res.status(200).json({ type: "success", message: "Pedido cancelado" });
-          }
+          console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
         }
       });
-  } catch (err) {
-    console.error("Error approving pedido:", err);
-    return res.status(500).json({ error: "An error occurred while approving the pedido." });
+    });
   }
+
+  res.json({ type: "success", message: "Pedidos actualizados con éxito" });
+});
+
+router.post("/cancelar_pedidos", async (req, res) => {
+  const { seleccionados } = req.body;
+  if (seleccionados.length > 0) {
+    seleccionados.forEach(id_detalle_pedido => {
+      const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Cancelado' WHERE id_detalle_pedido = ?`;
+      connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
+        if (error) {
+          console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
+        }
+      });
+    });
+  }
+
+  res.json({ type: "success", message: "Pedidos actualizados con éxito" });
 });
 
 router.post('/registrar_cliente', (req, res) => {
@@ -1019,7 +984,20 @@ router.post("/obtener_proveedores", async (req, res) => {
     }
   });
 });
-
+router.post("/obtener_bodegas", async (req, res) => {
+  const sql = "SELECT * FROM `bodegas` LEFT JOIN `usuarios` ON `bodegas`.`usuario_id` = `usuarios`.`id_usuario`";
+  connection.query(sql, (error, result) => {
+    if (error) {
+      res.json({ data: error.message });
+    } else {
+      if (result.length > 0) {
+        res.json({ data: result });
+      } else {
+        res.json({ data: null });
+      }
+    }
+  });
+});
 router.post("/obtener_provincias", async (req, res) => {
   const sql = "SELECT * FROM provincias ORDER BY provincia ASC";
   connection.query(sql, (error, result) => {

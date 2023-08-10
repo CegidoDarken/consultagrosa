@@ -115,13 +115,9 @@
                                                         id="datatable">
                                                         <thead>
                                                             <tr class="text-white" style="background-color: #59ab6e;">
+                                                                <th>#</th>
                                                                 <th>FECHA</th>
-                                                                <th>IMAGEN</th>
-                                                                <th>PRODUCTO</th>
-                                                                <th>CANTIDAD</th>
-                                                                <th>PRECIO PRODUCTO</th>
                                                                 <th>TOTAL</th>
-                                                                <th>ESTADOS</th>
                                                                 <th></th>
                                                             </tr>
                                                         </thead>
@@ -152,101 +148,36 @@
                     },
                     dom: 'Bfrtip',
                     columns: [
-                        { data: 'fecha', defaultContent: "-" },
-                        { data: 'img' },
-                        { data: 'nombre_producto', defaultContent: "-" },
-                        { data: 'cantidad', defaultContent: "-" },
-                        {
-                            data: 'precio',
-                            render: function (data) {
-                                return (data !== null) ? "$" + data : "-";
-                            }
-                        },
-                        {
-                            data: 'total_pedido',
-                            render: function (data) {
-                                return (data !== null) ? "$" + data : "-";
-                            }
-                        },
-                        { data: 'estado', defaultContent: "-" },
-                    ],
-                    buttons: [
-                        {
-                            extend: 'copy',
-                            text: '<i class="bi bi-clipboard"></i> Copiar',
-                            className: 'btn btn-primary btn-sm text-light'
-                        },
-                        {
-                            extend: 'excel',
-                            text: '<i class="bi bi-file-excel"></i>Exportar Excel',
-                            className: 'btn btn-primary btn-sm text-light'
-                        }
-                    ],
-                    columnDefs: [
-                        {
-                            targets: "_all",
-                            className: "dt-center",
-                        },
-                        {
-                            targets: 0,
-                            render: function (data, type, row, meta) {
-                                if (type === 'display' || type === 'filter') {
-                                    return new Date(data).toLocaleDateString();
+                                { data: 'id_pedido', defaultContent: "-" },
+                                { data: 'fecha', defaultContent: "-" },
+                                {
+                                    data: 'total',
+                                    render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
                                 }
-                                return data;
-                            }
-                        },
-                        {
-                            targets: 1,
-                            render: function (data, type, row, meta) {
-                                return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
-                            }
-                        },
-                        {
-                            targets: 6,
-                            render: function (data, type, row, meta) {
-                                var estado = row.estado;
-                                var badgeClass = '';
-                                switch (estado) {
-                                    case 'Aprobado':
-                                        badgeClass = 'badge bg-success';
-                                        break;
-                                    case 'Cancelado':
-                                        badgeClass = 'badge bg-danger';
-                                        break;
-                                    case 'Pendiente':
-                                        badgeClass = 'badge bg-warning';
-                                        break;
-                                    default:
-                                        badgeClass = 'badge bg-secondary';
-                                }
-
-                                return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
-                            }
-                        },
-                        {
-                            targets: 7,
-                            render: function (data, type, row, meta) {
-                                var estado = row.estado;
-                                var badgeClass = '';
-                                switch (estado) {
-                                    case 'Aprobado':
-                                        acciones = ``;
-                                        break;
-                                    case 'Cancelado':
-                                        acciones = ``;
-                                        break;
-                                    case 'Pendiente':
-                                        acciones = `<div class="dropdown"><a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a><ul class="dropdown-menu"><li><button class="dropdown-item text-danger" onclick="cancelar(${row.id_detalle_pedido})"><i class="bi bi-x"></i>Cancelar</button></li></ul></div>`;
-                                        break;
-                                    default:
-                                        acciones = 'badge bg-secondary';
-                                }
-
-                                return acciones;
-                            }
-                        },
-                    ],
+                            ],
+                            columnDefs: [
+                                {
+                                    targets: "_all",
+                                    className: "dt-center",
+                                },
+                                {
+                                    targets: 1,
+                                    render: function (data, type, row, meta) {
+                                        if (type === 'display' || type === 'filter') {
+                                            return new Date(data).toLocaleDateString();
+                                        }
+                                        return data;
+                                    }
+                                },
+                                {
+                                    targets: 3,
+                                    render: function (data, type, row, meta) {
+                                        return `<button class="btn btn-primary btn-sm" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button>`;
+                                    }
+                                },
+                            ],
                     "language": {
                         "sEmptyTable": "No hay datos disponibles en la tabla",
                         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
