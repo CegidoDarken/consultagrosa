@@ -169,13 +169,12 @@
                                         <ul class="list-inline pb-3">
                                             <li class="list-inline-item text-right">
                                                 Cantidad:
-                                                <input type="hidden" name="product-quanity" id="product-quanity"
-                                                    value="1">
                                             </li>
                                             <li class="list-inline-item"><span
                                                     class="btn btn-sm btn-success text-bg-success"
                                                     id="btn-minus">-</span></li>
-                                            <li class="list-inline-item"><span class="" id="var-value">1</span></li>
+                                            <li class="list-inline-item"><input
+                                                    class="form-control m-0 text-center" id="var-value" value="1" min="1" style="width: 60px;"></input></li>
                                             <li class="list-inline-item"><span
                                                     class="btn btn-sm btn-success text-bg-success"
                                                     id="btn-plus">+</span></li>
@@ -186,7 +185,7 @@
                                     <div class="col d-grid">
                                         <% if (credentials) { %>
                                             <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                onclick="agregar_carrito('<%= producto.id_producto %>','<%= producto.precio %>', $('#product-quanity').val())"><i
+                                                onclick="agregar_carrito('<%= producto.id_producto %>','<%= producto.precio %>', $('#var-value').val())"><i
                                                     class="bi bi-cart-fill"></i> Añadir al
                                                 carrito</button>
                                             <% } else { %>
@@ -196,6 +195,17 @@
                                                     carrito</button>
                                                 <% } %>
                                     </div>
+                                </div>
+                                <div class="col-auto me-auto">
+                                    <label for=""><font class="fw-semibold">¿No hay suficientes productos?</font> Contáctanos:</label>
+                                    <ul class="list-inline text-left footer-icons">
+                                        <li class="list-inline-item border border-light rounded-circle text-center">
+                                            <a class="text-light text-decoration-none" href="whatsapp://send?phone=+593985491766"><i class="bi bi-whatsapp text-success" style="font-size: 30px;"></i></a>
+                                        </li>
+                                        <li class="list-inline-item border border-light rounded-circle text-center">
+                                            <a class="text-light text-decoration-none" href="mailto:consultagrosaprueba@gmail.com"><i class="bi bi-envelope-fill text-success" style="font-size: 30px;"></i></a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>

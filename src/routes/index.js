@@ -187,6 +187,89 @@ async function aprioris(producto) {
     })
   });
 }
+router.post('/agregar_carrito2', async (req, res) => {
+  const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
+
+  try {
+    if (!usuario_id || !producto_id || !cantidad_deseada || !precio) {
+      return res.status(400).json({ type: "error", message: 'Faltan campos requeridos en la solicitud', data: null });
+    }
+    const cantidadDeseadaInt = parseInt(cantidad_deseada);
+    const precioInt = parseInt(precio);
+    const productResults = await new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT cantidad FROM productos WHERE id_producto = ?',
+        [producto_id],
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    if (productResults.length === 0) {
+      return res.status(404).json({ type: "error", message: 'Producto no encontrado', data: null });
+    }
+
+    const cantidadDisponible = productResults[0].cantidad;
+    if (cantidadDeseadaInt > cantidadDisponible) {
+      return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
+    }
+    const cartResults = await new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
+        [producto_id, usuario_id],
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    let cantidadActual = 0;
+    let isNewCartItem = true;
+
+    if (cartResults.length !== 0) {
+      cantidadActual = cartResults[0].cantidad;
+      isNewCartItem = false;
+    }
+
+    const nuevaCantidad = cantidadDeseadaInt;
+    const nuevoTotal = nuevaCantidad * precioInt;
+    if (nuevaCantidad > cantidadDisponible || nuevaCantidad === 0) {
+      return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
+    }
+    if (isNewCartItem) {
+      await new Promise((resolve, reject) => {
+        connection.query(
+          'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
+          [producto_id, usuario_id, nuevaCantidad, nuevoTotal],
+          (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          }
+        );
+      });
+    } else {
+
+      await new Promise((resolve, reject) => {
+        connection.query(
+          'UPDATE carritos SET cantidad = ?, total = ? WHERE producto_id = ? AND usuario_id = ?',
+          [nuevaCantidad, nuevoTotal, producto_id, usuario_id],
+          (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          }
+        );
+      });
+    }
+
+    return res.status(200).json({ type: "success", message: 'Producto agregado al carrito', data: null });
+  } catch (error) {
+    console.error('Error en el servidor:', error);
+    return res.status(500).json({ type: "error", message: 'Error en el servidor', data: null });
+  }
+});
 
 router.post('/agregar_carrito', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
@@ -689,7 +772,7 @@ router.post("/obtener_mas_pedidos", async (req, res) => {
 });
 async function obtener_mas_pedidos2() {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT p.id_producto, p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria GROUP BY p.id_producto ORDER BY vendidos DESC;";
+    const sql = "SELECT p.id_producto, p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria AND vendidos >=60 GROUP BY p.id_producto ORDER BY vendidos DESC ;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);

@@ -310,7 +310,7 @@
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder=" "
                                     required>
-                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre <font
+                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre Completo <font
                                         class="text-danger">*</font></label>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
@@ -613,13 +613,8 @@
                 targets: 5,
                 render: function (data, type, row, meta) {
                     pedidos = row;
-                    return `
-          <div class="quantity-control input-group" >
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, ${-1})" ${row.cantidad === 1 ? "disabled" : ""}>-</button>
-            <input type="number" class="input form-control text-center" value="${row.cantidad}"  min="1" readonly />
-            <button class="btn btn-primary btn-sm" onclick="agregar_carrito(${row.id_producto},${row.precio}, ${1})">+</button>
-          </div>
-        `;
+                    return `<div class="quantity-control input-group input-group-sm" >
+            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center" value="${row.cantidad}"  min="1"/><button class="btn btn-primary btn-sm" onclick="agregar_carrito2(${row.id_producto},${row.precio})">Actualizar</button></div>`;
                 }
             },
             {

@@ -15,7 +15,7 @@
                     <li>
                         <i class="fa fa-envelope fa-fw"></i>
                         <a class="text-decoration-none"
-                            href="mailto:consultagro.cia@gmail.com">consultagro.cia@gmail.com</a>
+                            href="mailto:consultagrosaprueba@gmail.com">consultagrosaprueba@gmail.com</a>
                     </li>
                 </ul>
             </div>
@@ -71,9 +71,41 @@
         let formData = new FormData();
         formData.append('producto_id', id_producto);
         formData.append('precio', precio);
-        formData.append('cantidad_deseada', cantidad);
+        formData.append('cantidad_deseada', cantidad ?? $("#cantidadesp").val());
         formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
-       await fetch("/agregar_carrito", {
+        await fetch("/agregar_carrito", {
+            method: "POST",
+            body: formData
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                obtener_cantidad_carrito();
+                carrito.api().ajax.reload();
+                $('#vaciar').prop('disabled', true);
+                $('#pedido').prop('disabled', true);
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: data.type,
+                    title: data.message,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    }
+    async function agregar_carrito2(id_producto, precio) {
+        let formData = new FormData();
+        formData.append('producto_id', id_producto);
+        formData.append('precio', precio);
+        formData.append('cantidad_deseada', $("#cantidadesp").val());
+        formData.append('usuario_id', '<%= (credentials)?credentials.id_usuario:null %>');
+        await fetch("/agregar_carrito2", {
             method: "POST",
             body: formData
         })
