@@ -275,7 +275,10 @@
           }
         },
         dataLabels: {
-          enabled: false
+          enabled: true,
+          formatter: function (value) {
+            return value;
+          }
         },
         stroke: {
           curve: 'smooth',
