@@ -414,7 +414,7 @@
 </div>
 
 <div class="modal fade" id="carrito-modal" tabindex="-1" aria-labelledby="carrito-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-fullscreen-sm-down modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="carrito-modal-label">Mi carrito</h5>
@@ -424,15 +424,15 @@
                 <div class="table-wrapper">
                     <table id="carrito-table" class="fl-table table table-sm table-hover text-center tablesort w-100">
                         <thead>
-                            <tr  class="text-white" style="background-color: #59ab6e;">
+                            <tr class="text-white" style="background-color: #59ab6e;">
                                 <th></th>
                                 <th></th>
-                                <th style="min-width: 150px !important;">IMAGEN</th>
-                                <th style="min-width: 150px !important;">NOMBRE</th>
-                                <th style="min-width: 150px !important;">PRECIO</th>
-                                <th style="min-width: 150px !important;">CATIDAD</th>
-                                <th style="min-width: 150px !important;">TOTA</th>
-                                <th style="min-width: 150px !important;">ELIMINAR</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">IMAGEN</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">NOMBRE</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">PRECIO</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">CATIDAD</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">TOTAL</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">ELIMINAR</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -441,7 +441,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="container-fluid text-start ps-5">
+                <div class="container-fluid text-start">
                     <h5>Subtotal: <span id="subtotal">$0</span></h5>
                     <h5>IVA: <span id="iva">$0</span></h5>
                     <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
@@ -582,7 +582,7 @@
         columnDefs: [
             {
                 targets: "_all",
-                className: "text-center",
+                className: "dt-center",
             },
             {
                 targets: 0,
@@ -595,6 +595,7 @@
             {
                 targets: 2,
                 render: function (data, type, row, meta) {
+                    console.log(row);
                     return `<img src="${row.img ?? '/img/no-image-icon.png'}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                 }
             },
@@ -619,7 +620,7 @@
                         }
                     });
                     return `<div class="row justify-content-center" >
-            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center col-1" value="${row.cantidad}" min="1" style="width: 50px;" /><button class="btn btn-primary btn-sm col-auto ms-2" onclick="agregar_carrito2(${row.id_producto},${row.precio})"><i class="bi bi-arrow-clockwise"></i> Actualizar</button></div>`;
+            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center col-1" value="${row.cantidad}" min="1" style="width: 50px;"/> <button class="btn btn-primary btn-sm col-auto ms-2" onclick="agregar_carrito2(${row.id_producto},${row.precio})">Cambiar</button></div>`;
                 }
             },
             {
