@@ -35,9 +35,10 @@
                                         <div class="col-12">
                                             <select class="js-example-basic-single form-select" id="productos">
                                                 <% if (productos) { %>
-                                                    <% productos.forEach(row=> { %><option
-                                                            value="<%= row.id_producto %>" }>
-                                                            Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %>
+                                                    <% productos.forEach(row=> { %>
+                                                        <option data-producto="<%= row.nombre %>"
+                                                            value="<%= row.id_producto %>" }> Codigo: <%= row.codigo %>
+                                                                | Nombre: <%= row.nombre %>
                                                         </option>
                                                         <% })}; %>
                                             </select>
@@ -110,12 +111,12 @@
                         var y = 20;
                         var date = new Date().toJSON().slice(0, 10).split('-').reverse().join('/')
                         doc.setLineWidth(2);
-                        var text = "Consultagro  S.A \nDirección: Avenida Juan X Marcos & Olmedo, Babahoyo \nTeléfono: 05-2570884 \nCorreo: consultagro.cia@gmail.com";
-                        var x = doc.internal.pageSize.getWidth() / 2;
+                        var text = "Consultagro S.A\nDirección: Avenida Juan X Marcos & Olmedo, Babahoyo \nTeléfono: 05-2570884 \nCorreo: consultagro.cia@gmail.com";
+                        var x = doc.internal.pageSize.getWidth() / 2.5;
                         doc.setFontSize(9);
                         doc.text(50, 20, text);
                         doc.setFontSize(16);
-                        doc.text(x, 65, "Kardex PEPS");
+                        doc.text(x, 65, "Kardex " + ($('#productos').find('option:selected').data('producto')));
                         doc.setFontSize(9);
                         doc.text(50, (doc.internal.pageSize.height - 25), ("Autor: <%= credentials.nombre %>" + " \nFecha: " + date));
                         var img = new Image()
@@ -125,7 +126,16 @@
                             html: '#datatable',
                             theme: 'grid',
                             startY: y + 70,
-                        })
+                        });
+                        for (var i = 1; i <= doc.internal.getNumberOfPages(); i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(10);
+                            doc.text(
+                                `Página ${i} de ${doc.internal.getNumberOfPages()}`,
+                                doc.internal.pageSize.getWidth() - 100,
+                                doc.internal.pageSize.getHeight() - 20
+                            );
+                        }
                         doc.save(('Kardex' + Date.now() + "." + 'pdf'));
                     }
                     $(document).ready(function () {

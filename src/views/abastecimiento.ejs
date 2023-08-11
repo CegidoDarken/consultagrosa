@@ -141,8 +141,9 @@
                                 },
                                 {
                                     targets: 0,
+                                    className: "danger",
                                     render: function (data, type, row, meta) {
-                                        return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                                        return `<img src="${row.img}" style="width: 100%; height: 80px;object-fit: contain;object-position: center;">`;
                                     }
                                 },
                                 {
@@ -152,6 +153,19 @@
                                     }
                                 }
                             ],
+                            initComplete: async function (settings, json) {
+                                /*var r = document.getElementById("datatable");
+                                for (let index = 0; index < json.data.length; index++) {
+                                    if (json.data[index].cantidad <= (json.data[index].min / 2)) {
+                                        var fila = r.rows[index];
+                                        fila.style.backgroundColor = "red";
+                                        console.log(json.data[index].min / 2);
+                                    } else {
+                                        var fila = r.rows[index];
+                                        fila.style.backgroundColor = "yellow";
+                                    }
+                                }*/
+                            },
                             "language": {
                                 "sEmptyTable": "No hay datos disponibles en la tabla",
                                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
@@ -173,10 +187,6 @@
                                 "oAria": {
                                     "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                                     "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                                },
-                                "buttons": {
-                                    "copy": "Copiar",
-                                    "colvis": "Visibilidad"
                                 }
                             }
                         });
