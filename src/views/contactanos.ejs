@@ -57,7 +57,11 @@
                 </div>
             </div>
             </form>
+            <div class="col">
+                <img src="img/qr.png" width="300">
+            </div>
         </div>
+
         </div>
         <%- include("partials/_fotterindex") %>
             <script>
@@ -81,9 +85,10 @@
                             });
                             return;
                         } else {
-                            const whatsappMessage = encodeURIComponent(`Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
+                            const whatsappMessage = encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
                             const whatsappLink = `https://wa.me/+593985491766?text=${whatsappMessage}`;
                             window.open(whatsappLink, "_blank");
+                            return;
                         }
 
                     });
@@ -105,8 +110,8 @@
                         } else {
                             const mailtoLink = `mailto:consultagrosaprueba@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
                             window.open(mailtoLink, "_blank");
+                            return;
                         }
-
                     });
                 });
             </script>
