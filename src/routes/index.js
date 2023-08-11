@@ -438,7 +438,6 @@ router.post("/obtener_pedidos_cliente", async (req, res) => {
             element.img = element.img.toString();
           }
         });
-        console.log(results);
         res.json({ data: results });
       } else {
         res.json({ message: "Producto no reconocido" });
@@ -772,7 +771,7 @@ router.post("/obtener_mas_pedidos", async (req, res) => {
 });
 async function obtener_mas_pedidos2() {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT p.id_producto, p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria AND vendidos >=60 GROUP BY p.id_producto ORDER BY vendidos DESC ;";
+    const sql = "SELECT p.id_producto, p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 20;";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);

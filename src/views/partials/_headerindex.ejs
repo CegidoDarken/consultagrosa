@@ -310,8 +310,9 @@
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder=" "
                                     required>
-                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre Completo <font
-                                        class="text-danger">*</font></label>
+                                <label style="color: #59ab6e;" for="nombre"><i class="bi bi-person"></i> Nombre Completo
+                                    <font class="text-danger">*</font>
+                                </label>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                             <div class="form-floating mb-3">
@@ -423,15 +424,15 @@
                 <div class="table-wrapper">
                     <table id="carrito-table" class="fl-table table table-sm table-hover text-center tablesort w-100">
                         <thead>
-                            <tr>
-                                <th class="text-center" style="width: 120px !important;"></th>
-                                <th class="text-center" style="width: 120px !important;"></th>
-                                <th class="text-center" style="width: 120px !important;">Imagen</th>
-                                <th class="text-center" style="width: 120px !important;">Nombre</th>
-                                <th class="text-center" style="width: 120px !important;">Precio</th>
-                                <th class="text-center" style="max-width: 60px !important;">Cantidad</th>
-                                <th class="text-center" style="width: 120px !important;">Total</th>
-                                <th class="text-center" style="width: 20px !important;"></th>
+                            <tr  class="text-white" style="background-color: #59ab6e;">
+                                <th></th>
+                                <th></th>
+                                <th style="min-width: 150px !important;">IMAGEN</th>
+                                <th style="min-width: 150px !important;">NOMBRE</th>
+                                <th style="min-width: 150px !important;">PRECIO</th>
+                                <th style="min-width: 150px !important;">CATIDAD</th>
+                                <th style="min-width: 150px !important;">TOTA</th>
+                                <th style="min-width: 150px !important;">ELIMINAR</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -612,9 +613,13 @@
             {
                 targets: 5,
                 render: function (data, type, row, meta) {
-                    pedidos = row;
-                    return `<div class="quantity-control input-group input-group-sm" >
-            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center" value="${row.cantidad}"  min="1"/><button class="btn btn-primary btn-sm" onclick="agregar_carrito2(${row.id_producto},${row.precio})">Actualizar</button></div>`;
+                    $('.inous').on('blur', function () {
+                        if ($(this).val() === '') {
+                            $(this).val(1);
+                        }
+                    });
+                    return `<div class="row justify-content-center" >
+            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center col-1" value="${row.cantidad}" min="1" style="width: 50px;" /><button class="btn btn-primary btn-sm col-auto ms-2" onclick="agregar_carrito2(${row.id_producto},${row.precio})"><i class="bi bi-arrow-clockwise"></i> Actualizar</button></div>`;
                 }
             },
             {

@@ -23,5 +23,34 @@
     "peacock.color": "#42b883",
     "npm-scripts.showStartNotification": false,
     "terminal.integrated.fontFamily": "Hack Nerd Font Mono",
-    "terminal.integrated.fontSize": 13
+    "terminal.integrated.fontSize": 13,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "containers-us-west-46.railway.app",
+            "port": 6609,
+            "driver": "MySQL",
+            "name": "railway connect MySQL",
+            "database": "railway",
+            "username": "root"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "phpMyAdmin",
+            "username": "root",
+            "database": "coreptec_soporte",
+            "password": ""
+        }
+    ]
 }

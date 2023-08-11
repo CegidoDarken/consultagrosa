@@ -181,7 +181,7 @@
                                                                 <th>#</th>
                                                                 <th>FECHA</th>
                                                                 <th>TOTAL</th>
-                                                                <th></th>
+                                                                <th>DETALLES</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -210,18 +210,18 @@
                         <div class="loader-text"></div>
                     </div>
                     <div class="modal-body">
-                        <div class="table-wrapper">
+                        <div class="table-wrapper overflow-x-scroll">
                             <table class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
                                 id="datatablepedidos">
                                 <thead>
-                                    <tr style="background-color: #59ab6e; color: #ffffff;">
+                                    <tr class="text-white" style="background-color: #59ab6e;">
                                         <th></th>
-                                        <th>IMAGEN</th>
-                                        <th>PRODUCTO</th>
-                                        <th>PRECIO</th>
-                                        <th>CANTIDAD</th>
-                                        <th>TOTAL</th>
-                                        <th>ESTADO</th>
+                                        <th style="min-width: 100px !important;">IMAGEN</th>
+                                        <th style="min-width: 100px !important;">PRODUCTO</th>
+                                        <th style="min-width: 100px !important;">PRECIO</th>
+                                        <th style="min-width: 100px !important;">CANTIDAD</th>
+                                        <th style="min-width: 100px !important;">TOTAL</th>
+                                        <th style="min-width: 100px !important;">ESTADO</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -302,7 +302,7 @@
                             targets: 0,
                             searchable: false,
                             orderable: false,
-                            visible:false,
+                            visible: false,
                             render: function (data, type, full, meta) {
                                 return '<input type="checkbox" class="form-check-input border-success" style="width:15px;height:15px;">';
                             }
@@ -461,5 +461,6 @@
             }
         </script>
 </body>
-      <%- include("partials/_fotterindex") %>
+<%- include("partials/_fotterindex") %>
+
 </html>

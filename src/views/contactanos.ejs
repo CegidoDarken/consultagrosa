@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-    <style>
-        .contactanos{ 
-            color: #69bb7e !important;
-        }
-    </style>
+<style>
+    .contactanos {
+        color: #69bb7e !important;
+    }
+</style>
+
 <head>
     <title>Contactanos</title>
 </head>
@@ -15,41 +16,96 @@
             <div class="col-md-6 m-auto text-center">
                 <h1 class="h1">Contactanos</h1>
                 <p>
-                    Puedes encontrarnos en nuestra tienda local o contactarnos por escrito para poder atender tus inquietudes. Estaremos encantados de ayudarte.
+                    Puedes encontrarnos en nuestra tienda local o contactarnos por escrito para poder atender tus
+                    inquietudes. Estaremos encantados de ayudarte.
                 </p>
             </div>
         </div>
 
         <div id="mapid" style="width: 100%; height: 600px;">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.8430751407122!2d-79.53766228848846!3d-1.8029741364035263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902d2820f44a8ff5%3A0x4ca18bc23f71a470!2sAvenida%20Juan%20X%20Marcos%20%26%20Olmedo%2C%20Babahoyo!5e0!3m2!1ses-419!2sec!4v1689453114118!5m2!1ses-419!2sec" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.8430751407122!2d-79.53766228848846!3d-1.8029741364035263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902d2820f44a8ff5%3A0x4ca18bc23f71a470!2sAvenida%20Juan%20X%20Marcos%20%26%20Olmedo%2C%20Babahoyo!5e0!3m2!1ses-419!2sec!4v1689453114118!5m2!1ses-419!2sec"
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
 
         <div class="container py-5">
             <div class="row py-5">
-                <form class="col-md-9 m-auto" method="post" role="form">
-                    <div class="row">
-                        <div class="form-group col-md-6 mb-3">
-                            <input type="text" class="form-control mt-1" id="name" name="name" placeholder="Nombre">
-                        </div>
-                        <div class="form-group col-md-6 mb-3">
-                            <input type="email" class="form-control mt-1" id="email" name="email" placeholder="Email">
-                        </div>
+                <form class="col-md-9 m-auto" id="contact-form"">
+                    <div class=" row">
+                    <div class="form-group col-md-6 mb-3">
+                        <input type="text" class="form-control mt-1" id="name" name="name"
+                            placeholder="Nombre completo">
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group col-md-6 mb-3">
                         <input type="text" class="form-control mt-1" id="subject" name="subject" placeholder="Asunto">
                     </div>
-                    <div class="mb-3">
-                        <textarea class="form-control mt-1" id="message" name="message" placeholder="Mensaje"
-                            rows="8"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col text-end mt-2">
-                            <button type="submit" class="btn btn-success btn-lg px-3">Enviar Mensaje</button>
-                        </div>
-                    </div>
-                </form>
             </div>
+            <div class="mb-3">
+                <textarea class="form-control mt-1" id="message" name="message" placeholder="Mensaje"
+                    rows="8"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-auto text-end mt-2">
+                    <a href="javascript:void(0);" target="_blank" class="btn btn-success btn-lg px-3"
+                        id="email-button"><i class="bi bi-envelope"></i>
+                        Enviar Correo</a>
+                </div>
+                <div class="col-auto text-end mt-2">
+                    <a href="javascript:void(0);" target="_blank" class="btn btn-success btn-lg px-3"
+                        id="whatsapp-button"><i class="bi bi-whatsapp"></i> Enviar WhatsApp</a>
+                </div>
+            </div>
+            </form>
+        </div>
         </div>
         <%- include("partials/_fotterindex") %>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const form = document.getElementById("contact-form");
+                    const whatsappButton = document.getElementById("whatsapp-button");
+                    const emailButton = document.getElementById("email-button");
+                    whatsappButton.addEventListener("click", function () {
+                        const name = form.name.value;
+                        const subject = form.subject.value;
+                        const message = form.message.value;
+                        if (!name || !subject || !message) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'error',
+                                title: 'Por favor, complete todos los campos del formulario antes de enviar.',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            return;
+                        }
+                        const whatsappMessage = encodeURIComponent(`Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
+                        const whatsappLink = `https://wa.me/+593985491766?text=${whatsappMessage}`;
+                        window.open(whatsappLink, "_blank");
+                    });
+                    emailButton.addEventListener("click", function () {
+                        const name = form.name.value;
+                        const subject = form.subject.value;
+                        const message = form.message.value;
+                        if (!name || !subject || !message) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'error',
+                                title: 'Por favor, complete todos los campos del formulario antes de enviar.',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            return;
+                        }
+                        const mailtoLink = `mailto:consultagrosaprueba@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
+                        window.open(mailtoLink, "_blank");
+                    });
+                });
+            </script>
 </body>
 
 </html>
