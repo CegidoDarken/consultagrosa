@@ -80,10 +80,12 @@
                                 timer: 3000
                             });
                             return;
+                        } else {
+                            const whatsappMessage = encodeURIComponent(`Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
+                            const whatsappLink = `https://wa.me/+593985491766?text=${whatsappMessage}`;
+                            window.open(whatsappLink, "_blank");
                         }
-                        const whatsappMessage = encodeURIComponent(`Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
-                        const whatsappLink = `https://wa.me/+593985491766?text=${whatsappMessage}`;
-                        window.open(whatsappLink, "_blank");
+
                     });
                     emailButton.addEventListener("click", function () {
                         const name = form.name.value;
@@ -100,9 +102,11 @@
                                 timer: 3000
                             });
                             return;
+                        } else {
+                            const mailtoLink = `mailto:consultagrosaprueba@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
+                            window.open(mailtoLink, "_blank");
                         }
-                        const mailtoLink = `mailto:consultagrosaprueba@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
-                        window.open(mailtoLink, "_blank");
+
                     });
                 });
             </script>
