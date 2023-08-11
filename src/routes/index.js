@@ -646,7 +646,7 @@ async function ganancias_pedidos(anio) {
 }
 async function ganancias_productos(anio) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT pr.img, pr.nombre as producto, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY ganancias DESC";
+    const sql = "SELECT pr.img, pr.nombre as producto, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY ganancias DESC LIMIT 10";
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
