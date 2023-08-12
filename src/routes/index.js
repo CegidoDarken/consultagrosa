@@ -440,14 +440,18 @@ router.post("/obtener_detalle_pedidos", async (req, res) => {
   }
 });
 router.post("/obtener_devoluciones", async (req, res) => {
-  const sql = "SELECT * FROM devoluciones;";
+  const sql = "SELECT d.id_devolucion, p.id_pedido, d.fecha, u.nombre AS usuario, pr.img, pr.nombre AS producto, d.cant_dev, d.motivo FROM devoluciones d JOIN pedidos p ON d.pedido_id = p.id_pedido JOIN usuarios u ON p.usuario_id = u.id_usuario JOIN productos pr ON d.producto_id = pr.id_producto;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
       console.log(error);
     } else {
-      console.log("sas" + results);
       if (results) {
+        results.forEach(element => {
+          if (element.img) {
+            element.img = element.img.toString();
+          }
+        });
         res.json({ data: results });
       } else {
         res.json({ message: "Producto no reconocido" });
@@ -461,7 +465,7 @@ router.post("/obtener_detalle_pedidos2", async (req, res) => {
   console.log(id_pedido);
   if (id_pedido) {
     credentials = req.session.credentials ? req.session.credentials.administrador : null;
-    const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ? AND dp.estado = 'Aprobado';";
+    const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.id_producto, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ? AND dp.estado = 'Aprobado';";
     connection.query(sql, [id_pedido], (error, results) => {
       if (error) {
         res.send({ message: error });
@@ -1032,12 +1036,13 @@ router.post("/devolver_pedidos", async (req, res) => {
     let successCount = 0;
     for (const element of seleccionados) {
       const pedidoId = element.pedido_id;
+      const productoId = element.id_producto;
       const cantDev = element.cant_dev;
       const cantidad = element.cantidad;
       if (cantDev <= cantidad && cantDev != 0) {
         connection.execute(
-          'INSERT INTO devoluciones (pedido_id, fecha, motivo, cant_dev) VALUES (?, ?, ?, ?)',
-          [pedidoId, new Date(), element.observacion, cantDev], (error, result) => {
+          'INSERT INTO devoluciones (pedido_id, producto_id, fecha, motivo, cant_dev) VALUES (?, ?, ?, ?, ?)',
+          [pedidoId, productoId, new Date(), element.observacion, cantDev], (error, result) => {
             if (error) {
               console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
             }
