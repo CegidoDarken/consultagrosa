@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
 //TODO: Rutas
 router.get("/tienda", async (req, res) => {
   res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
-}); 
+});
 router.get("/masvendidos", async (req, res) => {
   res.render("masvendidos", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_mas_pedidos2() });
 });
@@ -62,7 +62,23 @@ router.get("/admin", async (req, res) => {
     return res.render("admin");
   }
 });
-
+router.get("/devolucionpedidos", async (req, res) => {
+  const { pedido } = req.query;
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  try {
+    return res.render("devolucionpedidos", { pedido, credentials });
+  } catch (error) {
+    return res.render("admin");
+  }
+});
+router.get("/devoluciones", async (req, res) => {
+  credentials = req.session.credentials ? req.session.credentials.administrador : null;
+  try {
+    return res.render("devoluciones", { credentials });
+  } catch (error) {
+    return res.render("admin");
+  }
+});
 router.get("/validar", async (req, res) => {
   const { usuario } = req.query;
   const updateQuery = `UPDATE usuarios SET estado = 1 WHERE id_usuario = ?`;
@@ -385,7 +401,7 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.pedidos JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario;";
+  const sql = "SELECT dp.pedido_id, CASE WHEN SUM(CASE WHEN dp.estado = 'Pendiente' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Pendiente' WHEN SUM(CASE WHEN dp.estado = 'Cancelado' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Cancelado' ELSE 'Completado' END AS estado, pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto JOIN railway.pedidos ON dp.pedido_id = pedidos.id_pedido JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario GROUP BY dp.pedido_id;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -423,10 +439,52 @@ router.post("/obtener_detalle_pedidos", async (req, res) => {
     });
   }
 });
+router.post("/obtener_devoluciones", async (req, res) => {
+  const sql = "SELECT * FROM devoluciones;";
+  connection.query(sql, (error, results) => {
+    if (error) {
+      res.send({ message: error });
+      console.log(error);
+    } else {
+      console.log("sas" + results);
+      if (results) {
+        res.json({ data: results });
+      } else {
+        res.json({ message: "Producto no reconocido" });
+      }
+    }
+  });
+
+});
+router.post("/obtener_detalle_pedidos2", async (req, res) => {
+  const { id_pedido } = req.body;
+  console.log(id_pedido);
+  if (id_pedido) {
+    credentials = req.session.credentials ? req.session.credentials.administrador : null;
+    const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ? AND dp.estado = 'Aprobado';";
+    connection.query(sql, [id_pedido], (error, results) => {
+      if (error) {
+        res.send({ message: error });
+        console.log(error);
+      } else {
+        if (results) {
+          results.forEach(element => {
+            if (element.img) {
+              element.img = element.img.toString();
+            }
+          });
+          res.json({ data: results });
+        } else {
+          res.json({ message: "Producto no reconocido" });
+        }
+      }
+    });
+  }
+});
 router.post("/obtener_pedidos_cliente", async (req, res) => {
   const id_usuario = req.body.id_usuario;
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.pedidos JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario WHERE usuarios.`id_usuario` = " + id_usuario + ";";
+  const sql = "SELECT dp.pedido_id, CASE WHEN SUM(CASE WHEN dp.estado = 'Pendiente' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Pendiente' WHEN SUM(CASE WHEN dp.estado = 'Cancelado' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Cancelado' ELSE 'Completado' END AS estado, pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto JOIN railway.pedidos ON dp.pedido_id = pedidos.id_pedido JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario WHERE usuarios.id_usuario = " + id_usuario + " GROUP BY dp.pedido_id";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -968,7 +1026,35 @@ router.post("/aprobar_pedidos", async (req, res) => {
 
   res.json({ type: "success", message: "Pedidos actualizados con éxito" });
 });
+router.post("/devolver_pedidos", async (req, res) => {
+  const { seleccionados } = req.body;
+  try {
+    let successCount = 0;
+    for (const element of seleccionados) {
+      const pedidoId = element.pedido_id;
+      const cantDev = element.cant_dev;
+      const cantidad = element.cantidad;
+      if (cantDev <= cantidad && cantDev != 0) {
+        connection.execute(
+          'INSERT INTO devoluciones (pedido_id, fecha, motivo, cant_dev) VALUES (?, ?, ?, ?)',
+          [pedidoId, new Date(), element.observacion, cantDev], (error, result) => {
+            if (error) {
+              console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
+            }
+            console.log(`Inserted devolucion with ID: ${result.insertId}`);
+            successCount++;
+          });
 
+      } else {
+        console.log(`cant_dev is greater than cantidad for pedido ID: ${pedidoId}`);
+      }
+    }
+    res.json({ type: "success", message: `Pedidos actualizados con éxito. Filas afectadas: ${successCount}` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ type: "error", message: "Error en el servidor" });
+  }
+});
 router.post("/cancelar_pedidos", async (req, res) => {
   const { seleccionados } = req.body;
   if (seleccionados.length > 0) {

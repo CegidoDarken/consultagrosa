@@ -181,6 +181,7 @@
                                                                 <th>#</th>
                                                                 <th>FECHA</th>
                                                                 <th>TOTAL</th>
+                                                                <th>ESTADO</th>
                                                                 <th>DETALLES</th>
                                                             </tr>
                                                         </thead>
@@ -395,7 +396,8 @@
                             render: function (data) {
                                 return (data !== null) ? "$" + data : "-";
                             }
-                        }
+                        },
+                        { data: 'estado', defaultContent: "-" },
                     ],
                     columnDefs: [
                         {
@@ -413,6 +415,28 @@
                         },
                         {
                             targets: 3,
+                            render: function (data, type, row, meta) {
+                                var estado = row.estado;
+                                var badgeClass = '';
+
+                                switch (estado) {
+                                    case 'Completado':
+                                        badgeClass = 'badge bg-success';
+                                        break;
+                                    case 'Cancelado':
+                                        badgeClass = 'badge bg-danger';
+                                        break;
+                                    case 'Pendiente':
+                                        badgeClass = 'badge bg-warning text-black';
+                                        break;
+                                    default:
+                                        badgeClass = 'badge bg-secondary';
+                                }
+                                return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
+                            }
+                        },
+                        {
+                            targets: 4,
                             render: function (data, type, row, meta) {
                                 return `<button class="btn btn-primary btn-sm" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button>`;
                             }

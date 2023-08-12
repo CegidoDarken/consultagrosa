@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Pedidos</title>
+</head>
+<style>
+    .loader {
+        width: 100%;
+        position: absolute;
+        z-index: 9999;
+        background-color: #ffffff;
+        height: 100%;
+        border-radius: 5%;
+    }
+
+    .loader-wheel {
+        animation: spin 1s infinite linear;
+        border: 2px solid rgba(30, 30, 30, 0.5);
+        border-left: 4px solid #59ab6e;
+        border-radius: 50%;
+        height: 50px;
+        width: 50px;
+        position: relative;
+        left: 47%;
+        top: 47%;
+    }
+
+    .loader-text {
+        color: #59ab6e;
+        font-family: arial, sans-serif;
+        position: relative;
+        left: 46.5%;
+        top: 47%;
+    }
+
+    .loader-text:after {
+        content: 'Cargando';
+        animation: load 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes load {
+        0% {
+            content: 'Cargando';
+        }
+
+        33% {
+            content: 'Cargando.';
+        }
+
+        67% {
+            content: 'Cargando..';
+        }
+
+        100% {
+            content: 'Cargando...';
+        }
+    }
+</style>
+
+<body>
+    <%- include("partials/_headerpanel") %>
+        <%- include("partials/_sidebarpanel") %>
+            <main id="main" class="main">
+
+                <div class="pagetitle">
+                    <h1>Pedidos</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Reportes</li>
+                            <li class="breadcrumb-item active">Devoluciones</li>
+                        </ol>
+                    </nav>
+                </div>
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" id="search" placeholder="Buscar"
+                                                    value="">
+                                                <span class="input-group-text" id="basic-addon1"><i
+                                                        class="bi bi-search"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="input-group mb-3">
+                                                <input type="date" class="form-control" id="date" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container-fluid mt-2 p-0">
+                                        <div class="table-wrapper">
+                                            <table
+                                                class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
+                                                id="datatablepedidos">
+                                                <thead>
+                                                    <tr class="text-light" style="background-color: #59ab6e;">
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">#
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">FECHA
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">CATIDAD DEVOLUCIÓN
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">MOTIVO
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <%- include("partials/_fotterpanel") %>
+                <script>
+                    var pedidos;
+                    $(document).ready(function () {
+                        pedidos = $('#datatablepedidos').DataTable({
+                            ajax: {
+                                url: '/obtener_devoluciones',
+                                type: 'POST'
+                            },
+                            searching: false,
+                            bLengthChange: false,
+                            info: false,
+                            paging: false,
+                            autoWidth: true,
+                            columns: [
+                                { data: 'pedido_id', defaultContent: "-" },
+                                { data: 'fecha', defaultContent: "-" },
+                                { data: 'cant_dev', defaultContent: "-" },
+                                { data: 'motivo', defaultContent: "-" },
+                            ],
+                            "language": {
+                                "sEmptyTable": "No hay datos disponibles en la tabla",
+                                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                                "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
+                                "sInfoPostFix": "",
+                                "sInfoThousands": ",",
+                                "sLengthMenu": "Mostrar _MENU_ entradas",
+                                "sLoadingRecords": "Cargando...",
+                                "sProcessing": "Procesando...",
+                                "sSearch": "Buscar:",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Último",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+</body>
+
+</html>

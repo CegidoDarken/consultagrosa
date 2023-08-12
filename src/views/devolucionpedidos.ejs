@@ -79,7 +79,8 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
                             <li class="breadcrumb-item">Reportes</li>
-                            <li class="breadcrumb-item active">Pedidos</li>
+                            <li class="breadcrumb-item">Pedidos</li>
+                            <li class="breadcrumb-item active">Devolución</li>
                         </ol>
                     </nav>
                 </div>
@@ -110,32 +111,70 @@
                                         <div class="table-wrapper">
                                             <table
                                                 class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
-                                                id="datatable">
+                                                id="datatablepedidos">
                                                 <thead>
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">#</th>
+                                                            style="width: 0px; min-width: 120px;">SELECCIÓN</th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">FECHA</th>
+                                                            style="width: 0px; min-width: 120px;">IMAGEN
+                                                        </th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">CLIENTE</th>
+                                                            style="width: 0px; min-width: 120px;">PRODUCTO
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">PRECIO
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">CANTIDAD
+                                                        </th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
                                                             style="width: 0px; min-width: 120px;">TOTAL</th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">ESTADO</th>
+                                                            style="width: 0px; min-width: 120px;">ESTADO
+                                                        </th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">ACCIÓN</th>
+                                                            style="width: 0px; min-width: 120px;">CANTIDAD A DEVOLVER
+                                                        </th>
+                                                        <th class="dt-center sorting" tabindex="0"
+                                                            aria-controls="carrito-table" rowspan="1" colspan="1"
+                                                            style="width: 0px; min-width: 120px;">OBSERVACIÓN
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
                                             </table>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="container-fluid text-start row">
+                                        <div class="d-flex justify-content-start">
+                                            <i class="bi bi-arrow-90deg-up align-self-center"></i>
+                                            <div class="form-check m-1 align-self-center me-3">
+                                                <input class="form-check-input border-success border-1" type="checkbox"
+                                                    value="" id="example-select-all">
+                                                <label class="form-check-label link-underline-primary"
+                                                    for="example-select-all">
+                                                    Seleccionar todo
+                                                </label>
+                                            </div>
+                                            <div class="d-grid gap-1 d-md-flex"><label
+                                                    class="align-self-center me-md-1">Para
+                                                    los elementos que están
+                                                    marcados:</label>
+                                                <button class="btn btn-primary btn-sm" type="button"
+                                                    onclick="devolucion()"><i class="bi bi-check-lg"></i>
+                                                    Confirmar</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -185,93 +224,52 @@
                     </div>
                 </div>
             </div>
-
-            <div class="modal fade" id="detalle_producto" tabindex="-1" aria-labelledby="pedido" arhide="true">
-                <div class="modal-dialog modal-xl modal-fullscreen">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="pedido">Pedido #</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="loader" id="loader">
-                            <div class="loader-wheel"></div>
-                            <div class="loader-text"></div>
-                        </div>
-                        <div class="modal-body">
-                            <div class="table-wrapper">
-                                <table class="fl-table table table-sm table-hover text-center fl-table tablesort w-100"
-                                    id="datatablepedidos">
-                                    <thead>
-                                        <tr class="text-light" style="background-color: #59ab6e;">
-                                            <th>SELECCIÓN</th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">IMAGEN
-                                            </th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">PRODUCTO
-                                            </th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">PRECIO
-                                            </th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">CANTIDAD
-                                            </th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">TOTAL</th>
-                                            <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table"
-                                                rowspan="1" colspan="1" style="width: 0px; min-width: 120px;">ESTADO
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="container-fluid text-start row">
-                                <h5>Subtotal: <span id="subtotal">$0</span></h5>
-                                <h5>IVA: <span id="iva">$0</span></h5>
-                                <h2 class="fw-bold">Total: <span id="total">$0</span></h2>
-                                <div class="d-flex justify-content-start">
-                                    <i class="bi bi-arrow-90deg-up align-self-center"></i>
-                                    <div class="form-check m-1 align-self-center me-3">
-                                        <input class="form-check-input border-success border-1" type="checkbox" value=""
-                                            id="example-select-all">
-                                        <label class="form-check-label link-underline-primary" for="example-select-all">
-                                            Seleccionar todo
-                                        </label>
-                                    </div>
-                                    <div class="d-grid gap-1 d-md-flex"><label class="align-self-center me-md-1">Para
-                                            los elementos que están
-                                            marcados:</label>
-                                        <button class="btn btn-primary btn-sm" type="button" onclick="aprobar()"><i
-                                                class="bi bi-check-lg"></i> Aprobar</button>
-                                        <button class="btn btn-danger btn-sm" type="button" onclick="cancelar()"><i
-                                                class="bi bi-x-lg"></i> Cancelar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
-                    var tabla;
                     var pedidos;
                     var id_pedido;
                     $(document).ready(function () {
-                        tabla = $('#datatable').dataTable({
+                        $('#example-select-all').on('click', function () {
+                            var rows = pedidos.rows({
+                                'search': 'applied'
+                            }).nodes();
+                            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                            if (this.checked) {
+                                pedidos.rows().select();
+                            } else {
+                                pedidos.rows().deselect();
+                            }
+                        });
+                        pedidos = $('#datatablepedidos').DataTable({
                             ajax: {
-                                url: '/obtener_pedidos',
+                                url: '/obtener_detalle_pedidos2',
                                 type: 'POST',
+                                data: {
+                                    id_pedido: "<%= pedido %>",
+                                }
                             },
-                            dom: 'Bfrtip',
+                            searching: false,
+                            bLengthChange: false,
+                            info: false,
+                            paging: false,
+                            select: {
+                                style: 'multi',
+                                selector: 'td:first-child input[type="checkbox"]'
+                            },
+                            drawCallback: async function (settings, json) {
+
+                            },
+                            autoWidth: true,
                             columns: [
+                                { data: 'img', defaultContent: "-" },
                                 { data: 'id_pedido', defaultContent: "-" },
-                                { data: 'fecha', defaultContent: "-" },
-                                { data: 'nombre_usuario', defaultContent: "-" },
+                                { data: 'nombre_producto', defaultContent: "-" },
+                                {
+                                    data: 'precio', render: function (data) {
+                                        return (data !== null) ? "$" + data : "-";
+                                    }
+                                },
+                                { data: 'cantidad', defaultContent: "-" },
                                 {
                                     data: 'total',
                                     render: function (data) {
@@ -280,49 +278,49 @@
                                 },
                                 { data: 'estado', defaultContent: "-" },
                             ],
-                            order: [[0, 'desc']],
                             columnDefs: [
                                 {
                                     targets: "_all",
                                     className: "dt-center",
                                 },
                                 {
-                                    targets: 1,
-                                    render: function (data, type, row, meta) {
-                                        if (type === 'display' || type === 'filter') {
-                                            return new Date(data).toLocaleDateString();
-                                        }
-                                        return data;
-                                    }
-                                },
-                                {
-                                    targets: 5,
-                                    render: function (data, type, row, meta) {
+                                    targets: 0,
+                                    searchable: false,
+                                    orderable: false,
+                                    className: 'dt-body-center',
+                                    'render': function (data, type, row, meta) {
                                         var estado = row.estado;
-                                        var acciones = '';
+                                        var disabled = '';
                                         switch (estado) {
-                                            case 'Completado':
-                                                acciones = `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <a class="btn btn-primary btn-sm" title="Devolución" href="/devolucionpedidos?pedido=${row.id_pedido}"><i class="bi bi-arrow-repeat"></i></a>`;
+                                            case 'Aprobado':
+                                                disabled = '';
                                                 break;
                                             case 'Cancelado':
-                                                acciones =  `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
+                                                disabled = 'disabled';
                                                 break;
                                             case 'Pendiente':
-                                                acciones =  `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
+                                                disabled = 'disabled';
                                                 break;
                                             default:
-                                                acciones = 'badge bg-secondary';
+                                                disabled = 'disabled';
                                         }
-                                        return acciones;
+                                        return `<input type="checkbox" ${disabled} class="form-check-input border-success" style="width:15px;height:15px;">`;
                                     }
                                 },
                                 {
-                                    targets: 4,
+                                    targets: 1,
+                                    render: function (data, type, row, meta) {
+                                        return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
+                                    }
+                                },
+                                {
+                                    targets: 6,
                                     render: function (data, type, row, meta) {
                                         var estado = row.estado;
                                         var badgeClass = '';
+
                                         switch (estado) {
-                                            case 'Completado':
+                                            case 'Aprobado':
                                                 badgeClass = 'badge bg-success';
                                                 break;
                                             case 'Cancelado':
@@ -337,6 +335,18 @@
                                         return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
                                     }
                                 },
+                                {
+                                    targets: 7,
+                                    render: function (data, type, row, meta) {
+                                        return `<input type="number" class="form-control text-center" min="0" name="cant_dev" id="floatingInput" value="0" placeholder="Ingrese la cantidad a devolver">`;
+                                    }
+                                },
+                                {
+                                    targets: 8,
+                                    render: function (data, type, row, meta) {
+                                        return `<textarea class="form-control" placeholder="Ingrese la observación" id="floatingTextarea2" style="width: 300px !important; height: 30px !important;"></textarea>`;
+                                    }
+                                }
                             ],
                             "language": {
                                 "sEmptyTable": "No hay datos disponibles en la tabla",
@@ -359,157 +369,11 @@
                                 "oAria": {
                                     "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                                     "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                                },
-                                "buttons": {
-                                    "copy": "Copiar",
-                                    "colvis": "Visibilidad"
                                 }
                             }
-                        });
-                        $("#datatable_filter").hide();
-                        $('#search').keyup(function () {
-                            table = $('.tablesort').DataTable();
-                            table.search($(this).val()).draw();
-                        });
-                        $('#date').change(function () {
-                            table = $('.tablesort').DataTable();
-                            table.search($(this).val()).draw();
-                        });
-                        $('#actualizar').click(async function () {
-                            await tabla.ajax.reload()
-                        });
-                        $('#productos').change(function () {
-                            tabla.ajax.reload();
                         });
                     });
 
-                    $('#example-select-all').on('click', function () {
-                        var rows = pedidos.rows({
-                            'search': 'applied'
-                        }).nodes();
-                        $('input[type="checkbox"]', rows).prop('checked', this.checked);
-                        if (this.checked) {
-                            pedidos.rows().select();
-                        } else {
-                            pedidos.rows().deselect();
-                        }
-                    });
-                    pedidos = $('#datatablepedidos').DataTable({
-                        ajax: {
-                            url: '/obtener_detalle_pedidos',
-                            type: 'POST',
-                            data: {
-                                id_pedido: id_pedido,
-                            }
-                        },
-                        searching: false,
-                        bLengthChange: false,
-                        info: false,
-                        paging: false,
-                        select: {
-                            style: 'multi',
-                            selector: 'td:first-child input[type="checkbox"]'
-                        },
-                        drawCallback: async function (settings, json) {
-                            $('#loader').css('display', 'none');
-                            var iva = 0.12;
-                            var api = this.api();
-                            var totalGeneral = await api.column(5).data().reduce(function (a, b) {
-                                return a + b;
-                            }, 0);
-                            var montoIva = totalGeneral * iva;
-                            totalConIva = totalGeneral + montoIva;
-                            $("#subtotal").text("$" + totalGeneral.toFixed(2));
-                            $("#iva").text("$" + montoIva.toFixed(2));
-                            $("#total").text("$" + totalConIva.toFixed(2));
-
-                        },
-                        autoWidth: true,
-                        columns: [
-                            { data: 'img', defaultContent: "-" },
-                            { data: 'id_pedido', defaultContent: "-" },
-                            { data: 'nombre_producto', defaultContent: "-" },
-                            {
-                                data: 'precio', render: function (data) {
-                                    return (data !== null) ? "$" + data : "-";
-                                }
-                            },
-                            { data: 'cantidad', defaultContent: "-" },
-                            {
-                                data: 'total',
-                                render: function (data) {
-                                    return (data !== null) ? "$" + data : "-";
-                                }
-                            },
-                            { data: 'estado', defaultContent: "-" },
-                        ],
-                        columnDefs: [
-                            {
-                                targets: "_all",
-                                className: "dt-center",
-                            },
-                            {
-                                targets: 0,
-                                searchable: false,
-                                orderable: false,
-                                className: 'dt-body-center',
-                                'render': function (data, type, full, meta) {
-                                    return '<input type="checkbox" class="form-check-input border-success" style="width:15px;height:15px;">';
-                                }
-                            },
-                            {
-                                targets: 1,
-                                render: function (data, type, row, meta) {
-                                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
-                                }
-                            },
-                            {
-                                targets: 6,
-                                render: function (data, type, row, meta) {
-                                    var estado = row.estado;
-                                    var badgeClass = '';
-
-                                    switch (estado) {
-                                        case 'Aprobado':
-                                            badgeClass = 'badge bg-success';
-                                            break;
-                                        case 'Cancelado':
-                                            badgeClass = 'badge bg-danger';
-                                            break;
-                                        case 'Pendiente':
-                                            badgeClass = 'badge bg-warning text-black';
-                                            break;
-                                        default:
-                                            badgeClass = 'badge bg-secondary';
-                                    }
-                                    return '<span class="badge rounded-pill ' + badgeClass + '">' + estado + '</span>';
-                                }
-                            }
-                        ],
-                        "language": {
-                            "sEmptyTable": "No hay datos disponibles en la tabla",
-                            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
-                            "sInfoFiltered": "(Filtrado de _MAX_ entradas totales)",
-                            "sInfoPostFix": "",
-                            "sInfoThousands": ",",
-                            "sLengthMenu": "Mostrar _MENU_ entradas",
-                            "sLoadingRecords": "Cargando...",
-                            "sProcessing": "Procesando...",
-                            "sSearch": "Buscar:",
-                            "sZeroRecords": "No se encontraron resultados",
-                            "oPaginate": {
-                                "sFirst": "Primero",
-                                "sLast": "Último",
-                                "sNext": "Siguiente",
-                                "sPrevious": "Anterior"
-                            },
-                            "oAria": {
-                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                            }
-                        }
-                    });
                     pedidos.on('select', function () {
                         var selectedRows = pedidos.rows({ selected: true }).count();
                         var totalRows = pedidos.rows().count();
@@ -538,17 +402,23 @@
                         tabla.ajax.reload();
                     });
 
-                    function aprobar() {
+                    function devolucion() {
                         var seleccionados = [];
                         pedidos.rows({
                             selected: true
                         }).every(function () {
-                            seleccionados.push(this.data().id_detalle_pedido);
+                            var rowData = this.data();
+                            var cantDevInput = this.node().querySelector('input[name="cant_dev"]');
+                            var cantDevValue = cantDevInput ? cantDevInput.value : 0;
+                            var observacionTextarea = this.node().querySelector('#floatingTextarea2');
+                            var observacionValue = observacionTextarea ? observacionTextarea.value : '';
+                            rowData.cant_dev = cantDevValue;
+                            rowData.observacion = observacionValue;
+                            delete rowData.img;
+                            seleccionados.push(rowData);
                         });
                         if (seleccionados != 0) {
-                            pedidos.clear().draw();
-                            $('#loader').css('display', 'block');
-                            fetch("/aprobar_pedidos", {
+                            fetch("/devolver_pedidos", {
                                 method: 'POST',
                                 body: JSON.stringify({ seleccionados }),
                                 headers: {
@@ -565,10 +435,8 @@
                                     timer: 3000
                                 }).then((result) => {
                                     pedidos.ajax.reload();
-                                    tabla.ajax.reload();
                                 })
                                 $("#example-select-all").prop('checked', false);
-
                             }).catch(error => {
                                 console.error(error);
                             })
