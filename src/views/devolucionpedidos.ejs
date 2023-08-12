@@ -347,13 +347,13 @@
                                 {
                                     targets: 8,
                                     render: function (data, type, row, meta) {
-                                        return `<input type="number" class="form-control text-center" min="0" name="cant_dev" id="floatingInput" value="0" placeholder="Ingrese la cantidad a devolver">`;
+                                        return `<input type="number" class="form-control text-center" min="0" name="cant_dev" id="floatingInput" value="0"  placeholder="Ingrese la cantidad a devolver" disabled />`;
                                     }
                                 },
                                 {
                                     targets: 9,
                                     render: function (data, type, row, meta) {
-                                        return `<textarea class="form-control" placeholder="Ingrese la observación" id="floatingTextarea2" style="width: 300px !important; height: 30px !important;"></textarea>`;
+                                        return `<textarea class="form-control" placeholder="Ingrese la observación" id="floatingTextarea2" style="width: 300px !important; height: 30px !important"disabled></textarea>`;
                                     }
                                 }
                             ],
@@ -381,19 +381,32 @@
                                 }
                             }
                         });
-                    });
+                        $('#datatablepedidos').on('change', 'input[type="checkbox"]', function () {
+                            var isChecked = $(this).prop('checked');
+                            var $row = $(this).closest('tr');
+                            var $cantidadInput = $row.find('input[name="cant_dev"]');
+                            var $observacionTextarea = $row.find('textarea#floatingTextarea2');
 
-                    pedidos.on('select', function () {
-                        var selectedRows = pedidos.rows({ selected: true }).count();
-                        var totalRows = pedidos.rows().count();
-                        if (selectedRows === totalRows) {
-                            $("#example-select-all").prop('checked', true);
-                        }
-                    });
-                    pedidos.on('deselect', function (e, dt, type, indexes) {
-                        if (type === 'row' && indexes.length == 1) {
-                            $("#example-select-all").prop('checked', false);
-                        }
+                            if (isChecked) {
+                                $cantidadInput.prop('disabled', false);
+                                $observacionTextarea.prop('disabled', false);
+                            } else {
+                                $cantidadInput.prop('disabled', true);
+                                $observacionTextarea.prop('disabled', true);
+                            }
+                        });
+                        pedidos.on('select', function () {
+                            var selectedRows = pedidos.rows({ selected: true }).count();
+                            var totalRows = pedidos.rows().count();
+                            if (selectedRows === totalRows) {
+                                $("#example-select-all").prop('checked', true);
+                            }
+                        });
+                        pedidos.on('deselect', function (e, dt, type, indexes) {
+                            if (type === 'row' && indexes.length == 1) {
+                                $("#example-select-all").prop('checked', false);
+                            }
+                        });
                     });
                     $("#datatable_filter").hide();
                     $('#search').keyup(function () {
@@ -520,6 +533,7 @@
                         console.log(pedidos.ajax.data);
                         pedidos.ajax.reload();
                     }
+
                 </script>
 
 </body>

@@ -1040,16 +1040,20 @@ router.post("/devolver_pedidos", async (req, res) => {
       const cantDev = element.cant_dev;
       const cantidad = element.cantidad;
       if (cantDev <= cantidad && cantDev != 0) {
-        connection.execute(
-          'INSERT INTO devoluciones (pedido_id, producto_id, fecha, motivo, cant_dev) VALUES (?, ?, ?, ?, ?)',
-          [pedidoId, productoId, new Date(), element.observacion, cantDev], (error, result) => {
-            if (error) {
-              console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
-            }
-            console.log(`Inserted devolucion with ID: ${result.insertId}`);
-            successCount++;
-          });
-
+        await new Promise((resolve, reject) => {
+          connection.execute(
+            'INSERT INTO devoluciones (pedido_id, producto_id, fecha, motivo, cant_dev) VALUES (?, ?, ?, ?, ?)',
+            [pedidoId, productoId, new Date(), element.observacion, cantDev], (error, result) => {
+              if (error) {
+                console.error(`Error al actualizar: `, error);
+                reject(error);
+              } else {
+                console.log(`Inserted devolucion with ID: ${result.insertId}`);
+                successCount++;
+                resolve();
+              }
+            });
+        });
       } else {
         console.log(`cant_dev is greater than cantidad for pedido ID: ${pedidoId}`);
       }
@@ -1060,22 +1064,6 @@ router.post("/devolver_pedidos", async (req, res) => {
     res.status(500).json({ type: "error", message: "Error en el servidor" });
   }
 });
-router.post("/cancelar_pedidos", async (req, res) => {
-  const { seleccionados } = req.body;
-  if (seleccionados.length > 0) {
-    seleccionados.forEach(id_detalle_pedido => {
-      const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Cancelado' WHERE id_detalle_pedido = ?`;
-      connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
-        if (error) {
-          console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
-        }
-      });
-    });
-  }
-
-  res.json({ type: "success", message: "Pedidos actualizados con éxito" });
-});
-
 router.post('/registrar_cliente', (req, res) => {
   const { ciudad, usuario, contrasena, direccion, identificacion, nombre, correo, telefono } = req.body;
   bcrypt.hash(contrasena, 10, (error, hash) => {
