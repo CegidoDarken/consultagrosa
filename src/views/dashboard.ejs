@@ -11,11 +11,12 @@
     background: url('img/logo.png') 50% 50% no-repeat rgb(249, 249, 249);
     background-size: 400px;
   }
+
   @media (max-width: 768px) {
     .loader {
-        background-size: contain;
+      background-size: contain;
     }
-}
+  }
 </style>
 
 <head>
@@ -99,7 +100,7 @@
                   </div>
                 </a>
 
-                <div class="col-12">
+                <div class="col-6">
                   <div class="card">
                     <div class="form-floating">
                       <select class="form-select" name="" id="year">
@@ -108,7 +109,15 @@
                     </div>
                   </div>
                 </div>
-
+                <div class="col-6">
+                  <div class="card">
+                    <div class="form-floating">
+                      <select class="form-select" name="" id="mesSelect">
+                      </select>
+                      <label for="floatingSelect">Mes</label>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="card">
                     <div class="card-body">
@@ -172,6 +181,26 @@
       <%- include("partials/_fotterpanel") %>
 </body>
 <script>
+  (async () => {
+    const selectElement = document.getElementById('mesSelect');
+
+    const meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const allMonthsOption = document.createElement('option');
+    allMonthsOption.value = 'all';
+    allMonthsOption.textContent = 'Todos los meses';
+    selectElement.appendChild(allMonthsOption);
+
+    meses.forEach((mes, index) => {
+      const option = document.createElement('option');
+      option.value = index + 1;
+      option.textContent = mes;
+      selectElement.appendChild(option);
+    })
+  })();
   (async () => {
     let year_satart = 2017;
     let year_end = (new Date).getFullYear(); // current year
@@ -248,8 +277,8 @@
       console.error(error);
     });
   }
-  async function actividades_pedidos(anio) {
-    await fetch("/actividades_pedidos", {
+  async function actividades_pedidos_anual(anio) {
+    await fetch("/actividades_pedidos_anual", {
       method: 'POST',
       body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
       headers: {
@@ -307,8 +336,71 @@
       console.error(error);
     });
   }
-  async function ganancias_pedidos(anio) {
-    await fetch("/ganancias_pedidos", {
+  async function actividades_pedidos_mes(anio, mes) {
+    await fetch("/actividades_pedidos_mes", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear(), mes: mes }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      console.log(data)
+      const meses = [
+        'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7', 'Día 8', 'Día 9', 'Día 10',
+        'Día 11', 'Día 12', 'Día 13', 'Día 14', 'Día 15', 'Día 16', 'Día 17', 'Día 18', 'Día 19', 'Día 20', 'Día 21', 'Día 22', 'Día 23', 'Día 24', 'Día 25', 'Día 26', 'Día 27', 'Día 28', 'Día 29', 'Día 30', 'Día 31'
+      ];
+      const chart = new ApexCharts(document.querySelector("#reportsChart2"), {
+        series: [{
+          name: 'Pedidos',
+          data: data.pedidos
+        }],
+        chart: {
+          height: 350,
+          type: 'area',
+          toolbar: {
+            show: true
+          },
+        },
+        markers: {
+          size: 4
+        },
+        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (value) {
+            return value;
+          }
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 2
+        },
+        xaxis: {
+          categories: meses,
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+  async function ganancias_pedidos_anual(anio) {
+    await fetch("/ganancias_pedidos_anual", {
       method: 'POST',
       body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
       headers: {
@@ -363,9 +455,67 @@
       console.error(error);
     });
   }
-
-  async function ganancias_productos(anio) {
-    await fetch("/ganancias_productos", {
+  async function ganancias_pedidos_mes(anio, mes) {
+    await fetch("/ganancias_pedidos_mes", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear(), mes: mes }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      const meses = [
+        'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7', 'Día 8', 'Día 9', 'Día 10',
+        'Día 11', 'Día 12', 'Día 13', 'Día 14', 'Día 15', 'Día 16', 'Día 17', 'Día 18', 'Día 19', 'Día 20', 'Día 21', 'Día 22', 'Día 23', 'Día 24', 'Día 25', 'Día 26', 'Día 27', 'Día 28', 'Día 29', 'Día 30', 'Día 31'
+      ];
+      var ganancias = data.ganancias.map(valor => Math.round(valor * 100) / 100);
+      const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
+        series: [{
+          name: 'Ganancia Total',
+          data: ganancias
+        }],
+        chart: {
+          height: 350,
+          type: 'bar',
+          toolbar: {
+            show: true
+          },
+        },
+        markers: {
+          size: 4
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (value) {
+            return "$" + value;
+          }
+        },
+        xaxis: {
+          categories: meses,
+        },
+        colors: ['#2eca6a'],
+        yaxis: {
+          labels: {
+            formatter: function (value) {
+              return "$" + Math.round(value * 100) / 100;
+            }
+          },
+          min: 0,
+          max: Math.max(...data.ganancias)
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+  async function ganancias_productos_anual(anio) {
+    await fetch("/ganancias_productos_anual", {
       method: 'POST',
       body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
       headers: {
@@ -415,10 +565,61 @@
       console.error(error);
     });
   }
+  async function ganancias_productos_mes(anio, mes) {
+    await fetch("/ganancias_productos_mes", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear(), mes: mes }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(async data => {
+      const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
+        series: [{
+          name: 'Ganancia Total',
+          data: data.ganancias.map(item => item.ganancias)
+        }],
+        chart: {
+          type: 'area',
+          height: 500,
+          toolbar: {
+            show: true
+          },
+        },
+        stroke: {
+          width: 3
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (value) {
+            return "$" + value;
+          }
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        markers: {
+          size: 0
+        },
+        xaxis: {
+          categories: data.ganancias.map(item => item.producto)
+        },
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
   actividades_registros();
-  actividades_pedidos();
-  ganancias_pedidos();
-  ganancias_productos();
+  actividades_pedidos_anual();
+  ganancias_pedidos_anual();
+  ganancias_productos_anual();
   $(".loader").fadeOut("slow");
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
@@ -495,21 +696,63 @@
 
   var yearSelect = document.getElementById('year');
   yearSelect.addEventListener('change', async function () {
-    $(".loader").fadeIn("slow");
+    var mes = mesSelect.value;
     var anio = yearSelect.value;
-    await actividades_registros(anio);
-    await actividades_pedidos(anio);
-    await ganancias_pedidos(anio);
-    await ganancias_productos(anio);
-    pedidos.settings()[0].ajax.data.anio = anio;
-    pedidos.ajax.reload();
-    $(".anio").each(function () {
-      $(this).text("| " + anio);
-    });
-    $(".loader").fadeOut("slow");
+    var mesSeleccionado = mesSelect.options[mesSelect.selectedIndex].text;
+    if (mes == "all") {
+      $(".loader").fadeIn("slow");
+      await actividades_registros(anio);
+      await actividades_pedidos_anual(anio);
+      await ganancias_pedidos_anual(anio);
+      await ganancias_productos_anual(anio);
+      pedidos.settings()[0].ajax.data.anio = anio;
+      pedidos.ajax.reload();
+      $(".anio").each(function () {
+        $(this).text("| " + anio);
+      });
+      $(".loader").fadeOut("slow");
+    } else {
+      $(".loader").fadeIn("slow");
+      await actividades_pedidos_mes(anio, mes);
+      await ganancias_pedidos_mes(anio, mes);
+      await ganancias_productos_mes(anio, mes);
+      $(".anio").each(function () {
+        $(this).text("| " + mesSeleccionado + "-" + yearSelect.value);
+      });
+      $(".loader").fadeOut("slow");
+    }
+
   });
 
+  var mesSelect = document.getElementById('mesSelect');
+  mesSelect.addEventListener('change', async function () {
+    var mes = mesSelect.value;
+    var anio = yearSelect.value;
+    var mesSeleccionado = mesSelect.options[mesSelect.selectedIndex].text;
+    if (mes == "all") {
+      $(".loader").fadeIn("slow");
+      await actividades_registros(anio);
+      await actividades_pedidos_anual(anio);
+      await ganancias_pedidos_anual(anio);
+      await ganancias_productos_anual(anio);
+      pedidos.settings()[0].ajax.data.anio = anio;
+      pedidos.ajax.reload();
+      $(".anio").each(function () {
+        $(this).text("| " + anio);
+      });
+      $(".loader").fadeOut("slow");
+    } else {
+      $(".loader").fadeIn("slow");
+      await actividades_pedidos_mes(anio, mes);
+      await ganancias_pedidos_mes(anio, mes);
+      await ganancias_productos_mes(anio, mes);
+      $(".anio").each(function () {
+        $(this).text("| " + mesSeleccionado + "-" + yearSelect.value);
+      });
+      $(".loader").fadeOut("slow");
+    }
 
+  });
 </script>
 
 </html>
