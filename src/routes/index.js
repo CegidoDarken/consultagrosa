@@ -401,7 +401,7 @@ router.get("/escanear", async (req, res) => {
 
 router.post("/obtener_pedidos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT dp.pedido_id, CASE WHEN SUM(CASE WHEN dp.estado = 'Pendiente' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Pendiente' WHEN SUM(CASE WHEN dp.estado = 'Cancelado' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Cancelado' ELSE 'Completado' END AS estado, pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto JOIN railway.pedidos ON dp.pedido_id = pedidos.id_pedido JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario GROUP BY dp.pedido_id;";
+  const sql = "SELECT dp.pedido_id, CASE WHEN SUM(CASE WHEN dp.estado = 'Pendiente' THEN 1 ELSE 0 END) > 0 THEN 'Pendiente' WHEN SUM(CASE WHEN dp.estado = 'Cancelado' THEN 1 ELSE 0 END) = COUNT(*) THEN 'Cancelado' ELSE 'Completado' END AS estado, pedidos.id_pedido, pedidos.usuario_id, usuarios.nombre AS nombre_usuario, pedidos.fecha, pedidos.total FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto JOIN railway.pedidos ON dp.pedido_id = pedidos.id_pedido JOIN railway.usuarios ON pedidos.usuario_id = usuarios.id_usuario GROUP BY dp.pedido_id;";
   connection.query(sql, (error, results) => {
     if (error) {
       res.send({ message: error });
@@ -1020,6 +1020,21 @@ router.post("/aprobar_pedidos", async (req, res) => {
   if (seleccionados.length > 0) {
     seleccionados.forEach(id_detalle_pedido => {
       const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Aprobado' WHERE id_detalle_pedido = ?`;
+      connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
+        if (error) {
+          console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
+        }
+      });
+    });
+  }
+
+  res.json({ type: "success", message: "Pedidos actualizados con éxito" });
+});
+router.post("/cancelar_pedidos", async (req, res) => {
+  const { seleccionados } = req.body;
+  if (seleccionados.length > 0) {
+    seleccionados.forEach(id_detalle_pedido => {
+      const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Cancelado' WHERE id_detalle_pedido = ?`;
       connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
         if (error) {
           console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
