@@ -8,7 +8,7 @@
     width: 100%;
     height: 100%;
     z-index: 9999;
-    background: url('img/logo.png') 50% 50% no-repeat rgb(249, 249, 249);
+    background: url('img/graph.gif') 50% 50% no-repeat rgb(249, 249, 249);
     background-size: 400px;
   }
 
@@ -218,8 +218,8 @@
     }
     document.getElementById("year").innerHTML = option;
   })();
-  async function actividades_registros(anio) {
-    await fetch("/actividades_registros", {
+  async function actividades_registros_anual(anio) {
+    await fetch("/actividades_registros_anual", {
       method: 'POST',
       body: JSON.stringify({ anio: anio ?? (new Date).getFullYear() }),
       headers: {
@@ -227,6 +227,68 @@
       }
     }).then(response => response.json()).then(data => {
       const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+      const chart = new ApexCharts(document.querySelector("#reportsChart"), {
+        series: [{
+          name: 'Proveedores',
+          data: data.proveedores
+        }, {
+          name: 'Productos',
+          data: data.productos
+        }, {
+          name: 'Usuarios',
+          data: data.usuarios
+        }],
+        chart: {
+          height: 350,
+          type: 'area',
+          toolbar: {
+            show: true
+          },
+        },
+        markers: {
+          size: 4
+        },
+        colors: ['#5d5aab', '#2eca6a', '#ff771d'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        dataLabels: {
+          enabled: true
+        },
+        xaxis: {
+          categories: meses,
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        }
+      });
+      chart.render();
+      chart.update();
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+  async function actividades_registros_mes(anio, mes) {
+    await fetch("/actividades_registros_mes", {
+      method: 'POST',
+      body: JSON.stringify({ anio: anio ?? (new Date).getFullYear(), mes: mes }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json()).then(data => {
+      const meses = [
+        'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7', 'Día 8', 'Día 9', 'Día 10',
+        'Día 11', 'Día 12', 'Día 13', 'Día 14', 'Día 15', 'Día 16', 'Día 17', 'Día 18', 'Día 19', 'Día 20', 'Día 21', 'Día 22', 'Día 23', 'Día 24', 'Día 25', 'Día 26', 'Día 27', 'Día 28', 'Día 29', 'Día 30', 'Día 31'
+      ];
 
       const chart = new ApexCharts(document.querySelector("#reportsChart"), {
         series: [{
@@ -463,53 +525,60 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(data => {
-      const meses = [
-        'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7', 'Día 8', 'Día 9', 'Día 10',
-        'Día 11', 'Día 12', 'Día 13', 'Día 14', 'Día 15', 'Día 16', 'Día 17', 'Día 18', 'Día 19', 'Día 20', 'Día 21', 'Día 22', 'Día 23', 'Día 24', 'Día 25', 'Día 26', 'Día 27', 'Día 28', 'Día 29', 'Día 30', 'Día 31'
-      ];
-      var ganancias = data.ganancias.map(valor => Math.round(valor * 100) / 100);
-      const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
-        series: [{
-          name: 'Ganancia Total',
-          data: ganancias
-        }],
-        chart: {
-          height: 350,
-          type: 'bar',
-          toolbar: {
-            show: true
+      console.log(data.ganancias.length);
+      if (data.ganancias && data.ganancias.length > 0) {
+        const meses = [
+          'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7', 'Día 8', 'Día 9', 'Día 10',
+          'Día 11', 'Día 12', 'Día 13', 'Día 14', 'Día 15', 'Día 16', 'Día 17', 'Día 18', 'Día 19', 'Día 20', 'Día 21', 'Día 22', 'Día 23', 'Día 24', 'Día 25', 'Día 26', 'Día 27', 'Día 28', 'Día 29', 'Día 30', 'Día 31'
+        ];
+        var ganancias = data.ganancias.map(valor => Math.round(valor * 100) / 100);
+        const chart = new ApexCharts(document.querySelector("#reportsChart3"), {
+          series: [{
+            name: 'Ganancia Total',
+            data: ganancias
+          }],
+          chart: {
+            height: 350,
+            type: 'bar',
+            toolbar: {
+              show: true
+            },
           },
-        },
-        markers: {
-          size: 4
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: function (value) {
-            return "$" + value;
-          }
-        },
-        xaxis: {
-          categories: meses,
-        },
-        colors: ['#2eca6a'],
-        yaxis: {
-          labels: {
+          markers: {
+            size: 4
+          },
+          dataLabels: {
+            enabled: true,
             formatter: function (value) {
-              return "$" + Math.round(value * 100) / 100;
+              return "$" + value;
             }
           },
-          min: 0,
-          max: Math.max(...data.ganancias)
-        },
-        tooltip: {
-          x: {
-            format: 'dd/MM/yy HH:mm'
+          xaxis: {
+            categories: meses,
           },
-        }
-      });
-      chart.render();
-      chart.update();
+          colors: ['#2eca6a'],
+          yaxis: {
+            labels: {
+              formatter: function (value) {
+                return "$" + Math.round(value * 100) / 100;
+              }
+            },
+            min: 0,
+            max: Math.max(...data.ganancias)
+          },
+          tooltip: {
+            x: {
+              format: 'dd/MM/yy HH:mm'
+            },
+          }
+        });
+        chart.render();
+        chart.update();
+      } else {
+        alert("reportsChart3");
+        const chartContainer = document.querySelector("#reportsChart3");
+        chartContainer.innerHTML = "No hay datos disponibles para mostrar.";
+      }
     }).catch(error => {
       console.error(error);
     });
@@ -522,45 +591,49 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(async data => {
-      const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
-        series: [{
-          name: 'Ganancia Total',
-          data: data.ganancias.map(item => item.ganancias)
-        }],
-        chart: {
-          type: 'area',
-          height: 500,
-          toolbar: {
-            show: true
+      if (data.ganancias && data.ganancias.length > 0) {
+        const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
+          series: [{
+            name: 'Ganancia Total',
+            data: data.ganancias ? data.ganancias.map(item => item.ganancias) : null
+          }],
+          chart: {
+            type: 'area',
+            height: 500,
+            toolbar: {
+              show: true
+            },
           },
-        },
-        stroke: {
-          width: 3
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: function (value) {
-            return "$" + value;
-          }
-        },
-        fill: {
-          type: "gradient",
-          gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.3,
-            opacityTo: 0.4,
-            stops: [0, 90, 100]
-          }
-        },
-        markers: {
-          size: 0
-        },
-        xaxis: {
-          categories: data.ganancias.map(item => item.producto)
-        },
-      });
-      chart.render();
-      chart.update();
+          stroke: {
+            width: 3
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: function (value) {
+              return "$" + value;
+            }
+          },
+          fill: {
+            type: "gradient",
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.4,
+              stops: [0, 90, 100]
+            }
+          },
+          markers: {
+            size: 0
+          },
+          xaxis: {
+            categories: data.ganancias ? data.ganancias.map(item => item.producto) : null
+          },
+        });
+        chart.render();
+        chart.update();
+      } else {
+        alert();
+      }
     }).catch(error => {
       console.error(error);
     });
@@ -573,50 +646,55 @@
         'Content-Type': 'application/json'
       }
     }).then(response => response.json()).then(async data => {
-      const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
-        series: [{
-          name: 'Ganancia Total',
-          data: data.ganancias.map(item => item.ganancias)
-        }],
-        chart: {
-          type: 'area',
-          height: 500,
-          toolbar: {
-            show: true
+      if (data.ganancias && data.ganancias.length > 0) {
+        const chart = new ApexCharts(document.querySelector("#reportsChart4"), {
+          series: [{
+            name: 'Ganancia Total',
+            data: data.ganancias ? data.ganancias.map(item => item.ganancias) : null
+          }],
+          chart: {
+            type: 'area',
+            height: 500,
+            toolbar: {
+              show: true
+            },
           },
-        },
-        stroke: {
-          width: 3
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: function (value) {
-            return "$" + value;
-          }
-        },
-        fill: {
-          type: "gradient",
-          gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.3,
-            opacityTo: 0.4,
-            stops: [0, 90, 100]
-          }
-        },
-        markers: {
-          size: 0
-        },
-        xaxis: {
-          categories: data.ganancias.map(item => item.producto)
-        },
-      });
-      chart.render();
-      chart.update();
+          stroke: {
+            width: 3
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: function (value) {
+              return "$" + value;
+            }
+          },
+          fill: {
+            type: "gradient",
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.4,
+              stops: [0, 90, 100]
+            }
+          },
+          markers: {
+            size: 0
+          },
+          xaxis: {
+            categories: data.ganancias ? data.ganancias.map(item => item.producto) : null
+          },
+        });
+        chart.render();
+        chart.update();
+      } else {
+        const chartContainer = document.querySelector("#reportsChart4");
+        chartContainer.innerHTML = "No hay datos disponibles para mostrar.";
+      }
     }).catch(error => {
       console.error(error);
     });
   }
-  actividades_registros();
+  actividades_registros_anual();
   actividades_pedidos_anual();
   ganancias_pedidos_anual();
   ganancias_productos_anual();
@@ -624,7 +702,7 @@
   var selectedAnio = $("#anioSelect").val();
   var pedidos = $('#mas_pedidos').DataTable({
     ajax: {
-      url: "/mas_pedidos",
+      url: "/mas_pedidos_anual",
       type: "POST",
       data: {
         anio: (new Date).getFullYear(),
@@ -701,21 +779,25 @@
     var mesSeleccionado = mesSelect.options[mesSelect.selectedIndex].text;
     if (mes == "all") {
       $(".loader").fadeIn("slow");
-      await actividades_registros(anio);
+      await actividades_registros_anual(anio);
       await actividades_pedidos_anual(anio);
       await ganancias_pedidos_anual(anio);
       await ganancias_productos_anual(anio);
       pedidos.settings()[0].ajax.data.anio = anio;
-      pedidos.ajax.reload();
+      pedidos.ajax.url("/mas_pedidos_anual").load();
       $(".anio").each(function () {
         $(this).text("| " + anio);
       });
       $(".loader").fadeOut("slow");
     } else {
       $(".loader").fadeIn("slow");
+      await actividades_registros_mes(anio, mes);
       await actividades_pedidos_mes(anio, mes);
       await ganancias_pedidos_mes(anio, mes);
       await ganancias_productos_mes(anio, mes);
+      pedidos.settings()[0].ajax.data.anio = anio;
+      pedidos.settings()[0].ajax.data.mes = mes;
+      pedidos.ajax.url("/mas_pedidos_mes").load();
       $(".anio").each(function () {
         $(this).text("| " + mesSeleccionado + "-" + yearSelect.value);
       });
@@ -731,18 +813,22 @@
     var mesSeleccionado = mesSelect.options[mesSelect.selectedIndex].text;
     if (mes == "all") {
       $(".loader").fadeIn("slow");
-      await actividades_registros(anio);
+      await actividades_registros_anual(anio);
       await actividades_pedidos_anual(anio);
       await ganancias_pedidos_anual(anio);
       await ganancias_productos_anual(anio);
       pedidos.settings()[0].ajax.data.anio = anio;
-      pedidos.ajax.reload();
+      pedidos.ajax.url("/mas_pedidos_anual").load();
       $(".anio").each(function () {
         $(this).text("| " + anio);
       });
       $(".loader").fadeOut("slow");
     } else {
       $(".loader").fadeIn("slow");
+      pedidos.settings()[0].ajax.data.anio = anio;
+      pedidos.settings()[0].ajax.data.mes = mes;
+      pedidos.ajax.url("/mas_pedidos_mes").load();
+      await actividades_registros_mes(anio, mes);
       await actividades_pedidos_mes(anio, mes);
       await ganancias_pedidos_mes(anio, mes);
       await ganancias_productos_mes(anio, mes);
