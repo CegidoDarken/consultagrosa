@@ -246,7 +246,7 @@
                 });
                 $('#escanearProducto').modal('hide');
             } else if (data.error) {
-                Swal.fire({
+                Swal.fire({g
                     toast: true,
                     position: 'bottom-end',
                     icon: 'error',
@@ -343,7 +343,7 @@
             $('#precio').prop('readonly', true);
         }
     });
-    let snd = new Audio("sound/beep.wav");
+    let snd = new Audio("sound/beep.mp3");
     let port;
     let reader = null;
     async function requestSerialPermission() {
