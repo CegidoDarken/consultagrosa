@@ -40,7 +40,7 @@
                                                                 podremos recopilar la
                                                                 información necesaria y brindarte una
                                                                 experiencia personalizada.</p>
-                                                            <button onclick="escanear()" id="escanear"
+                                                            <button onclick="escanearProducto()" id="escanear"
                                                                 class="btn btn-primary text-uppercase">Empezar</button>
                                                         </div>
                                                     </div>
@@ -93,15 +93,33 @@
                     </div>
                 </section>
             </main>
-            <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+            <div class="modal fade" id="escanearProducto" aria-hidden="true" aria-labelledby="escanearProductoLabel"
                 tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <form id="kardexForm">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">¡ESCANEA EL PRODUCTO PARA
+                                <p class="modal-title fs-5 text-success h2" id="escanearProductoLabel">¡ESCANEA EL
+                                    PRODUCTO PARA
                                     OBTENER
-                                    MÁS DETALLES!</h1>
+                                    MÁS DETALLES!</p>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
+                            </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal fade" id="detalleProducto" aria-hidden="true" aria-labelledby="detalleProductoLabel"
+                tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <form id="kardexForm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">DETALLE PRODUCTO
+                                </h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -226,7 +244,7 @@
                     timerProgressBar: true,
                     timer: 3000
                 });
-                $('#exampleModalToggle').modal('hide');
+                $('#escanearProducto').modal('hide');
             } else if (data.error) {
                 Swal.fire({
                     toast: true,
@@ -255,7 +273,7 @@
                     timerProgressBar: true,
                     timer: 3000
                 });
-                $('#exampleModalToggle').modal('hide');
+                $('#escanearProducto').modal('hide');
             } else if (data.error) {
                 Swal.fire({
                     toast: true,
@@ -287,7 +305,7 @@
                         timerProgressBar: true,
                         timer: 3000
                     });
-                    $('#exampleModalToggle').modal('hide');
+                    $('#escanearProducto').modal('hide');
                 } else {
                     Swal.fire({
                         toast: true,
@@ -325,16 +343,6 @@
             $('#precio').prop('readonly', true);
         }
     });
-    $('#exampleModalToggle').on('shown.bs.modal', async function () {
-        await read();
-    });
-    $('#exampleModalToggle').on('hidden.bs.modal', async function () {
-        if (reader) {
-            await reader.cancel();
-            reader.releaseLock();
-            reader = null;
-        }
-    });
     let snd = new Audio("sound/beep.wav");
     let port;
     let reader = null;
@@ -362,9 +370,6 @@
             console.log('Desconectado del puerto serie.');
         }
     }
-    async function escanear() {
-        $('#exampleModalToggle').modal('show');
-    }
 
     async function asignar() {
         let tag;
@@ -385,6 +390,13 @@
                 write($("#productos").val());
             }
         })
+    }
+    async function reconnect() {
+        try {
+            await port.connect();
+        } catch (error) {
+            console.error('Error al intentar reconectar:', error);
+        }
     }
     async function write(data) {
         if (!port) {
@@ -441,7 +453,7 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        location.reload();
+                        reconnect();
                         return;
                     } else if (message.includes("success")) {
                         fetch('/buscarproductotag', {
@@ -495,11 +507,12 @@
         var precio = $('#precio').val();
         $('#total').val(parseFloat(cantidad * precio).toFixed(2));
     }
-    async function read() {
+    async function escanearProducto() {
         if (!port) {
             console.error('No se ha establecido una conexión con el puerto serie.');
             return;
         }
+        $('#escanearProducto').modal('show');
         let message = "";
         await sendData("l");
         await sendData("l");
@@ -529,7 +542,8 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        location.reload();
+                        reconnect();
+                        reader = await port.readable.getReader();
                         return;
                     }
                     fetch('/buscarproductotag', {
@@ -548,11 +562,12 @@
                                 timer: 3000
                             });
                         } else if (data.codigo) {
+                            $('#detalleProducto').modal('show');
                             Swal.fire({
                                 toast: true,
                                 position: 'bottom-end',
                                 icon: 'success',
-                                text: "El primer producto que se escaneó",
+                                text: "Producto escaneado exitosamente",
                                 showConfirmButton: false,
                                 timerProgressBar: true,
                                 timer: 3000

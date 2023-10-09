@@ -427,12 +427,24 @@
                             <tr class="text-white" style="background-color: #59ab6e;">
                                 <th></th>
                                 <th></th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">IMAGEN</th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">NOMBRE</th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">PRECIO</th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">CATIDAD</th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">TOTAL</th>
-                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1" colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente" style="width: 0px; min-width: 120px;">ELIMINAR</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">IMAGEN</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">NOMBRE</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">PRECIO</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">CATIDAD</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">TOTAL</th>
+                                <th class="dt-center sorting" tabindex="0" aria-controls="carrito-table" rowspan="1"
+                                    colspan="1" aria-label="TOTAL: Activar para ordenar la columna de manera ascendente"
+                                    style="width: 0px; min-width: 120px;">ELIMINAR</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -614,13 +626,8 @@
             {
                 targets: 5,
                 render: function (data, type, row, meta) {
-                    $('.inous').on('blur', function () {
-                        if ($(this).val() === '') {
-                            $(this).val(1);
-                        }
-                    });
                     return `<div class="row justify-content-center" >
-            <input type="number" id="cantidadesp" class="input inous form-control form-control-sm text-center col-1" value="${row.cantidad}" min="1" style="width: 50px;"/> <button class="btn btn-primary btn-sm col-auto ms-2" onclick="agregar_carrito2(${row.id_producto},${row.precio})">Cambiar</button></div>`;
+            <input type="number" id="${row.id_producto}" class="input inous form-control form-control-sm text-center col-1" value="${row.cantidad}" min="1" style="width: 50px;"/> <button class="btn btn-primary btn-sm col-auto ms-2" onclick="cambiar_cantidad(${row.id_producto},${row.precio})">Cambiar</button></div>`;
                 }
             },
             {

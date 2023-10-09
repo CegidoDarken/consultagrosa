@@ -26,8 +26,8 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-grid gap-2 d-md-block">
-                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#nuevoModal"><i class="bi bi-plus"></i>Nuevo
+                                        <button class="btn btn-primary" type="button" onclick="add()"><i
+                                                class="bi bi-plus"></i>Nuevo
                                             usuario</button>
                                     </div>
                                 </div>
@@ -73,15 +73,16 @@
                     </div>
                 </section>
             </main>
-            <div class="modal fade" id="nuevoModal" tabindex="-1" aria-labelledby="nuevoModalLabel" aria-hidden="true">
+            <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="nuevoModalLabel">Nuevo usuario</h1>
+                            <h1 class="modal-title fs-5" id="usuarioModalLabel"></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="formulario">
+                            <form id="usuarioForm">
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-12">
@@ -163,95 +164,6 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="editModalLabel">Editar usuario</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formulario">
-                                <div class="card mb-3 border-0">
-                                    <div class="row g-0">
-                                        <div class="col-md-12">
-                                            <div class="card-body">
-                                                <div class="row g-3">
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="nombre"
-                                                                placeholder="Ingese su nombre" required>
-                                                            <label for="nombre">Nombre Completo</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="usuario"
-                                                                placeholder="Ingese su nombre de usuario" required>
-                                                            <label for="usuario">Usuario</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="number" class="form-control"
-                                                                id="identificacion"
-                                                                placeholder="Ingese su número de Cédula/RUC" required>
-                                                            <label for="identificacion">Cédula/RUC</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <input type="email" class="form-control" id="correo"
-                                                                placeholder="Ingese su correo" required>
-                                                            <label for="correo">Correo</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select"
-                                                                id="provincias2">
-                                                                <option selected disabled>Provincias</option>
-                                                            </select>
-                                                            <label for="floatingSelect">Selecione una provincia</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <label for="editcategoria" class="form-label">Ciudad</label>
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="ciudades2">
-                                                                <option selected disabled>Ciudades</option>
-                                                            </select>
-                                                            <label for="floatingSelect">Selecione una ciudad</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="direccion"
-                                                                placeholder="Ingese su direccion" required>
-                                                            <label for="direccion">Dirección</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="perfiles2">
-                                                            </select>
-                                                            <label for="floatingSelect">Selecione un perfil</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                        </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
             <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
@@ -289,8 +201,8 @@
             <%- include("partials/_fotterpanel") %>
                 <script>
                     $(document).ready(function () {
+                        var op = '';
                         var provinciasSelect = document.getElementById("provincias");
-                        var provinciasSelect2 = document.getElementById("provincias2");
                         fetch("/obtener_provincias", {
                             method: "POST"
                         })
@@ -305,21 +217,14 @@
                                         option.text = provincia.provincia;
                                         provinciasSelect.appendChild(option);
                                     });
-                                    data.data.forEach(function (provincia) {
-                                        var option = document.createElement("option");
-                                        option.value = provincia.id_provincia;
-                                        option.text = provincia.provincia;
-                                        provinciasSelect2.appendChild(option);
-                                    });
                                 }
                             })
                             .catch(function (error) {
                                 console.error("Error:", error);
                             });
-                        var ciudadesSelect = document.getElementById("ciudades");
                         provinciasSelect.addEventListener("change", function () {
                             var provinciaId = this.value;
-                            ciudadesSelect.innerHTML = "";
+                            $("#ciudades").html('');
                             fetch("/obtener_ciudades", {
                                 method: "POST",
                                 body: JSON.stringify({ provinciaId: provinciaId }),
@@ -332,41 +237,12 @@
                                 })
                                 .then(function (data) {
                                     if (data.data !== null) {
-                                        ciudadesSelect.innerHTML = "<option value='' selected disabled>Selecciona una opción</option>";
+                                        $("#ciudades").html("<option value='' selected disabled>Selecciona una opción</option>");
                                         data.data.forEach(function (ciudad) {
                                             var option = document.createElement("option");
                                             option.value = ciudad.id_ciudad;
                                             option.text = ciudad.ciudad;
-                                            ciudadesSelect.appendChild(option);
-                                        });
-                                    }
-                                })
-                                .catch(function (error) {
-                                    console.error("Error:", error);
-                                });
-                        });
-                        var ciudadesSelect2 = document.getElementById("ciudades2");
-                        provinciasSelect2.addEventListener("change", function () {
-                            var provinciaId = this.value;
-                            ciudadesSelect2.innerHTML = "";
-                            fetch("/obtener_ciudades", {
-                                method: "POST",
-                                body: JSON.stringify({ provinciaId: provinciaId }),
-                                headers: {
-                                    "Content-Type": "application/json"
-                                }
-                            })
-                                .then(function (response) {
-                                    return response.json();
-                                })
-                                .then(function (data) {
-                                    if (data.data !== null) {
-                                        ciudadesSelect2.innerHTML = "<option value='' selected disabled>Selecciona una opción</option>";
-                                        data.data.forEach(function (ciudad) {
-                                            var option = document.createElement("option");
-                                            option.value = ciudad.id_ciudad;
-                                            option.text = ciudad.ciudad;
-                                            ciudadesSelect2.appendChild(option);
+                                            $("#ciudades").append(option);
                                         });
                                     }
                                 })
@@ -375,7 +251,6 @@
                                 });
                         });
                         var perfilesSelect = document.getElementById("perfiles");
-                        var perfilesSelect2 = document.getElementById("perfiles2");
                         fetch("/obtener_perfiles", {
                             method: "POST"
                         })
@@ -389,12 +264,6 @@
                                         option.value = provincia.id_perfil;
                                         option.text = provincia.perfil;
                                         perfilesSelect.appendChild(option);
-                                    });
-                                    data.data.forEach(function (provincia) {
-                                        var option = document.createElement("option");
-                                        option.value = provincia.id_perfil;
-                                        option.text = provincia.perfil;
-                                        perfilesSelect2.appendChild(option);
                                     });
                                 }
                             })
@@ -431,7 +300,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button><button type="button" class="btn btn-warning text-light btn-sm m-1" data-bs-toggle="modal" data-bs-target="#cambiar_contasena_modal"  title="Cambiar contraseña"><i class="bi bi-key"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" data-perfil="${data.perfil_id ?? ''}" data-provincia="${data.provincia_id ?? ''}" data-ciudad="${data.id_ciudad ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button><button type="button" class="btn btn-warning text-light btn-sm m-1" data-bs-toggle="modal" data-bs-target="#cambiar_contasena_modal"  title="Cambiar contraseña"><i class="bi bi-key"></i></button></div>`;
                                     }
                                 }
                             ],
@@ -473,45 +342,67 @@
                         });
                     });
                     function edit(button) {
+                        $("#usuarioModalLabel").text("Editar Usuario");
+                        $("#usuarioForm")[0].reset();
                         var nombre = button.getAttribute('data-nombre');
                         var usuario = button.getAttribute('data-usuario');
                         var identificacion = button.getAttribute('data-identificacion');
                         var correo = button.getAttribute('data-correo');
                         var direccion = button.getAttribute('data-direccion');
+                        var perfil = button.getAttribute('data-perfil');
+                        var provincia = button.getAttribute('data-provincia');
+                        var ciudad = button.getAttribute('data-ciudad');
                         $("#nombre").val(nombre);
                         $("#usuario").val(usuario);
                         $("#identificacion").val(identificacion);
                         $("#correo").val(correo);
                         $("#direccion").val(direccion);
-                        $('#editModal').modal('show');
+                        $('#provincias option[value="' + provincia + '"]').prop('selected', true);
+                        $('#perfiles option[value="' + perfil + '"]').prop('selected', true);
+                        fetch("/obtener_ciudades", {
+                            method: "POST",
+                            body: JSON.stringify({ provinciaId: provincia }),
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        })
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (data) {
+                                $("#ciudades").html('');
+                                if (data.data !== null) {
+                                    $("#ciudades").html("<option value='' selected disabled>Selecciona una opción</option>");
+                                    data.data.forEach(function (ciudad) {
+                                        var option = document.createElement("option");
+                                        option.value = ciudad.id_ciudad;
+                                        option.text = ciudad.ciudad;
+                                        $("#ciudades").append(option);
+                                    });
+                                    $('#ciudades option[value="' + ciudad + '"]').prop('selected', true);
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error("Error:", error);
+                            });
+                        $('#usuarioModal').modal('show');
                     }
-                    function calculardesc() {
-                        var desc = $('#descuento').val();
-                        var precio = $('#precio').val();
-                        $('#preciodesc').val(parseFloat(precio - (precio * (desc / 100))).toFixed(2));
+                    function add() {
+                        $("#usuarioForm")[0].reset();
+                        $("#usuarioModalLabel").text("Nuevo Usuario");
+                        $('#usuarioModal').modal('show');
+                        op = '';
                     }
 
-                    function calculartotal() {
-                        var cantidad = $('#cantidad').val();
-                        var precio = $('#precio').val();
-                        $('#total').val(parseFloat(cantidad * precio).toFixed(2));
-                    }
-                    function limit(input) {
-                        if (input.id === "descuento") {
-                            input.value = input.value.replace(/^0+/, '');
-                            if (input.value === '') {
-                                input.value = 0;
-                            }
-                            if (input.value > 100) {
-                                input.value = 100;
-                            }
-                        } else if (input.id === "cantidad") {
-                            input.value = input.value.replace(/^0+/, '');
-                            if (input.value === '') {
-                                input.value = 0;
-                            }
-                        }
-                    }
+                    $('#usuarioForm').submit(async function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(event.target);
+                        const response = await fetch(op, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                    });
                 </script>
 
 </body>

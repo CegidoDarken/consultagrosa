@@ -1,93 +1,159 @@
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#reportes" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-file-earmark-text"></i></i><span>Reportes</span><i
-                    class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="reportes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="/kardex">
-                        <span><i class="bi bi-file-ruled fs-6"></i>Kardex</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/dashboard">
-                        <span><i class="bi bi-clipboard-data fs-6"></i>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/pedidos">
-                        <span><i class="bi bi-clock-history fs-6"></i>Pedidos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/devoluciones">
-                        <span><i class="bi bi-arrow-repeat fs-6"></i>Devoluciones</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
+        <% if (credentials.perfil==='Administrador' ) { %>
+            <!-- El usuario tiene el perfil de administrador -->
+            <p>Bienvenido, <strong>
+                    <%= (credentials.perfil) %>
+                </strong>.</p>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#inventario" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-clipboard2"></i><span>Inventario</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="inventario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#reportes" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-file-earmark-text"></i></i><span>Reportes</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="reportes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+
+                    <li>
+
+                        <a href="/kardex">
+                            <span><i class="bi bi-file-ruled fs-6"></i>Kardex</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard">
+                            <span><i class="bi bi-clipboard-data fs-6"></i>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pedidos">
+                            <span><i class="bi bi-clock-history fs-6"></i>Pedidos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/devoluciones">
+                            <span><i class="bi bi-arrow-repeat fs-6"></i>Devoluciones</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#inventario" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-clipboard2"></i><span>Inventario</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="inventario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link " href="/productos">
+                            <i class="bi bi-boxes fs-6"></i>
+                            <span>Productos</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/abastecimiento">
+                            <span><i class="bi bi-arrow-clockwise fs-6"></i>Abastecimiento</span>
+                            <span class="position-relative translate-middle badge rounded-pill bg-danger" id="abas">
+                            </span>
+                        </a>
+                    </li>
+                    <!--<li>
+        <a href="#">
+            <i class="bi bi-back fs-6"></i>
+            <span>Devoluciones</span>
+        </a>
+    </li>-->
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#administrar" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-person-gear" style="font-size: 20px;"></i><span>Administrar</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="administrar" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="/usuarios">
+                            <i class="bi bi-people fs-6"></i>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/bodegas">
+                            <i class="bi bi-boxes fs-6"></i>
+                            <span>Bodegas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/proveedores">
+                            <i class="bi bi-people fs-6"></i>
+                            <span>Proveedores</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/escanear">
+                    <i class="bi bi-upc-scan fs-6"></i>
+                    <span>Escaner RFID</span>
+                </a>
+            </li>
+            <% } else if (credentials.perfil==='Bodeguero' ) { %>
+                <p>Bienvenido, <strong>
+                        <%= (credentials.perfil) %>
+                    </strong>.</p>
                 <li class="nav-item">
-                    <a class="nav-link " href="/productos">
-                        <i class="bi bi-boxes fs-6"></i>
-                        <span>Productos</span>
+                    <a class="nav-link collapsed" data-bs-target="#reportes" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-file-earmark-text"></i></i><span>Reportes</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
+                    <ul id="reportes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="/pedidos">
+                                <span><i class="bi bi-clock-history fs-6"></i>Pedidos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/devoluciones">
+                                <span><i class="bi bi-arrow-repeat fs-6"></i>Devoluciones</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
-                <li>
-                    <a href="/abastecimiento">
-                        <span><i class="bi bi-arrow-clockwise fs-6"></i>Abastecimiento</span>
-                        <span class="position-relative translate-middle badge rounded-pill bg-danger" id="abas">
-                        </span>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#inventario" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-clipboard2"></i><span>Inventario</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                </li>
-                <!--<li>
-                    <a href="#">
-                        <i class="bi bi-back fs-6"></i>
-                        <span>Devoluciones</span>
-                    </a>
-                </li>-->
-            </ul>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#administrar" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-person-gear" style="font-size: 20px;"></i><span>Administrar</span><i
-                    class="bi bi-chevron-down ms-auto"></i>
+                    <ul id="inventario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link " href="/productos">
+                                <i class="bi bi-boxes fs-6"></i>
+                                <span>Productos</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/abastecimiento">
+                                <span><i class="bi bi-arrow-clockwise fs-6"></i>Abastecimiento</span>
+                                <span class="position-relative translate-middle badge rounded-pill bg-danger" id="abas">
+                                </span>
+                            </a>
+                        </li>
+                        <!--<li>
+            <a href="#">
+                <i class="bi bi-back fs-6"></i>
+                <span>Devoluciones</span>
             </a>
-            <ul id="administrar" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="/usuarios">
-                        <i class="bi bi-people fs-6"></i>
-                        <span>Usuarios</span>
+        </li>-->
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/escanear">
+                        <i class="bi bi-upc-scan fs-6"></i>
+                        <span>Escaner RFID</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/bodegas">
-                        <i class="bi bi-boxes fs-6"></i>
-                        <span>Bodegas</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/proveedores">
-                        <i class="bi bi-people fs-6"></i>
-                        <span>Proveedores</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " href="/escanear">
-                <i class="bi bi-upc-scan fs-6"></i>
-                <span>Escaner RFID</span>
-            </a>
-        </li>
+                <% } %>
     </ul>
 </aside>
 <script>

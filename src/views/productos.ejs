@@ -276,6 +276,14 @@
                             $('#search').prop('disabled', false);
                             $('#date').prop('disabled', false);
                         },
+                        createdRow: function (row, data, dataIndex) {
+                            if (data.cantidad == 0) {
+                                console.log("error");
+                                $('td', row).css('background-color', '#EC7063');
+                            } else if (data.min > data.cantidad) {
+                                $('td', row).css('background-color', '#F4D03F');
+                            }
+                        },
                         columnDefs: [
                             {
                                 targets: "_all",
@@ -326,9 +334,8 @@
                             {
                                 targets: 11,
                                 render: function (data, type, row, meta) {
-                                    var data = table.row(meta.row).data();
-                                    var dataAsString = JSON.stringify(data);
-                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_producto}" data-img="${data.img ?? 'img/no-image-icon.png'}" data-codigo="${data.codigo}" data-nombre="${data.producto}" data-tag="${data.tag}" data-descripcion="${data.descripcion ?? ""}" data-cantidad="${data.cantidad}" data-precio="${data.precio}" data-medida="${data.medida}" data-total="${data.total}" data-proveedor="${data.proveedor_id} data-categoria="${data.categoria_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${data.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
+                                    console.log(row.categoria_id);
+                                    return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${row.id_producto}" data-img="${row.img ?? 'img/no-image-icon.png'}" data-codigo="${row.codigo}" data-categoria="${row.categoria_id}" data-nombre="${row.producto}" data-tag="${row.tag}" data-descripcion="${row.descripcion ?? ""}" data-cantidad="${row.cantidad}" data-precio="${row.precio}" data-medida="${row.medida}" data-total="${row.total}" data-proveedor="${row.proveedor_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${row.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
                                 }
                             }
                         ],

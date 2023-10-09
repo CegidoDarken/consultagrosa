@@ -134,6 +134,14 @@
                                     className: 'btn btn-primary btn-sm text-light'
                                 }
                             ],
+                            createdRow: function (row, data, dataIndex) {
+                                if (data.cantidad == 0) {
+                                    console.log("error");
+                                    $('td', row).css('background-color', '#EC7063');
+                                } else {
+                                    $('td', row).css('background-color', '#F4D03F');
+                                }
+                            },
                             columnDefs: [
                                 {
                                     targets: "_all",
