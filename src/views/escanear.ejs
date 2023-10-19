@@ -231,36 +231,7 @@
         var valorSeleccionado = $('#tipo_movimiento').val();
         const formData = new FormData(event.target);
         formData.append('id_producto', producto.id_producto);
-        if (valorSeleccionado == '1') {
-            console.log('Modo seleccionado: Saldo');
-            const response = await fetch('kardex_saldo', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (data.message) {
-                Swal.fire({
-                    toast: true,
-                    position: 'bottom-end',
-                    icon: 'success',
-                    title: data.message,
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
-                $('#escanearProducto').modal('hide');
-            } else if (data.error) {
-                Swal.fire({
-                    toast: true,
-                    position: 'bottom-end',
-                    icon: 'error',
-                    title: data.error,
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
-            }
-        } else if (valorSeleccionado == '2') {
+        if (valorSeleccionado == '2') {
             console.log('Modo seleccionado: Entrada');
             const response = await fetch('kardex_entrada', {
                 method: 'POST',
