@@ -109,6 +109,7 @@
                             <div class="modal-body">
                                 <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
                             </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -219,6 +220,11 @@
 </body>
 <script>
     let producto;
+    var modal = $('#detalleProducto');
+    modal.on('hidden.bs.modal', function () {
+        sendData("n");
+        console.log('El modal se ha ocultado');
+    });
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
         var cantidad = parseInt($('#cantidad').val());
@@ -343,31 +349,23 @@
             $('#precio').prop('readonly', true);
         }
     });
-    let snd = new Audio("sound/beep.wav");
     let port;
     let reader = null;
+    let writer = null;
     async function requestSerialPermission() {
         try {
             port = await navigator.serial.requestPort();
             await port.open({ baudRate: 9600 });
-            if (port.getInfo().usbVendorId != 9025) {
-                await port.close();
-                return;
-            }
-            port.addEventListener('disconnect', handleDisconnect);
+            // Crea el lector al abrir el puerto
+            reader = await port.readable.getReader();
+            writer = port.writable.getWriter();
             await setTimeout(() => {
                 document.getElementById("connected").style.display = "block";
                 document.getElementById("disconnected").style.display = "none";
             }, 1000);
+            // Resto del código de configuración, como agregar event listeners, si es necesario
         } catch (error) {
             console.error('Error al solicitar permiso de acceso al puerto serie:', error);
-        }
-    }
-    function handleDisconnect(event) {
-        if (event.target === port) {
-            document.getElementById("connected").style.display = "none";
-            document.getElementById("disconnected").style.display = "block";
-            console.log('Desconectado del puerto serie.');
         }
     }
 
@@ -391,13 +389,27 @@
             }
         })
     }
+
     async function reconnect() {
         try {
-            await port.connect();
+            if (reader) {
+                // Cancela y libera el lector antes de cerrar el puerto
+                await reader.cancel();
+                reader.releaseLock();
+                reader = null; // Establece el lector como nulo
+            }
+            if (port) {
+                await port.close(); // Cierra el puerto si está abierto
+            }
+            port = await navigator.serial.requestPort(); // Vuelve a solicitar el puerto
+            await port.open({ baudRate: 9600 }); // Ábrelo nuevamente
+            reader = await port.readable.getReader();
+            // Resto del código de configuración, como agregar event listeners, si es necesario
         } catch (error) {
             console.error('Error al intentar reconectar:', error);
         }
     }
+
     async function write(data) {
         if (!port) {
             console.error('No se ha establecido una conexión con el puerto serie.');
@@ -426,11 +438,8 @@
         });
         let message = "";
         try {
-            if (reader) {
-                await reader.cancel();
-                reader.releaseLock();
-                reader = null;
-            }
+            await reader.cancel();
+            reader.releaseLock();
             reader = await port.readable.getReader();
             while (true) {
                 const { value, done } = await reader.read();
@@ -453,7 +462,6 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        reconnect();
                         return;
                     } else if (message.includes("success")) {
                         fetch('/buscarproductotag', {
@@ -461,7 +469,6 @@
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ tag: data }),
                         }).then(response => response.json()).then(async data => {
-                            snd.play();
                             Swal.fire({
                                 icon: 'success',
                                 title: '¡ASIGNADO CORRECTAMENTE!',
@@ -471,7 +478,6 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             }).then(async (result) => {
-                                await sendData("e");
                                 await sendData("e");
                                 Swal.fire({
                                     title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
@@ -486,11 +492,7 @@
                                     allowEscapeKey: false,
                                     width: '800px',
                                 }).then(async (result) => {
-                                    if (result.isDenied) {
-                                        await reader.cancel();
-                                        reader.releaseLock();
-                                        reader = null;
-                                    }
+                                    await sendData("n");
                                 });
                             });
                         });
@@ -517,11 +519,8 @@
         await sendData("l");
         await sendData("l");
         try {
-            if (reader) {
-                await reader.cancel();
-                reader.releaseLock();
-                reader = null;
-            }
+            await reader.cancel();
+            reader.releaseLock();
             reader = await port.readable.getReader();
             while (true) {
                 const { value, done } = await reader.read();
@@ -533,7 +532,7 @@
                 message += receivedData;
                 if (receivedData.includes("\n")) {
                     console.log(message);
-                    if (message.includes("failed")) {
+                    if (message.includes("Error")) {
                         Swal.fire({
                             toast: true,
                             position: 'bottom-end',
@@ -542,8 +541,6 @@
                             showConfirmButton: false,
                             timer: 3000
                         });
-                        reconnect();
-                        reader = await port.readable.getReader();
                         return;
                     }
                     fetch('/buscarproductotag', {
@@ -562,6 +559,7 @@
                                 timer: 3000
                             });
                         } else if (data.codigo) {
+                            $('#escanearProducto').modal('hide');
                             $('#detalleProducto').modal('show');
                             Swal.fire({
                                 toast: true,
@@ -578,7 +576,6 @@
                             $('#precios').val(data.precio);
                             $('#precio').val(data.precio);
                             $('#img').attr('src', data.img);
-                            snd.play();
                             producto = data;
                         }
                     });
@@ -594,11 +591,10 @@
         try {
             let encoder = new TextEncoder();
             const encodedData = encoder.encode(data);
-            const writer = port.writable.getWriter();
             await writer.write(encodedData);
-            await writer.releaseLock();
         } catch (error) {
             console.error('Error al enviar datos al puerto serie:', error);
+            await writer.releaseLock();
         }
     }
 </script>
