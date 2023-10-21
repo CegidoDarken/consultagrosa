@@ -96,19 +96,18 @@
             <div class="modal fade" id="escanearProducto" aria-hidden="true" aria-labelledby="escanearProductoLabel"
                 tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <p class="modal-title fs-5 text-success h2" id="escanearProductoLabel">¡ESCANEA EL
-                                    PRODUCTO PARA
-                                    OBTENER
-                                    MÁS DETALLES!</p>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
-                            </div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="modal-title fs-5 text-success h2" id="escanearProductoLabel">¡ESCANEA EL
+                                PRODUCTO PARA
+                                OBTENER
+                                MÁS DETALLES!</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        <div class="modal-body">
+                            <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal fade" id="detalleProducto" aria-hidden="true" aria-labelledby="detalleProductoLabel"
@@ -221,7 +220,6 @@
     var modal = $('#detalleProducto');
     modal.on('hidden.bs.modal', function () {
         sendData("n");
-        console.log('El modal se ha ocultado');
     });
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -325,15 +323,45 @@
         try {
             port = await navigator.serial.requestPort();
             await port.open({ baudRate: 9600 });
-            // Crea el lector al abrir el puerto
+            if (port.getInfo().usbVendorId != 9025) {
+                await port.close();
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    text: "Dispositivo no reconocido",
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 2000
+                });
+                return;
+            }
             reader = await port.readable.getReader();
             writer = port.writable.getWriter();
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'success',
+                text: "Conectado exitosamente",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 2000
+            });
             await setTimeout(() => {
                 document.getElementById("connected").style.display = "block";
                 document.getElementById("disconnected").style.display = "none";
             }, 1000);
             // Resto del código de configuración, como agregar event listeners, si es necesario
         } catch (error) {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'error',
+                text: "Error: " + error.message,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 2000
+            });
             console.error('Error al solicitar permiso de acceso al puerto serie:', error);
         }
     }
@@ -380,10 +408,6 @@
     }
 
     async function write(data) {
-        if (!port) {
-            console.error('No se ha establecido una conexión con el puerto serie.');
-            return;
-        }
         await sendData("e");
         await sendData("e");
         Swal.fire({
@@ -440,7 +464,7 @@
                         }).then(response => response.json()).then(async data => {
                             Swal.fire({
                                 icon: 'success',
-                                title:  '¡ASIGNADO CORRECTAMENTE!',
+                                title: '¡ASIGNADO CORRECTAMENTE!',
                                 showConfirmButton: false,
                                 allowOutsideClick: false,
                                 allowEscapeKey: false,
