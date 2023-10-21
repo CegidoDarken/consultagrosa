@@ -116,7 +116,7 @@
                     <form id="kardexForm">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">DETALLE PRODUCTO
+                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">¡ESCANEA EL PRODUCTO PARA OBTENER MÁS DETALLES!
                                 </h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -217,9 +217,14 @@
 </body>
 <script>
     let producto;
-    var modal = $('#detalleProducto');
-    modal.on('hidden.bs.modal', function () {
-        sendData("n");
+    $('#detalleProducto').on('hidden.bs.modal', async function () {
+        await sendData("n");
+    });
+    $('#detalleProducto').on('shown.bs.modal', async function () {
+        await sendData("l");
+    });
+    $('#escanearProducto').on('hidden.bs.modal', async function () {
+        await sendData("n");
     });
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -338,6 +343,19 @@
             }
             reader = await port.readable.getReader();
             writer = port.writable.getWriter();
+            port.addEventListener('disconnect', async (event) => {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    text: "Dispositivo desconectado",
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 2000
+                }).then((result) => {
+                    window.location.reload(true); 
+                })
+            });
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
