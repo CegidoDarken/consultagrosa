@@ -27,7 +27,7 @@
                                     <div class="col">
                                         <div class="card-body">
                                             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-                                                <div class="col">
+                                                <div class="col-lg-6">
                                                     <div class="card text-center mb-3 shadow-lg">
                                                         <div class="card-body">
                                                             <svg class="icon m-3" width="100" height="100"
@@ -45,7 +45,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col">
+                                                <div class="col-lg-6">
                                                     <div class="card text-center mb-3 shadow-lg">
                                                         <div class="card-body">
                                                             <svg class="icon m-3" width="100" height="100"
@@ -123,114 +123,102 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal fade" id="detalleProducto" aria-hidden="true" aria-labelledby="detalleProductoLabel"
-                tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <form id="kardexForm">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">¡ESCANEA EL PRODUCTO
-                                    PARA OBTENER MÁS DETALLES!
-                                </h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                            <div id="default">
+                                <img src="img/rfid.gif" alt="" class="mx-auto d-block" width="300">
                             </div>
-                            <div class="modal-body">
-                                <div class="card mb-3">
-                                    <div class="row g-0">
-                                        <div class="col-md-4">
-                                            <img src="" class="img-fluid rounded-start" id="img"
-                                                style=" width: 100%; height: 300px; object-fit: contain; object-position: center;">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body col-12">
-                                                <div class="row">
-                                                    <div class="col-3 card-title">Nombre:</div>
-                                                    <div class="col-9 align-self-center">
-                                                        <input class="form-control" id="nombres" type="text" readonly
-                                                            required>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-3 card-title">Categoría:</div>
-                                                    <div class="col-9 card-text align-self-center">
-                                                        <input class="form-control" id="categorias" type="text" readonly
-                                                            required>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-3 card-title">Cantidad:</div>
-                                                    <div class="col-9 card-text align-self-center">
-                                                        <input class="form-control" id="cantidades" type="number"
-                                                            readonly required>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-3 card-title">Precio:</div>
-                                                    <div class="col-9 card-text align-self-center">
-                                                        <input class="form-control" id="precios" type="number" readonly
-                                                            required>
-                                                    </div>
-                                                </div>
-                                                <p class="card-text"></p>
+                            <div id="detalles">
+                                <form id="kardexForm">
+                                    <div class="card mb-3">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                <img src="" class="img-fluid rounded-start" id="img"
+                                                    style=" width: 100%; height: 300px; object-fit: contain; object-position: center;">
                                             </div>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="form-floating">
-                                                        <select class="form-select mb-3" id="tipo_movimiento" required>
-                                                            <option selected disabled value="">Movimientos</option>
-                                                            <option value="2">Entrada</option>
-                                                            <option value="3">Salida</option>
-                                                        </select>
-                                                        <label for="floatingSelect">Tipo de movimiento</label>
+                                            <div class="col-md-8">
+                                                <div class="card-body col-12">
+                                                    <div class="row">
+                                                        <div class="col-3 card-title">Nombre:</div>
+                                                        <div class="col-9 align-self-center">
+                                                            <input class="form-control" id="nombres" type="text"
+                                                                readonly required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-floating mb-3">
-                                                        <input type="text" class="form-control" id="detalle"
-                                                            name="detalle" placeholder="insertar"
-                                                            value="Ingreso al sistema">
-                                                        <label for="detalle">Detalle</label>
+                                                    <div class="row">
+                                                        <div class="col-3 card-title">Categoría:</div>
+                                                        <div class="col-9 card-text align-self-center">
+                                                            <input class="form-control" id="categorias" type="text"
+                                                                readonly required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="form-floating mb-3">
-                                                        <input type="number" class="form-control" id="cantidad"
-                                                            name="cantidad" placeholder="insertar"
-                                                            oninput="calculartotal()" required>
-                                                        <label for="cantidad">Cantidad</label>
+                                                    <div class="row">
+                                                        <div class="col-3 card-title">Cantidad:</div>
+                                                        <div class="col-9 card-text align-self-center">
+                                                            <input class="form-control" id="cantidades" type="number"
+                                                                readonly required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="form-floating mb-3">
-                                                        <input type="number" class="form-control" id="precio"
-                                                            name="precio" placeholder="insertar" readonly>
-                                                        <label for="inputprecio">Precio</label>
+                                                    <div class="row">
+                                                        <div class="col-3 card-title">Precio:</div>
+                                                        <div class="col-9 card-text align-self-center">
+                                                            <input class="form-control" id="precios" type="number"
+                                                                readonly required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-floating mb-3">
-                                                        <input type="number" class="form-control" id="total"
-                                                            name="total" placeholder="insertar" readonly>
-                                                        <label for="total">Total</label>
-                                                    </div>
+                                                    <p class="card-text"></p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <select class="form-select mb-3" id="tipo_movimiento" required>
+                                                    <option selected disabled value="">Movimientos</option>
+                                                    <option value="1">Entrada</option>
+                                                    <option value="2">Salida</option>
+                                                </select>
+                                                <label for="floatingSelect">Tipo de movimiento</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="detalle" name="detalle"
+                                                    placeholder="insertar" value="" required>
+                                                <label for="detalle">Detalle</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                                    placeholder="insertar" oninput="calculartotal()" required>
+                                                <label for="cantidad">Cantidad</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" id="precio" name="precio"
+                                                    placeholder="insertar" step="any" readonly>
+                                                <label for="inputprecio">Precio</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" id="total" name="total"
+                                                    placeholder="insertar" readonly>
+                                                <label for="total">Total</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cerrar</button>
+                                        <button class="btn btn-primary" type="submit">Guardar</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button class="btn btn-primary" type="submit">Guardar</button>
-                            </div>
-                    </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <%- include("partials/_fotterpanel") %>
@@ -238,8 +226,12 @@
 <script>
     let producto;
     $(document).ready(function () {
+        document.getElementById("default").style.display = "block";
+        document.getElementById("detalles").style.display = "none";
         $('.js-example-basic-single').select2({ theme: 'bootstrap-5' });
         $('#escanearProducto').on('hidden.bs.modal', async function () {
+            document.getElementById("default").style.display = "block";
+            document.getElementById("detalles").style.display = "none";
             await sendData("n");
             await sendData("n");
         });
@@ -256,8 +248,7 @@
         var valorSeleccionado = $('#tipo_movimiento').val();
         const formData = new FormData(event.target);
         formData.append('id_producto', producto.id_producto);
-        if (valorSeleccionado == '2') {
-            console.log('Modo seleccionado: Entrada');
+        if (valorSeleccionado == '1') {
             const response = await fetch('kardex_entrada', {
                 method: 'POST',
                 body: formData
@@ -273,7 +264,9 @@
                     timerProgressBar: true,
                     timer: 3000
                 });
-                $('#escanearProducto').modal('hide');
+                $("#kardexForm")[0].reset();
+                document.getElementById("default").style.display = "block";
+                document.getElementById("detalles").style.display = "none";
             } else if (data.error) {
                 Swal.fire({
                     toast: true,
@@ -285,11 +278,9 @@
                     timer: 3000
                 });
             }
-        } else if (valorSeleccionado == '3') {
+        } else if (valorSeleccionado == '2') {
             console.log(cantidad, cantidades);
             if (cantidad <= cantidades && cantidad != 0) {
-                console.log(cantidad, cantidades);
-                console.log('Modo seleccionado: Salida');
                 const response = await fetch('kardex_salida', {
                     method: 'POST',
                     body: formData
@@ -305,7 +296,9 @@
                         timerProgressBar: true,
                         timer: 3000
                     });
-                    $('#escanearProducto').modal('hide');
+                    $("#kardexForm")[0].reset();
+                    document.getElementById("default").style.display = "block";
+                    document.getElementById("detalles").style.display = "none";
                 } else {
                     Swal.fire({
                         toast: true,
@@ -333,12 +326,9 @@
     $('#tipo_movimiento').on('change', function () {
         var valorSeleccionado = $(this).val();
         if (valorSeleccionado == '1') {
-            $('#detalle').val('Ingreso al sistema');
-            $('#precio').prop('readonly', true);
-        } else if (valorSeleccionado == '2') {
             $('#detalle').val('Entrada de producto');
             $('#precio').removeAttr('readonly');
-        } else if (valorSeleccionado == '3') {
+        } else if (valorSeleccionado == '2') {
             $('#detalle').val('Salida de producto');
             $('#precio').prop('readonly', true);
         }
@@ -379,8 +369,12 @@
                     timer: 1000
                 })
             });
-            document.getElementById("connected").style.display = "block";
-            document.getElementById("disconnected").style.display = "none";
+
+            setTimeout(function () {
+                document.getElementById("connected").style.display = "block";
+                document.getElementById("disconnected").style.display = "none";
+            }, 2000);
+
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
@@ -424,7 +418,7 @@
                     console.log(message);
                     if (message.includes("#")) {
                         await sendData($("#productos").val() + "#");
-                    } else if (message.includes("failed")) {
+                    } else if (message.includes("Error")) {
                         Swal.fire({
                             toast: true,
                             position: 'bottom-end',
@@ -433,9 +427,9 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        $('#escanearProducto').modal('hide');
+                        asignarProducto();
                         return;
-                    } else if (message.includes("success")) {
+                    } else if (message.includes("exitosa")) {
                         fetch('/buscarproductotag', {
                             method: 'POST',
                             headers: { "Content-Type": "application/json" },
@@ -494,7 +488,7 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        $('#escanearProducto').modal('hide');
+                        escanearProducto();
                         return;
                     }
                     fetch('/buscarproductotag', {
@@ -513,8 +507,6 @@
                                 timer: 3000
                             });
                         } else if (data.codigo) {
-                            $('#escanearProducto').modal('hide');
-                            $('#detalleProducto').modal('show');
                             Swal.fire({
                                 toast: true,
                                 position: 'bottom-end',
@@ -531,6 +523,8 @@
                             $('#precio').val(data.precio);
                             $('#img').attr('src', data.img);
                             producto = data;
+                            document.getElementById("default").style.display = "none";
+                            document.getElementById("detalles").style.display = "block";
                         }
                     });
                     message = "";
