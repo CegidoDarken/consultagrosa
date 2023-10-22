@@ -235,7 +235,7 @@ router.get("/validar", async (req, res) => {
      * - "message" set to "Cuenta validada exitosamente"
      * - "data" set to null
      */
-    connection.query(updateQuery, [usuario], (error, result) => {
+  connection.query(updateQuery, [usuario], (error, result) => {
     if (error) {
       return res.render("validar", { type: "error", message: "Error al actualizar el estado del usuario: " + error, data: null });
     }
@@ -418,7 +418,7 @@ router.post('/recuperar', async (req, res) => {
      * If the email is sent successfully, the function sends a response with a status
      * code of 200 and a success message.
      */
-    connection.query(sql, [correo], (error, results) => {
+  connection.query(sql, [correo], (error, results) => {
     if (error) {
       console.log(error);
       res.status(500).json({ type: 'error', message: 'Error en la base de datos', data: null });
@@ -489,7 +489,7 @@ router.post('/recuperar', async (req, res) => {
      * returns no results, the promise is resolved with a message indicating that the
      * product is not recognized.
      */
-    async function aprioris(producto) {
+async function aprioris(producto) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT GROUP_CONCAT(`detallepedidos`.`producto_id` SEPARATOR ',') AS `productos` FROM `pedidos` INNER JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` WHERE `pedidos`.`id_pedido` IN (SELECT DISTINCT `detallepedidos`.`pedido_id` FROM `detallepedidos` WHERE `detallepedidos`.`producto_id` = ?) GROUP BY `pedidos`.`id_pedido`, `pedidos`.`usuario_id`, `pedidos`.`fecha`, `pedidos`.`total`;";
     /**
@@ -577,7 +577,7 @@ router.post('/recuperar', async (req, res) => {
          * - The `push` method returns the new length of the array after adding the
          * elements.
          */
-        results.forEach(elements => {
+          results.forEach(elements => {
             productos.push(elements.productos.split(","));
           });
           var aprioriAlgo = new apriori.Apriori(0.1);
@@ -593,7 +593,7 @@ router.post('/recuperar', async (req, res) => {
          * 
          * Finally, the function resolves the productos_recomendado array.
          */
-        aprioriAlgo.exec(productos)
+          aprioriAlgo.exec(productos)
             .then(function (result) {
               var frequentItemsets = result.itemsets;
               var recommendations = generateRecommendations(frequentItemsets);
@@ -610,7 +610,7 @@ router.post('/recuperar', async (req, res) => {
          * @param {Array} itemsets - An array of itemsets.
          * @returns {Array} - An array of recommendations.
          */
-        function generateRecommendations(itemsets) {
+          function generateRecommendations(itemsets) {
             /**
              * The function takes two parameters, `a` and `b`, and returns the difference
              * between the `support` property of `b` and `a`. The `support` property is
@@ -686,7 +686,7 @@ router.post('/recuperar', async (req, res) => {
          * If any error occurs during the execution of the function, it logs the error and
          * returns a 500 status code with an error message indicating a server error.
          */
-        router.post('/cambiar_cantidad', async (req, res) => {
+router.post('/cambiar_cantidad', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
   console.log(producto_id, cantidad_deseada);
   try {
@@ -746,7 +746,7 @@ router.post('/recuperar', async (req, res) => {
              * reject the promise with the err value. Otherwise, it will resolve the promise
              * with the result value.
              */
-            connection.query(
+        connection.query(
           'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
           [producto_id, usuario_id, nuevaCantidad, nuevoTotal],
           (err, result) => {
@@ -811,7 +811,7 @@ router.post('/agregar_carrito', async (req, res) => {
              * parameters. If an error is present, it will be rejected. If there is no error,
              * the result will be resolved.
              */
-            connection.query(
+      connection.query(
         'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
         [producto_id, usuario_id],
         (err, result) => {
@@ -876,7 +876,7 @@ router.get("/", async (req, res) => {
          * response in JavaScript. It uses the `render` method to render a view called
          * "test".
          */
-        router.get("/test", async (req, res) => {
+router.get("/test", async (req, res) => {
   res.render("test");
 });
 router.get("/analisis", async (req, res) => {
@@ -933,7 +933,7 @@ router.post("/obtener_detalle_pedidos", async (req, res) => {
              * Finally, it sends a JSON response with the modified results or a message
              * indicating that the product is not recognized.
              */
-            connection.query(sql, [id_pedido], (error, results) => {
+    connection.query(sql, [id_pedido], (error, results) => {
       if (error) {
         res.send({ message: error });
         console.log(error);
@@ -992,7 +992,7 @@ router.post("/obtener_detalle_pedidos2", async (req, res) => {
              * Finally, it sends a JSON response with the modified results or a message
              * indicating that the product is not recognized.
              */
-            connection.query(sql, [id_pedido], (error, results) => {
+    connection.query(sql, [id_pedido], (error, results) => {
       if (error) {
         res.send({ message: error });
         console.log(error);
@@ -1075,7 +1075,7 @@ router.post("/realizar_pedidos", async (req, res) => {
              * promise that either rejects with the error parameter if it exists, or resolves
              * with no value if the error parameter is falsy.
              */
-            connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], async (error) => {
+        connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], async (error) => {
           if (error) {
             reject(error);
           } else {
@@ -1159,7 +1159,7 @@ router.post("/actividades_registros_anual", async (req, res) => {
          * 'productos', 'usuarios', and 'proveedores'. The values of these properties are
          * the results of the corresponding asynchronous functions.
          */
-        router.post("/actividades_registros_mes", async (req, res) => {
+router.post("/actividades_registros_mes", async (req, res) => {
   let anio = req.body.anio;
   let mes = req.body.mes;
   res.json({ productos: await actividades_productos_mes(anio, mes), usuarios: await actividades_usuarios_mes(anio, mes), proveedores: await actividades_proveedores_mes(anio, mes) });
@@ -1188,7 +1188,7 @@ router.post("/actividades_pedidos_mes", async (req, res) => {
          * Note: The code assumes that the 'ganancias_pedidos_anual' function is defined
          * elsewhere in the codebase.
          */
-        router.post("/ganancias_pedidos_anual", async (req, res) => {
+router.post("/ganancias_pedidos_anual", async (req, res) => {
   let anio = req.body.anio;
   res.json({ ganancias: await ganancias_pedidos_anual(anio) });
 });
@@ -1220,7 +1220,7 @@ router.post("/mas_pedidos_mes", async (req, res) => {
          * a JSON object with a key "data" that contains the result of the
          * "abastecimiento" function, which is awaited.
          */
-        router.post("/abastecimiento", async (req, res) => {
+router.post("/abastecimiento", async (req, res) => {
   res.json({ data: await abastecimiento() });
 });
 router.post("/count_abastecimiento", async (req, res) => {
@@ -1354,7 +1354,7 @@ async function ganancias_productos_anual(anio) {
                                                                      * @returns {Promise<Array<Object>>} A promise that resolves to an array of objects representing the top 10 products with their earnings.
                                                                      * @throws {Error} If there is an error executing the SQL query.
                                                                      */
-                                                                    async function ganancias_productos_mes(anio, mes) {
+async function ganancias_productos_mes(anio, mes) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT pr.img, pr.nombre as producto, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " AND MONTH(`pedidos`.`fecha`) = " + mes + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY ganancias DESC LIMIT 10";
     connection.query(sql, (error, result) => {
@@ -1441,7 +1441,7 @@ async function actividades_usuarios_mes(anio, mes) {
                                                                                                      * If no error is passed and the "result" array has a length of 0, the method
                                                                                                      * resolves the promise with null.
                                                                                                      */
-                                                                                                    connection.query(sql, (error, result) => {
+    connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -1491,7 +1491,7 @@ async function actividades_proveedores_mes(anio, mes) {
                                                                                                                      * If no error is passed and the "result" array has a length of 0, the method
                                                                                                                      * resolves the promise with null.
                                                                                                                      */
-                                                                                                                    connection.query(sql, (error, result) => {
+    connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -1554,7 +1554,7 @@ async function mas_pedidos_anual(anio) {
                                                                                                                                      * If an error occurs during the query execution, the Promise is rejected with the
                                                                                                                                      * error.
                                                                                                                                      */
-                                                                                                                                    async function mas_pedidos_mes(anio, mes) {
+async function mas_pedidos_mes(anio, mes) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT pr.img, pr.codigo, pr.nombre, dp.precio, dp.vendidos, dp.ganancias FROM (SELECT dp.producto_id, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM railway.pedidos LEFT JOIN railway.detallepedidos AS dp ON pedidos.id_pedido = dp.pedido_id WHERE YEAR(pedidos.fecha) = ? AND MONTH(pedidos.fecha) = ? GROUP BY dp.producto_id, dp.precio ORDER BY vendidos DESC LIMIT 10) AS dp LEFT JOIN railway.productos AS pr ON dp.producto_id = pr.id_producto;"
     connection.query(sql, [anio, mes], (error, result) => {
@@ -1586,7 +1586,7 @@ async function mas_pedidos_anual(anio) {
                                                                                                                                              * with the value of the "num_clientes" column from the first row. If the query
                                                                                                                                              * returns no rows, the Promise is resolved with a value of null.
                                                                                                                                              */
-                                                                                                                                            async function obtener_num_clientes() {
+async function obtener_num_clientes() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT count(*) AS num_clientes FROM usuarios";
     connection.query(sql, (error, productos) => {
@@ -1641,7 +1641,7 @@ async function obtener_mas_pedidos2() {
                                                                                                                                                              * Finally, if the `result` array is empty, the method will resolve the promise
                                                                                                                                                              * with `null`.
                                                                                                                                                              */
-                                                                                                                                                            connection.query(sql, (error, result) => {
+    connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -1699,7 +1699,7 @@ async function obtener_recientes() {
                                                                                                                                                                              * promise with the modified `result` array. If the `result` array is empty, it
                                                                                                                                                                              * will resolve the promise with `null`.
                                                                                                                                                                              */
-                                                                                                                                                                            connection.query(sql, (error, result) => {
+    connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -1732,7 +1732,7 @@ async function obtener_recientes() {
                                                                                                                                                                                      * To use this function, you need to have a valid "connection" object established
                                                                                                                                                                                      * with the database.
                                                                                                                                                                                      */
-                                                                                                                                                                                    async function obtener_num_proveedores() {
+async function obtener_num_proveedores() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT count(*) AS num_proveedores FROM proveedores;";
     connection.query(sql, (error, productos) => {
@@ -1798,7 +1798,7 @@ router.post("/obtener_inventario", async (req, res) => {
                                                                                                                                                                                                  * property called "img". If the "img" property exists, it converts its value to a
                                                                                                                                                                                                  * string.
                                                                                                                                                                                                  */
-                                                                                                                                                                                                productos.forEach(element => {
+      productos.forEach(element => {
         if (element.img) {
           element.img = element.img.toString();
         }
@@ -1876,7 +1876,7 @@ router.post("/aprobar_pedidos", async (req, res) => {
                                                                                                                                                                                                      * });
                                                                                                                                                                                                  * }
                                                                                                                                                                                              */
-                                                                                                                                                                                            seleccionados.forEach(id_detalle_pedido => {
+    seleccionados.forEach(id_detalle_pedido => {
       const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Aprobado' WHERE id_detalle_pedido = ?`;
       connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
         if (error) {
@@ -1963,7 +1963,7 @@ router.post("/devolver_pedidos", async (req, res) => {
                                                                                                                                                                                          * success response is sent with a message indicating that a verification email
                                                                                                                                                                                          * has been sent to the user's email address.
                                                                                                                                                                                          */
-                                                                                                                                                                                        router.post('/registrar_cliente', (req, res) => {
+router.post('/registrar_cliente', (req, res) => {
   const { ciudad, usuario, contrasena, direccion, identificacion, nombre, correo, telefono } = req.body;
   bcrypt.hash(contrasena, 10, (error, hash) => {
     if (error) {
@@ -1990,7 +1990,7 @@ router.post("/devolver_pedidos", async (req, res) => {
             /**
                                                                                                                                                                                                      * MailOptions object.
                                                                                                                                                                                                      */
-                                                                                                                                                                                                    var mailOptions = {
+            var mailOptions = {
               form: 'consultagrosaprueba@gmail.com',
               to: correo,
               subject: 'Confirma tu cuenta',
@@ -2024,7 +2024,7 @@ router.post("/devolver_pedidos", async (req, res) => {
                                                                                                                                                                                                      * This method is typically used in an Express.js route handler to send a response
                                                                                                                                                                                                      * back to the client after completing an operation.
                                                                                                                                                                                                      */
-                                                                                                                                                                                                    transporter.sendMail(mailOptions, (error, info) => {
+            transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
                 res.status(500).json({ type: "error", message: error.message, data: null });
               } else {
@@ -2045,7 +2045,7 @@ router.post('/reenviar_correo', (req, res) => {
   /**
                                                                                                                                                                                              * MailOptions object.
                                                                                                                                                                                              */
-                                                                                                                                                                                            var mailOptions = {
+  var mailOptions = {
     form: 'consultagrosaprueba@gmail.com',
     to: correo,
     subject: 'Confirma tu cuenta',
@@ -2087,7 +2087,7 @@ router.post("/obtener_inventario_total", async (req, res) => {
                                                                                                                                                                                          * sends a JSON response with the result data. If no rows are returned, the method
                                                                                                                                                                                          * sends a JSON response with a null value for the data.
                                                                                                                                                                                          */
-                                                                                                                                                                                        router.post("/obtener_usuarios", async (req, res) => {
+router.post("/obtener_usuarios", async (req, res) => {
   const sql = "SELECT * FROM usuarios INNER JOIN perfiles ON usuarios.perfil_id = perfiles.id_perfil LEFT JOIN ciudades ON usuarios.ciudad_id = ciudades.id_ciudad LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
   connection.query(sql, (error, result) => {
     if (error) {
@@ -2164,7 +2164,7 @@ router.post("/obtener_kardex", async (req, res) => {
                                                                                                                                                                                              * This method is commonly used in web development to handle API responses and
                                                                                                                                                                                              * provide appropriate feedback to the client.
                                                                                                                                                                                              */
-                                                                                                                                                                                            connection.query(sql, [id_producto], (error, result) => {
+  connection.query(sql, [id_producto], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
     } else {
@@ -2209,7 +2209,7 @@ router.post("/obtener_ciudades", async (req, res) => {
                                                                                                                                                                                          * If the query is successful but returns no records, the callback function sends a
                                                                                                                                                                                          * JSON response with a null value for the data.
                                                                                                                                                                                          */
-                                                                                                                                                                                        router.post("/obtener_perfiles", async (req, res) => {
+router.post("/obtener_perfiles", async (req, res) => {
   const sql = "SELECT * FROM perfiles";
   connection.query(sql, (error, result) => {
     if (error) {
@@ -2255,7 +2255,7 @@ router.post("/obtener_productos", async (req, res) => {
                                                                                                                                                                                          * Finally, the method sends a JSON response containing the query result data and
                                                                                                                                                                                          * the `IVA` value.
                                                                                                                                                                                          */
-                                                                                                                                                                                        router.post('/obtener_carrito', (req, res) => {
+router.post('/obtener_carrito', (req, res) => {
   const id_usuario = req.body.id_usuario;
   iva = process.env.IVA;
   console.log(id_usuario);
@@ -2269,7 +2269,7 @@ router.post("/obtener_productos", async (req, res) => {
                                                                                                                                                                                                  * property called "img". If the "img" property exists, it converts its value to a
                                                                                                                                                                                                  * string.
                                                                                                                                                                                                  */
-                                                                                                                                                                                                result.forEach(element => {
+      result.forEach(element => {
         if (element.img) {
           element.img = element.img.toString();
         }
@@ -2325,7 +2325,7 @@ router.post('/update_usuario', (req, res) => {
                                                                                                                                                                                              * If no error occurs, and there are results available, the "id_producto" will be
                                                                                                                                                                                              * logged to the console and a success message will be sent as a JSON response.
                                                                                                                                                                                              */
-                                                                                                                                                                                            connection.query(sql, values, (error, results) => {
+  connection.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
@@ -2363,7 +2363,7 @@ router.post('/insertar_producto', (req, res) => {
                                                                                                                                                                                              * sends a response with a JSON object containing a success message stating that
                                                                                                                                                                                              * the data was saved successfully.
                                                                                                                                                                                              */
-                                                                                                                                                                                            connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
+  connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
@@ -2480,7 +2480,7 @@ router.post('/vaciar_carrito', (req, res) => {
                                                                                                                                                                                          * If the query is successful but does not return any results, a "No found" message
                                                                                                                                                                                          * is sent back as a response.
                                                                                                                                                                                          */
-                                                                                                                                                                                        router.post('/insertar_salida', (req, res) => {
+router.post('/insertar_salida', (req, res) => {
   const { idproducto, cantidad, total } = req.body;
   const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";
   /**
@@ -2494,7 +2494,7 @@ router.post('/vaciar_carrito', (req, res) => {
                                                                                                                                                                                              * be sent. If there are no results, a response with the message "Not found" will
                                                                                                                                                                                              * be sent.
                                                                                                                                                                                              */
-                                                                                                                                                                                            connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
+  connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
     if (error) {
       console.log(error);
       res.send({ message: error });
@@ -2598,7 +2598,6 @@ router.post("/kardex_salida", async (req, res) => {
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
     const { cantidad, precio, total, id_producto, detalle } = req.body;
-
     let sql = "UPDATE railway.productos SET cantidad = cantidad - ?, total = total - ? WHERE id_producto = ?;";
     connection.query(sql, [cantidad, total, id_producto], (error, updateResult) => {
       if (error) {
@@ -2614,19 +2613,7 @@ router.post("/kardex_salida", async (req, res) => {
             res.status(500).json({ error: "Error al obtener el resultado de la suma" });
           } else {
             sql = "INSERT INTO `kardex` (`producto_id`, `fecha`, `detalle`, `scantidad`, `sunidad`, `stotal`, `icantidad`, `iunidad`, `itotal`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            /**
-                                                                                                                                                                                                     * This method takes two parameters: "error" and "insertResult". It is a callback
-                                                                                                                                                                                                     * function that handles the result of an insert operation in the "kardex"
-                                                                                                                                                                                                     * database.
-                                                                                                                                                                                                     * 
-                                                                                                                                                                                                     * If an error occurs during the insert operation, the function logs an error
-                                                                                                                                                                                                     * message to the console and sends a response with a status code of 500 and an
-                                                                                                                                                                                                     * error message in JSON format.
-                                                                                                                                                                                                     * 
-                                                                                                                                                                                                     * If the insert operation is successful, the function sends a response with a
-                                                                                                                                                                                                     * status code of 200 and a success message in JSON format.
-                                                                                                                                                                                                     */
-                                                                                                                                                                                                    connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], (cantidad * selectResult[0]['cantidad'])], (error, insertResult) => {
+            connection.query(sql, [id_producto, `${year}-${month}-${day}`, detalle, cantidad, precio, total, selectResult[0]['cantidad'], precio, (selectResult[0]['cantidad'] * precio)], (error, insertResult) => {
               if (error) {
                 console.log('Error al insertar en el kardex:', error);
                 res.status(500).json({ error: "Error al insertar en el kardex" });
@@ -2769,7 +2756,7 @@ router.get('/carrito', (req, res) => {
                                                                                                                                                                                                          * ensure that the response is sent only after the database query and password
                                                                                                                                                                                                          * comparison are completed.
                                                                                                                                                                                                          */
-                                                                                                                                                                                                        router.post("/validar_cliente", async (req, res) => {
+router.post("/validar_cliente", async (req, res) => {
   const { usuario, contrasena } = req.body
   const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ? AND perfil_id = 2';
   connection.query(query, [usuario], (error, results) => {
@@ -2834,7 +2821,7 @@ router.post("/validar_administrador", async (req, res) => {
                                                                                                                                                                                                                  * 
                                                                                                                                                                                                                  * Additionally, it logs appropriate messages to the console for debugging purposes.
                                                                                                                                                                                                                  */
-                                                                                                                                                                                                                bcrypt.compare(contrasena, usuario.contrasena, (err, match) => {
+      bcrypt.compare(contrasena, usuario.contrasena, (err, match) => {
         if (err) {
           res.status(500).json({ error: "Usuario y/o contraseña incorrrectos" });
           return;

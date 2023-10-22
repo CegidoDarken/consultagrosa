@@ -59,8 +59,24 @@
                                                                 editar la información del TAG del producto. Esto
                                                                 te permitirá asignar un
                                                                 producto según sea necesario.</p>
-                                                            <button class="btn btn-primary"
-                                                                onclick="asignar()">Empezar</button>
+                                                            <p class="card-title text-uppercase">Seleccione un producto:
+                                                            </p>
+                                                            <select class="js-example-basic-single form-select"
+                                                                id="productos" style="z-index: 1000;">
+                                                                <% if (productos) { %>
+                                                                    <% productos.forEach(row=> { %>
+                                                                        <option class="text-start"
+                                                                            data-producto="<%= row.nombre %>"
+                                                                            value="<%= row.tag %>" }>
+                                                                            Codigo:
+                                                                            <%= row.codigo %>
+                                                                                | Nombre: <%= row.nombre %>
+                                                                        </option>
+                                                                        <% })}; %>
+                                                            </select>
+                                                            <br>
+                                                            <button class="btn btn-primary text-uppercase"
+                                                                onclick="asignarProducto()">Empezar</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -81,8 +97,9 @@
                                                 <h2 class="card-title text-uppercase">Para continuar con el proceso de
                                                     escaneo de
                                                     productos, conecte un sensor a tu PC.</h2>
-                                                <button onClick="requestSerialPermission()" class="btn btn-primary"><i
-                                                        class="bi bi-usb-symbol"></i> Conectar</button>
+                                                <button onClick="requestSerialPermission()"
+                                                    class="btn btn-primary m-3"><i class="bi bi-usb-symbol"></i>
+                                                    Conectar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -93,6 +110,7 @@
                     </div>
                 </section>
             </main>
+
             <div class="modal fade" id="escanearProducto" aria-hidden="true" aria-labelledby="escanearProductoLabel"
                 tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -110,13 +128,15 @@
                     </div>
                 </div>
             </div>
+
             <div class="modal fade" id="detalleProducto" aria-hidden="true" aria-labelledby="detalleProductoLabel"
                 tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <form id="kardexForm">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">¡ESCANEA EL PRODUCTO PARA OBTENER MÁS DETALLES!
+                                <h1 class="modal-title fs-5 text-success" id="detalleProductoLabel">¡ESCANEA EL PRODUCTO
+                                    PARA OBTENER MÁS DETALLES!
                                 </h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -164,7 +184,7 @@
                                                 <div class="col-12">
                                                     <div class="form-floating">
                                                         <select class="form-select mb-3" id="tipo_movimiento" required>
-                                                            <option selected disabled>Movimientos</option>
+                                                            <option selected disabled value="">Movimientos</option>
                                                             <option value="2">Entrada</option>
                                                             <option value="3">Salida</option>
                                                         </select>
@@ -217,14 +237,16 @@
 </body>
 <script>
     let producto;
-    $('#detalleProducto').on('hidden.bs.modal', async function () {
-        await sendData("n");
-    });
-    $('#detalleProducto').on('shown.bs.modal', async function () {
-        await sendData("l");
-    });
-    $('#escanearProducto').on('hidden.bs.modal', async function () {
-        await sendData("n");
+    $(document).ready(function () {
+        $('.js-example-basic-single').select2({ theme: 'bootstrap-5' });
+        $('#escanearProducto').on('hidden.bs.modal', async function () {
+            await sendData("n");
+            await sendData("n");
+        });
+        $('#detalleProducto').on('shown.bs.modal', async function () {
+            await sendData("l");
+            await sendData("l");
+        });
     });
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -289,7 +311,7 @@
                         toast: true,
                         position: 'bottom-end',
                         icon: 'error',
-                        title: 'Cantidad nos disponible',
+                        title: 'Error: ' + data.error,
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 3000
@@ -336,7 +358,7 @@
                     icon: 'error',
                     text: "Dispositivo no reconocido",
                     showConfirmButton: false,
-                    timerProgressBar: true,
+                    timerProgressBar: false,
                     timer: 2000
                 });
                 return;
@@ -344,32 +366,30 @@
             reader = await port.readable.getReader();
             writer = port.writable.getWriter();
             port.addEventListener('disconnect', async (event) => {
+                document.getElementById("connected").style.display = "none";
+                document.getElementById("disconnected").style.display = "block";
+                $('.modal').modal('hide');
                 Swal.fire({
                     toast: true,
                     position: 'bottom-end',
                     icon: 'error',
                     text: "Dispositivo desconectado",
                     showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 2000
-                }).then((result) => {
-                    window.location.reload(true); 
+                    timerProgressBar: false,
+                    timer: 1000
                 })
             });
+            document.getElementById("connected").style.display = "block";
+            document.getElementById("disconnected").style.display = "none";
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
                 icon: 'success',
                 text: "Conectado exitosamente",
                 showConfirmButton: false,
-                timerProgressBar: true,
+                timerProgressBar: false,
                 timer: 2000
             });
-            await setTimeout(() => {
-                document.getElementById("connected").style.display = "block";
-                document.getElementById("disconnected").style.display = "none";
-            }, 1000);
-            // Resto del código de configuración, como agregar event listeners, si es necesario
         } catch (error) {
             Swal.fire({
                 toast: true,
@@ -380,73 +400,13 @@
                 timerProgressBar: true,
                 timer: 2000
             });
-            console.error('Error al solicitar permiso de acceso al puerto serie:', error);
         }
     }
 
-    async function asignar() {
-        let tag;
-        Swal.fire({
-            title: '¡SELECCIONE UN PRODUCTO PARA SER ASIGNADO!',
-            icon: 'info',
-            html: `<div class="container-fluid text-start p-3"><select id="productos" class="form-select"><% if (productos) { %><% productos.forEach(row=> { %><option value="<%= row.tag %>"><%= row.nombre %></option><% }); %><% } %></select></div>`,
-            showCloseButton: true,
-            showCancelButton: true,
-            confirmButtonText: 'SIGUIENTE',
-            confirmButtonColor: "#198754",
-            cancelButtonText: 'CANCELAR',
-            showConfirmButton: true,
-            focusConfirm: false,
-            width: '800px',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                write($("#productos").val());
-            }
-        })
-    }
-
-    async function reconnect() {
-        try {
-            if (reader) {
-                // Cancela y libera el lector antes de cerrar el puerto
-                await reader.cancel();
-                reader.releaseLock();
-                reader = null; // Establece el lector como nulo
-            }
-            if (port) {
-                await port.close(); // Cierra el puerto si está abierto
-            }
-            port = await navigator.serial.requestPort(); // Vuelve a solicitar el puerto
-            await port.open({ baudRate: 9600 }); // Ábrelo nuevamente
-            reader = await port.readable.getReader();
-            // Resto del código de configuración, como agregar event listeners, si es necesario
-        } catch (error) {
-            console.error('Error al intentar reconectar:', error);
-        }
-    }
-
-    async function write(data) {
+    async function asignarProducto() {
+        $('#escanearProducto').modal('show');
         await sendData("e");
         await sendData("e");
-        Swal.fire({
-            title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
-            icon: 'info',
-            text: '',
-            showCloseButton: false,
-            showCancelButton: true,
-            showConfirmButton: false,
-            confirmButtonColor: "#198754",
-            cancelButtonText: 'CANCELAR',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            width: '800px',
-        }).then(async (result) => {
-            if (result.isDenied) {
-                await reader.cancel();
-                reader.releaseLock();
-                reader = null;
-            }
-        });
         let message = "";
         try {
             await reader.cancel();
@@ -463,7 +423,7 @@
                 if (receivedData.includes("\n")) {
                     console.log(message);
                     if (message.includes("#")) {
-                        await sendData(data + "#");
+                        await sendData($("#productos").val() + "#");
                     } else if (message.includes("failed")) {
                         Swal.fire({
                             toast: true,
@@ -471,40 +431,25 @@
                             icon: 'error',
                             title: message,
                             showConfirmButton: false,
-                            timer: 3000
+                            timer: 2000
                         });
+                        $('#escanearProducto').modal('hide');
                         return;
                     } else if (message.includes("success")) {
                         fetch('/buscarproductotag', {
                             method: 'POST',
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ tag: data }),
+                            body: JSON.stringify({ tag: $("#productos").val() }),
                         }).then(response => response.json()).then(async data => {
                             Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
                                 icon: 'success',
-                                title: '¡ASIGNADO CORRECTAMENTE!',
+                                title: '¡Asignado correctamente!',
                                 showConfirmButton: false,
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                                timer: 1200
                             }).then(async (result) => {
                                 await sendData("e");
-                                Swal.fire({
-                                    title: '¡MANTEN EL PRODUCTO EN EL ESCANNER PARA ASIGNARLO!',
-                                    icon: 'info',
-                                    text: '',
-                                    showCloseButton: false,
-                                    showCancelButton: true,
-                                    showConfirmButton: false,
-                                    confirmButtonColor: "#198754",
-                                    cancelButtonText: 'CANCELAR',
-                                    allowOutsideClick: false,
-                                    allowEscapeKey: false,
-                                    width: '800px',
-                                }).then(async (result) => {
-                                    await sendData("n");
-                                });
                             });
                         });
                     }
@@ -515,16 +460,13 @@
             console.error('Error al leer desde el puerto serie:', error);
         }
     }
+
     function calculartotal() {
         var cantidad = $('#cantidad').val();
         var precio = $('#precio').val();
         $('#total').val(parseFloat(cantidad * precio).toFixed(2));
     }
     async function escanearProducto() {
-        if (!port) {
-            console.error('No se ha establecido una conexión con el puerto serie.');
-            return;
-        }
         $('#escanearProducto').modal('show');
         let message = "";
         await sendData("l");
@@ -550,8 +492,9 @@
                             icon: 'error',
                             title: message,
                             showConfirmButton: false,
-                            timer: 3000
+                            timer: 2000
                         });
+                        $('#escanearProducto').modal('hide');
                         return;
                     }
                     fetch('/buscarproductotag', {
@@ -576,10 +519,10 @@
                                 toast: true,
                                 position: 'bottom-end',
                                 icon: 'success',
-                                text: "Producto escaneado exitosamente",
+                                title: "Producto escaneado exitosamente <b></b>",
                                 showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                                timerProgressBar: false,
+                                timer: 2000,
                             });
                             $('#nombres').val(data.nombre);
                             $('#categorias').val(data.categoria);
