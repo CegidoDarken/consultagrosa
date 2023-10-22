@@ -67,10 +67,9 @@
                                                                     <% productos.forEach(row=> { %>
                                                                         <option class="text-start"
                                                                             data-producto="<%= row.nombre %>"
-                                                                            value="<%= row.tag %>" }>
-                                                                            Codigo:
-                                                                            <%= row.codigo %>
-                                                                                | Nombre: <%= row.nombre %>
+                                                                            value="<%= row.tag %>" }>Codigo: <%=
+                                                                                row.codigo %> | Nombre: <%= row.nombre
+                                                                                    %> | Medida: <%= row.medida %>
                                                                         </option>
                                                                         <% })}; %>
                                                             </select>
@@ -224,6 +223,7 @@
             <%- include("partials/_fotterpanel") %>
 </body>
 <script>
+
     let producto;
     $(document).ready(function () {
         document.getElementById("default").style.display = "block";
@@ -239,6 +239,11 @@
             await sendData("l");
             await sendData("l");
         });
+        window.addEventListener("beforeunload", async function (e) {
+            await sendData("n");
+            await sendData("n");
+        });
+
     });
     document.getElementById('kardexForm').addEventListener('submit', async function (event) {
         event.preventDefault();

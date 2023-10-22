@@ -37,8 +37,7 @@
                                                 <% if (productos) { %>
                                                     <% productos.forEach(row=> { %>
                                                         <option data-producto="<%= row.nombre %>"
-                                                            value="<%= row.id_producto %>" }> Codigo: <%= row.codigo %>
-                                                                | Nombre: <%= row.nombre %>
+                                                            value="<%= row.id_producto %>" }> Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %> | Medida: <%= row.medida %>
                                                         </option>
                                                         <% })}; %>
                                             </select>
