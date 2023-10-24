@@ -7,7 +7,7 @@ const favicon = require("express-favicon");
 const session = require("cookie-session");
 const fileUpload = require("express-fileupload");
 const { createServer } = require("http");
-const {configureSocket,router} = require('./routes/index');
+const { configureSocket, router } = require('./routes/index');
 const server = createServer(app);
 configureSocket(server);
 var bodyParser = require("body-parser");
