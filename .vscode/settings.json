@@ -52,5 +52,6 @@
             "database": "coreptec_soporte",
             "password": ""
         }
-    ]
+    ],
+    "editor.cursorStyle": "line"
 }

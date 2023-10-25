@@ -6,26 +6,7 @@ const nodemailer = require('nodemailer');
 const { connection } = require('../database');
 require('datatables.net-bs5');
 let io;
-/**
- * Function: configureSocket
- * 
- * Description: This function is used to configure a socket server.
- * 
- * Parameters:
- * - server: The server object to configure the socket on.
- * 
- * Return Type: None
- * 
- * Example Usage:
- * ```
- * const http = require('http');
- * const server = http.createServer();
- * configureSocket(server);
- * ```
- * 
- * Note: This function uses the 'io' variable which should be declared globally
- * before calling this function.
- */
+
 function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
@@ -46,35 +27,11 @@ const transporter = nodemailer.createTransport({
 router.get("/tienda", async (req, res) => {
   res.render("tienda", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_productos() });
 });
-/**
- * This is an asynchronous function that handles a request and response. It renders
- * a view called "masvendidos" and passes two variables to the view: "credentials"
- * and "productos".
- * 
- * The "credentials" variable is set to the value of
- * "req.session.credentials.cliente" if it exists, otherwise it is set to null.
- * 
- * The "productos" variable is set to the result of the "obtener_mas_pedidos2()"
- * function, which is awaited to ensure the function waits for the result before
- * proceeding.
- * 
- * Note: The code provided is written in JavaScript.
- */
+
 router.get("/masvendidos", async (req, res) => {
   res.render("masvendidos", { credentials: req.session.credentials ? req.session.credentials.cliente : null, productos: await obtener_mas_pedidos2() });
 });
-/**
- * This is an asynchronous function that handles a request and response. It checks
- * if the session contains credentials and if the "cliente" property exists within
- * the credentials object.
- * 
- * If the conditions are met, it renders the "perfilcliente" view and passes the
- * "credentials" object from the session as a parameter. Otherwise, it redirects
- * the user to the root ("/") path.
- * 
- * If any error occurs during the execution, it also redirects the user to the root
- * ("/") path.
- */
+
 router.get("/perfilcliente", async (req, res) => {
   try {
     if (req.session.credentials && req.session.credentials.cliente) {
@@ -86,17 +43,7 @@ router.get("/perfilcliente", async (req, res) => {
     return res.redirect("/");
   }
 });
-/**
- * This is an asynchronous function that handles a request and response in a
- * JavaScript environment. It checks if the session contains credentials and if
- * the "cliente" property exists within the credentials object.
- * 
- * If the conditions are met, it renders the "pedidoscliente" view and passes the
- * "credentials" object from the session as a parameter. Otherwise, it redirects
- * the user to the root ("/") path.
- * 
- * In case of any error, it also redirects the user to the root ("/") path.
- */
+
 router.get("/pedidoscliente", async (req, res) => {
   try {
     if (req.session.credentials && req.session.credentials.cliente) {
@@ -108,24 +55,7 @@ router.get("/pedidoscliente", async (req, res) => {
     return res.redirect("/");
   }
 });
-/**
- * This is an asynchronous function that takes in a request object (req) and a
- * response object (res) as parameters. It is used to handle a specific route in a
- * web application.
- * 
- * The function first checks if the "credentials" property exists in the session
- * object of the request and if the "administrador" property is set to true. If
- * both conditions are met, it redirects the user to the "/dashboard" route.
- * 
- * If the conditions are not met, it renders the "admin" view, which is typically a
- * login page for administrators.
- * 
- * If an error occurs during the execution of the function, it also renders the
- * "admin" view.
- * 
- * Note: This code assumes the use of a session middleware that stores user
- * credentials in the session object.
- */
+
 router.get("/admin", async (req, res) => {
   try {
     if (req.session.credentials && req.session.credentials.administrador) {
@@ -137,23 +67,7 @@ router.get("/admin", async (req, res) => {
     return res.render("admin");
   }
 });
-/**
- * This is an asynchronous function that handles a request and response. It takes
- * in a request object (req) and a response object (res). The function retrieves
- * the "pedido" parameter from the query string of the request.
- * 
- * The function then checks if there are credentials stored in the session object.
- * If there are, it retrieves the "administrador" property from the credentials
- * object, otherwise it sets the credentials variable to null.
- * 
- * Inside a try-catch block, the function renders a view called "devolucionpedidos"
- * and passes the "pedido" and "credentials" variables as data to be used in the
- * view. If an error occurs during rendering, it catches the error and renders a
- * different view called "admin".
- * 
- * Note: The provided code snippet is incomplete and lacks necessary imports and
- * variable declarations.
- */
+
 router.get("/devolucionpedidos", async (req, res) => {
   const { pedido } = req.query;
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
@@ -163,22 +77,7 @@ router.get("/devolucionpedidos", async (req, res) => {
     return res.render("admin");
   }
 });
-/**
- * This is an asynchronous function that handles a request and response. It takes
- * in a request object (req) and a response object (res) as parameters.
- * 
- * The function first checks if the "credentials" property exists in the
- * "req.session" object. If it does, it assigns the value of
- * "req.session.credentials.administrador" to the "credentials" variable.
- * Otherwise, it assigns null to "credentials".
- * 
- * Inside a try-catch block, the function then renders a view called "devoluciones"
- * and passes the "credentials" variable as a parameter to the view. If an error
- * occurs during the rendering process, the catch block is executed and the
- * function renders a view called "admin".
- * 
- * Note: The documentation assumes that the code is written in JavaScript.
- */
+
 router.get("/devoluciones", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   try {
@@ -187,54 +86,10 @@ router.get("/devoluciones", async (req, res) => {
     return res.render("admin");
   }
 });
-/**
- * This is an asynchronous function that handles a request to update the state of a
- * user in a database. The function takes in a request object (req) and a response
- * object (res) as parameters.
- * 
- * The function expects a query parameter called "usuario" to be present in the
- * request. This parameter represents the user ID of the user whose state needs to
- * be updated.
- * 
- * The function constructs an SQL query string to update the "estado" (state)
- * column of the "usuarios" table in the database. The query uses a prepared
- * statement with a placeholder "?" for the user ID.
- * 
- * The function then executes the query using the "connection" object, which
- * represents the database connection. It passes the user ID as a parameter to the
- * query.
- * 
- * If an error occurs during the query execution, the function renders a "validar"
- * view with an error message indicating the failure. The error message includes
- * the specific error received from the database.
- * 
- * If the query is successful, the function renders a "validar" view with a success
- * message indicating that the user's account has been successfully validated.
- * 
- * Note: The code assumes that there is a view template called "validar" that can
- * be rendered with the provided data (type, message, and data).
- */
+
 router.get("/validar", async (req, res) => {
   const { usuario } = req.query;
   const updateQuery = `UPDATE usuarios SET estado = 1 WHERE id_usuario = ?`;
-  /**
-     * This method takes two parameters: "error" and "result". It is a callback
-     * function that is typically used to handle the response of an asynchronous
-     * operation.
-     * 
-     * If an error occurs, it will return a rendered view with the following
-     * properties:
-     * - "type" set to "error"
-     * - "message" set to "Error al actualizar el estado del usuario: " concatenated
-     * with the error message
-     * - "data" set to null
-     * 
-     * If no error occurs, it will return a rendered view with the following
-     * properties:
-     * - "type" set to "success"
-     * - "message" set to "Cuenta validada exitosamente"
-     * - "data" set to null
-     */
   connection.query(updateQuery, [usuario], (error, result) => {
     if (error) {
       return res.render("validar", { type: "error", message: "Error al actualizar el estado del usuario: " + error, data: null });
@@ -242,122 +97,37 @@ router.get("/validar", async (req, res) => {
     return res.render("validar", { type: "success", message: "Cuenta validada exitosamente", data: null });
   });
 });
-/**
- * This is an asynchronous function that handles a request and response. It takes
- * in a request object (req) and a response object (res) as parameters.
- * 
- * The function retrieves the "usuario" parameter from the query string of the
- * request object using destructuring assignment.
- * 
- * It then renders a view called "recuperar" and passes the "usuario" parameter as
- * data to the view.
- * 
- * Finally, it returns the rendered view as the response.
- */
+
 router.get("/recuperar", async (req, res) => {
   const { usuario } = req.query;
   return res.render("recuperar", { usuario });
 });
-/**
- * This is an asynchronous function that handles a request and response. It
- * retrieves the "credentials" object from the "req.session" object, specifically
- * the "administrador" property. If the "credentials" object is not found, it is
- * set to null.
- * 
- * The function then renders the "perfiladministrador" view, passing the
- * "credentials" object as a parameter.
- */
+
 router.get("/perfiladministrador", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("perfiladministrador", { credentials });
 });
-/**
- * This is an asynchronous function that handles a request and response. It
- * retrieves the "credentials" from the session object stored in the request. If
- * the "credentials" exist and have a property called "administrador", it assigns
- * it to the "credentials" variable; otherwise, it assigns null.
- * 
- * Finally, it renders the "usuarios" view, passing the "credentials" as a
- * parameter to the view.
- */
+
 router.get("/usuarios", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("usuarios", { credentials });
 });
-/**
- * This is an asynchronous function that handles a request and response. It
- * retrieves the "credentials" from the session object stored in the request. If
- * the "credentials" exist, it assigns the value of
- * "req.session.credentials.administrador" to the "credentials" variable;
- * otherwise, it assigns null.
- * 
- * Finally, it renders the "proveedores" view, passing the "credentials" variable
- * as a parameter to the view.
- */
+
 router.get("/proveedores", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("proveedores", { credentials });
 });
-/**
- * This is an asynchronous function that handles a request and response. It takes
- * in two parameters, `req` and `res`, which represent the request and response
- * objects respectively.
- * 
- * Inside the function, it checks if the `req.session.credentials` object exists.
- * If it does, it assigns the value of `req.session.credentials.administrador` to
- * the `credentials` variable. Otherwise, it assigns `null` to `credentials`.
- * 
- * Finally, it renders the "bodegas" view, passing the `credentials` variable as a
- * parameter to the view.
- */
+
 router.get("/bodegas", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   res.render("bodegas", { credentials });
 });
-/**
- * This is an asynchronous function that handles a request and response. It
- * retrieves the credentials from the session object stored in the request,
- * specifically the "cliente" property. If the credentials are found, they are
- * assigned to the "credentials" variable; otherwise, it is set to null.
- * 
- * The function then renders a view called "contactanos" and passes the
- * "credentials" variable as a parameter to the view.
- */
+
 router.get("/contactanos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("contactanos", { credentials });
 });
-/**
- * This is an asynchronous function that handles a request and response. It takes
- * in a request object (req) and a response object (res) as parameters.
- * 
- * The function first checks if the session object has a "credentials" property. If
- * it does, it assigns the value of "req.session.credentials.cliente" to the
- * "credentials" variable. Otherwise, it assigns null to "credentials".
- * 
- * Next, it extracts the "producto" property from the query object of the request
- * and assigns it to the "producto" variable.
- * 
- * Then, it initializes an empty array called "productos_recomendado".
- * 
- * The function calls the "aprioris" function asynchronously, passing in the
- * "producto" variable. It awaits the result and assigns it to the "array"
- * variable.
- * 
- * It then iterates over each element in the "array" using a for...of loop. Inside
- * the loop, it calls the "obtener_producto_id" function asynchronously, passing
- * in the current element. It awaits the result and assigns it to the
- * "producto_id" variable. Finally, it pushes the "producto_id" to the
- * "productos_recomendado" array.
- * 
- * Finally, it renders a view called "detalleproducto" and passes in an object with
- * the properties "credentials" (the value of the "credentials" variable),
- * "producto" (the result of calling "obtener_producto_id" with the "producto"
- * variable), and "recomendados" (the "productos_recomendado" array).
- * 
- * Note: The documentation provided assumes that the "aprioris" and
- * "obtener_producto_id" functions are defined elsewhere in the code.
- */
+
 router.get("/detalleproducto", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;
   const { producto } = req.query;
@@ -370,54 +140,9 @@ router.get("/detalleproducto", async (req, res) => {
   res.render("detalleproducto", { credentials, producto: await obtener_producto_id(producto), recomendados: productos_recomendado });
 });
 
-/**
- * This is an asynchronous function that handles a request to send a password
- * recovery email to a user.
- * 
- * Parameters:
- * - req: The request object containing the user's email address in the body.
- * - res: The response object used to send the response back to the client.
- * 
- * Steps:
- * 1. Destructure the email address from the request body.
- * 2. Define a SQL query to select the user from the database based on the email
- * address.
- * 3. Execute the SQL query using the connection object.
- * 4. If there is an error executing the query, log the error and send a 500 status
- * response with an error message.
- * 5. If the query returns no results, send a 404 status response with an error
- * message indicating that the user is not valid.
- * 6. If the query returns a result, generate a recovery link using the user's ID.
- * 7. Define the email options including the sender, recipient, subject, and text
- * content.
- * 8. Use the transporter object to send the email.
- * 9. If there is an error sending the email, send a 500 status response with an
- * error message.
- * 10. If the email is sent successfully, send a 200 status response with a success
- * message.
- */
 router.post('/recuperar', async (req, res) => {
   const { correo } = req.body;
   const sql = 'SELECT * FROM usuarios WHERE correo = ?';
-  /**
-     * This method is a callback function that handles the response of a database
-     * query. It takes two parameters: "error" and "results".
-     * 
-     * If an error occurs during the query, the function logs the error and sends a
-     * response with a status code of 500 and a JSON object containing an error
-     * message.
-     * 
-     * If the query is successful but no results are found, the function sends a
-     * response with a status code of 404 and a JSON object indicating that the user
-     * is not valid.
-     * 
-     * If the query is successful and results are found, the function generates a URL
-     * based on the user's ID and constructs an email with a recovery link. The email
-     * is sent using the "transporter" object. If there is an error sending the email,
-     * the function sends a response with a status code of 500 and an error message.
-     * If the email is sent successfully, the function sends a response with a status
-     * code of 200 and a success message.
-     */
   connection.query(sql, [correo], (error, results) => {
     if (error) {
       console.log(error);
@@ -436,22 +161,6 @@ router.post('/recuperar', async (req, res) => {
           subject: 'Recuperacion de contraseña',
           text: `Para crear una nueva contraseña, haz clic en el siguiente enlace: ${enlace}`,
         };
-        /**
-         * This method takes two parameters: "error" and "info". It is a callback function
-         * that handles the response after attempting to send an email.
-         * 
-         * If an error occurs, the method will set the response status to 500 and return a
-         * JSON object with the following properties:
-         * - "type" set to "error"
-         * - "message" set to "Error al enviar el correo"
-         * - "data" set to null
-         * 
-         * If no error occurs, the method will set the response status to 200 and return a
-         * JSON object with the following properties:
-         * - "type" set to "success"
-         * - "message" set to "Correo enviado correctamente"
-         * - "data" set to null
-         */
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             res.status(500).json({ type: 'error', message: 'Error al enviar el correo', data: null });
@@ -464,73 +173,9 @@ router.post('/recuperar', async (req, res) => {
   });
 });
 
-/**
-     * This is an asynchronous function named `aprioris` that takes a parameter
-     * `producto`. It returns a promise that resolves to an array of recommended
-     * products based on the given `producto`.
-     * 
-     * The function executes a SQL query to retrieve a list of products associated with
-     * orders that contain the given `producto`. It then uses the retrieved data to
-     * generate recommendations using the Apriori algorithm.
-     * 
-     * The Apriori algorithm is instantiated with a minimum support threshold of 0.1.
-     * It is then executed on the retrieved product data. The resulting frequent
-     * itemsets are used to generate recommendations.
-     * 
-     * The `generateRecommendations` function sorts the itemsets based on their support
-     * and extracts the first item from each itemset. These items are added to the
-     * recommendations array, ensuring that duplicates are not included.
-     * 
-     * Finally, the function resolves the promise with the array of recommended
-     * products.
-     * 
-     * If any error occurs during the execution of the SQL query or the Apriori
-     * algorithm, the promise is rejected with an error message. If the SQL query
-     * returns no results, the promise is resolved with a message indicating that the
-     * product is not recognized.
-     */
 async function aprioris(producto) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT GROUP_CONCAT(`detallepedidos`.`producto_id` SEPARATOR ',') AS `productos` FROM `pedidos` INNER JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` WHERE `pedidos`.`id_pedido` IN (SELECT DISTINCT `detallepedidos`.`pedido_id` FROM `detallepedidos` WHERE `detallepedidos`.`producto_id` = ?) GROUP BY `pedidos`.`id_pedido`, `pedidos`.`usuario_id`, `pedidos`.`fecha`, `pedidos`.`total`;";
-    /**
-     * This method takes in two parameters: "error" and "results". It is a callback
-     * function that handles the response of a database query.
-     * 
-     * If an error occurs, it will return a JSON object with a "message" property
-     * containing the error message.
-     * 
-     * If there are results, it will process the data to generate product
-     * recommendations using the Apriori algorithm.
-     * 
-     * First, it initializes two empty arrays: "productos" and "productos_recomendado".
-     * 
-     * Then, it iterates through the "results" array and pushes the "productos"
-     * property of each element into the "productos" array.
-     * 
-     * Next, it creates a new instance of the Apriori algorithm with a minimum support
-     * threshold of 0.1.
-     * 
-     * The algorithm is executed on the "productos" array, and the result is a promise.
-     * 
-     * Once the promise is resolved, the frequent itemsets are extracted from the
-     * result.
-     * 
-     * A function called "generateRecommendations" is defined to generate the
-     * recommendations based on the frequent itemsets.
-     * 
-     * The itemsets are sorted in descending order of support.
-     * 
-     * A set called "recommendationSet" is created to keep track of recommended items.
-     * 
-     * A loop iterates through the itemsets and adds the first item of each itemset to
-     * the "recommendations" array if it hasn't been recommended before.
-     * 
-     * Finally, the "productos_recomendado" array is resolved with the generated
-     * recommendations.
-     * 
-     * If there are no results, it returns a JSON object with a "message" property
-     * indicating that the product is not recognized.
-     */
     connection.query(sql, [producto], (error, results) => {
       if (error) {
         res.json({ message: error });
@@ -538,61 +183,10 @@ async function aprioris(producto) {
         if (results) {
           let productos = [];
           let productos_recomendado = [];
-          /**
-         * The `push` method is used to add one or more elements to the end of an array and
-         * returns the new length of the array.
-         * 
-         * Syntax:
-         * ```
-         * array.push(element1, element2, ..., elementN)
-         * ```
-         * 
-         * Parameters:
-         * - `element1, element2, ..., elementN` (optional): The elements to add to the end
-         * of the array.
-         * 
-         * Return Value:
-         * - The new length of the array after adding the elements.
-         * 
-         * Description:
-         * The `push` method modifies the original array by adding one or more elements to
-         * the end of it. The elements are provided as arguments to the method. If
-         * multiple elements are provided, they are added in the order they appear in the
-         * argument list.
-         * 
-         * Example:
-         * ```javascript
-         * const productos = ["apple", "banana"];
-         * productos.push("orange");
-         * console.log(productos); // Output: ["apple", "banana", "orange"]
-         * 
-         * const numbers = [1, 2, 3];
-         * numbers.push(4, 5);
-         * console.log(numbers); // Output: [1, 2, 3, 4, 5]
-         * ```
-         * 
-         * Note:
-         * - The `push` method modifies the original array and does not create a new array.
-         * - The `push` method can be used to add elements of any data type to an array.
-         * - The `push` method returns the new length of the array after adding the
-         * elements.
-         */
           results.forEach(elements => {
             productos.push(elements.productos.split(","));
           });
           var aprioriAlgo = new apriori.Apriori(0.1);
-          /**
-         * This function takes a result object as a parameter and retrieves the frequent
-         * itemsets from it. It then generates recommendations based on these frequent
-         * itemsets using the generateRecommendations() function. The recommendations are
-         * stored in the productos_recomendado array.
-         * 
-         * The function iterates through each element in the recommendations array and
-         * checks if it is not equal to the producto variable. If it is not equal, the
-         * element is added to the productos_recomendado array.
-         * 
-         * Finally, the function resolves the productos_recomendado array.
-         */
           aprioriAlgo.exec(productos)
             .then(function (result) {
               var frequentItemsets = result.itemsets;
@@ -604,18 +198,8 @@ async function aprioris(producto) {
               }
               resolve(productos_recomendado);
             });
-          /**
-         * Generates recommendations based on the given itemsets.
-         *
-         * @param {Array} itemsets - An array of itemsets.
-         * @returns {Array} - An array of recommendations.
-         */
+
           function generateRecommendations(itemsets) {
-            /**
-             * The function takes two parameters, `a` and `b`, and returns the difference
-             * between the `support` property of `b` and `a`. The `support` property is
-             * assumed to be a numerical value.
-             */
             itemsets.sort(function (a, b) {
               return b.support - a.support;
             });
@@ -638,54 +222,7 @@ async function aprioris(producto) {
     })
   });
 }
-/**
-         * This is an asynchronous function that handles a request to add a product to a
-         * shopping cart. It expects the following parameters in the request body:
-         * `usuario_id` (user ID), `producto_id` (product ID), `cantidad_deseada` (desired
-         * quantity), and `precio` (price).
-         * 
-         * The function first checks if any of the required parameters are missing. If so,
-         * it returns a 400 status code with an error message indicating the missing
-         * fields.
-         * 
-         * Next, it converts the `cantidad_deseada` and `precio` values to integers using
-         * the `parseInt` function.
-         * 
-         * The function then queries the database to retrieve the current quantity of the
-         * product with the specified `producto_id`. If the product is not found, it
-         * returns a 404 status code with an error message.
-         * 
-         * After retrieving the current quantity, it compares it with the desired quantity.
-         * If the desired quantity is greater than the available quantity, it returns a
-         * 400 status code with an error message indicating that the quantity is not
-         * available.
-         * 
-         * The function then queries the database to check if the product already exists in
-         * the user's shopping cart. If it does, it retrieves the current quantity and
-         * total price of the product.
-         * 
-         * If the product is not already in the cart, it sets the `cantidadActual` variable
-         * to 0 and `isNewCartItem` to true.
-         * 
-         * Next, it calculates the new quantity and total price based on the desired
-         * quantity and price.
-         * 
-         * If the new quantity is greater than the available quantity or is 0, it returns a
-         * 400 status code with an error message indicating that the quantity is not
-         * available.
-         * 
-         * If `isNewCartItem` is true, it inserts a new row into the `carritos` table with
-         * the product ID, user ID, new quantity, and new total price.
-         * 
-         * If `isNewCartItem` is false, it updates the existing row in the `carritos` table
-         * with the new quantity and total price.
-         * 
-         * Finally, it returns a 200 status code with a success message indicating that the
-         * product has been added to the cart.
-         * 
-         * If any error occurs during the execution of the function, it logs the error and
-         * returns a 500 status code with an error message indicating a server error.
-         */
+
 router.post('/cambiar_cantidad', async (req, res) => {
   const { usuario_id, producto_id, cantidad_deseada, precio } = req.body;
   console.log(producto_id, cantidad_deseada);
@@ -740,12 +277,6 @@ router.post('/cambiar_cantidad', async (req, res) => {
     }
     if (isNewCartItem) {
       await new Promise((resolve, reject) => {
-        /**
-             * This method is used to handle the callback function with an error and result. It
-             * takes two parameters: err and result. If the err parameter is not null, it will
-             * reject the promise with the err value. Otherwise, it will resolve the promise
-             * with the result value.
-             */
         connection.query(
           'INSERT INTO carritos (producto_id, usuario_id, cantidad, total) VALUES (?, ?, ?, ?)',
           [producto_id, usuario_id, nuevaCantidad, nuevoTotal],
@@ -1937,32 +1468,7 @@ router.post("/devolver_pedidos", async (req, res) => {
     res.status(500).json({ type: "error", message: "Error en el servidor" });
   }
 });
-/**
-                                                                                                                                                                                         * This method is used to handle a POST request for user registration. It expects
-                                                                                                                                                                                         * the following parameters in the request body: `ciudad`, `usuario`,
-                                                                                                                                                                                         * `contrasena`, `direccion`, `identificacion`, `nombre`, `correo`, and
-                                                                                                                                                                                         * `telefono`.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The method first hashes the password using bcrypt with a salt factor of 10. If
-                                                                                                                                                                                         * an error occurs during the hashing process, a 500 error response is sent with
-                                                                                                                                                                                         * the error message.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * Next, the current date is obtained and formatted to be stored in the database.
-                                                                                                                                                                                         * The SQL query is then constructed to insert the user data into the `usuarios`
-                                                                                                                                                                                         * table.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The query is executed using the `connection.query` method. If an error occurs
-                                                                                                                                                                                         * during the execution, the error is logged and appropriate error responses are
-                                                                                                                                                                                         * sent based on the type of error (e.g., duplicate username, duplicate
-                                                                                                                                                                                         * identification, duplicate email).
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If the query is successful, an email verification link is generated using the
-                                                                                                                                                                                         * inserted user's ID. The link is sent to the user's email address using the
-                                                                                                                                                                                         * `transporter.sendMail` method. If an error occurs during the email sending
-                                                                                                                                                                                         * process, a 500 error response is sent with the error message. Otherwise, a 200
-                                                                                                                                                                                         * success response is sent with a message indicating that a verification email
-                                                                                                                                                                                         * has been sent to the user's email address.
-                                                                                                                                                                                         */
+
 router.post('/registrar_cliente', (req, res) => {
   const { ciudad, usuario, contrasena, direccion, identificacion, nombre, correo, telefono } = req.body;
   bcrypt.hash(contrasena, 10, (error, hash) => {
@@ -2342,34 +1848,25 @@ router.post('/update_usuario', (req, res) => {
   });
 });
 router.post('/insertar_producto', (req, res) => {
+  let tag="";
   const currentDate = new Date(Date.now());
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  const { codigo, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  var caracteres = "0123456789";
+  for (var i = 0; i < 10; i++) {
+    var indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+    tag += caracteres.charAt(indiceAleatorio);
+  }
   const sql = "INSERT INTO `productos`(`codigo`, `tag`,`proveedor_id`,`categoria_id`,`nombre`,`descripcion`,`medida`,`precio`,`cantidad`,`total`,`img`, `fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-  /**
-                                                                                                                                                                                             * This method takes two parameters: `error` and `results`. It is a callback
-                                                                                                                                                                                             * function that handles the response of a database operation.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If an error occurs, the method checks the error message to determine the type of
-                                                                                                                                                                                             * error. If the error message indicates a duplicate entry for the `codigo` field,
-                                                                                                                                                                                             * it sends a response with a status code of 500 and a JSON object containing an
-                                                                                                                                                                                             * error message stating that the code already exists. If the error message
-                                                                                                                                                                                             * indicates a duplicate entry for the `tag` field, it sends a similar response
-                                                                                                                                                                                             * with an error message stating that the tag already exists.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If no error occurs, the method checks if there are any results. If there are, it
-                                                                                                                                                                                             * sends a response with a JSON object containing a success message stating that
-                                                                                                                                                                                             * the data was saved successfully.
-                                                                                                                                                                                             */
-  connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
+  connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, 0, 0, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
       if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
         res.status(500).json({ error: "Código ya existente" });
       } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
-        res.status(500).json({ error: "Tag ya existente" });
+        res.status(500).json({ error: "Tag ya existente, intentelo nuevamente" });
       }
     } else {
       if (results) {

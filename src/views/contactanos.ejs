@@ -69,12 +69,12 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const form = document.getElementById("contact-form");
+                    const name = form.name.value;
+                    const subject = form.subject.value;
+                    const message = form.message.value;
                     const whatsappButton = document.getElementById("whatsapp-button");
                     const emailButton = document.getElementById("email-button");
                     whatsappButton.addEventListener("click", function () {
-                        const name = form.name.value;
-                        const subject = form.subject.value;
-                        const message = form.message.value;
                         if (!name || !subject || !message) {
                             Swal.fire({
                                 toast: true,
@@ -85,14 +85,12 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             });
-                            return;
                         } else {
                             const whatsappMessage = encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nAsunto: ${subject}\nMensaje: ${message}`);
-                            const whatsappLink = `https://wa.me/+593985491766?text=${whatsappMessage}`;
-                            window.open(whatsappLink, "_blank");
-                            return;
+                            const phoneNumber = '+593959933280';
+                            const whatsappLink = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+                            window.open(whatsappLink);
                         }
-
                     });
                     emailButton.addEventListener("click", function () {
                         const name = form.name.value;
@@ -108,11 +106,9 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             });
-                            return;
                         } else {
-                            const mailtoLink = `mailto:consultagrosaprueba@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
-                            window.open(mailtoLink, "_blank");
-                            return;
+                            const mailtoLink = `mailto:consultagro.cia@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`¡Hola, necesito más información!\n\nNombre: ${name}\nMensaje: ${message}`)}`;
+                            window.open(mailtoLink);
                         }
                     });
                 });
