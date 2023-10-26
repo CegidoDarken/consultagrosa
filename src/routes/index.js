@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const { connection } = require('../database');
+const apriori = require("node-apriori");
 require('datatables.net-bs5');
 let io;
 
@@ -11,7 +12,6 @@ function configureSocket(server) {
   io = new Server(server);
   io.setMaxListeners(0);
 }
-var apriori = require("node-apriori");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -337,11 +337,6 @@ router.post('/agregar_carrito', async (req, res) => {
       return res.status(400).json({ type: "error", message: 'Cantidad no disponible', data: null });
     }
     const cartResults = await new Promise((resolve, reject) => {
-      /**
-             * This method is used to handle the callback function with an error and result
-             * parameters. If an error is present, it will be rejected. If there is no error,
-             * the result will be resolved.
-             */
       connection.query(
         'SELECT cantidad, total FROM carritos WHERE producto_id = ? AND usuario_id = ? LIMIT 1',
         [producto_id, usuario_id],
@@ -402,11 +397,7 @@ router.get("/", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.cliente : null;
   res.render("index", { credentials });
 });
-/**
-         * The provided code snippet is an asynchronous function that handles a request and
-         * response in JavaScript. It uses the `render` method to render a view called
-         * "test".
-         */
+
 router.get("/test", async (req, res) => {
   res.render("test");
 });
@@ -451,19 +442,6 @@ router.post("/obtener_detalle_pedidos", async (req, res) => {
   if (id_pedido) {
     credentials = req.session.credentials ? req.session.credentials.administrador : null;
     const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ?;";
-    /**
-             * This method takes two parameters: "error" and "results". It is a callback
-             * function that handles the response of a request.
-             * 
-             * If an error occurs, it sends a response with the error message and logs the
-             * error to the console.
-             * 
-             * If there are results, it iterates through each element and checks if the "img"
-             * property exists. If it does, it converts it to a string.
-             * 
-             * Finally, it sends a JSON response with the modified results or a message
-             * indicating that the product is not recognized.
-             */
     connection.query(sql, [id_pedido], (error, results) => {
       if (error) {
         res.send({ message: error });
@@ -510,19 +488,6 @@ router.post("/obtener_detalle_pedidos2", async (req, res) => {
   if (id_pedido) {
     credentials = req.session.credentials ? req.session.credentials.administrador : null;
     const sql = "SELECT dp.id_detalle_pedido, dp.pedido_id, p.id_producto, p.nombre AS nombre_producto, p.img, dp.precio, dp.cantidad, dp.total, dp.estado FROM railway.detallepedidos dp JOIN railway.productos p ON dp.producto_id = p.id_producto WHERE dp.pedido_id = ? AND dp.estado = 'Aprobado';";
-    /**
-             * This method takes two parameters: "error" and "results". It is a callback
-             * function that handles the response of a request.
-             * 
-             * If an error occurs, it sends a response with the error message and logs the
-             * error to the console.
-             * 
-             * If there are results, it iterates through each element and checks if the "img"
-             * property exists. If it does, it converts it to a string.
-             * 
-             * Finally, it sends a JSON response with the modified results or a message
-             * indicating that the product is not recognized.
-             */
     connection.query(sql, [id_pedido], (error, results) => {
       if (error) {
         res.send({ message: error });
@@ -601,11 +566,6 @@ router.post("/realizar_pedidos", async (req, res) => {
     for (const pedido of pedidos) {
       const { id_producto, precio, cantidad } = pedido;
       await new Promise((resolve, reject) => {
-        /**
-             * This is an asynchronous function that takes an error parameter. It returns a
-             * promise that either rejects with the error parameter if it exists, or resolves
-             * with no value if the error parameter is falsy.
-             */
         connection.query(insertDetallePedidoQuery, [pedidoId, id_producto, precio, cantidad, (cantidad * precio), "Pendiente"], async (error) => {
           if (error) {
             reject(error);
@@ -673,23 +633,7 @@ router.post("/actividades_registros_anual", async (req, res) => {
   let anio = req.body.anio;
   res.json({ productos: await actividades_productos_anual(anio), usuarios: await actividades_usuarios_anual(anio), proveedores: await actividades_proveedores_anual(anio) });
 });
-/**
-         * This is an asynchronous function that handles a request and response. It takes
-         * in the request object (req) and response object (res) as parameters.
-         * 
-         * The function retrieves the 'anio' and 'mes' values from the request body.
-         * 
-         * It then calls three separate functions: 'actividades_productos_mes',
-         * 'actividades_usuarios_mes', and 'actividades_proveedores_mes'. These functions
-         * are expected to return promises.
-         * 
-         * The function uses the 'await' keyword to wait for each promise to resolve before
-         * proceeding.
-         * 
-         * Finally, the function sends a JSON response to the client with three properties:
-         * 'productos', 'usuarios', and 'proveedores'. The values of these properties are
-         * the results of the corresponding asynchronous functions.
-         */
+
 router.post("/actividades_registros_mes", async (req, res) => {
   let anio = req.body.anio;
   let mes = req.body.mes;
@@ -704,21 +648,7 @@ router.post("/actividades_pedidos_mes", async (req, res) => {
   let mes = req.body.mes;
   res.json({ pedidos: await actividades_pedidos_mes(anio, mes) });
 });
-/**
-         * This is an asynchronous function that handles a request and response. It takes a
-         * request object (req) and a response object (res) as parameters.
-         * 
-         * The function retrieves the 'anio' value from the request body and assigns it to
-         * the 'anio' variable.
-         * 
-         * Then, it sends a JSON response with the 'ganancias' property set to the result
-         * of the 'ganancias_pedidos_anual' function, which is awaited. The
-         * 'ganancias_pedidos_anual' function is expected to return a promise that
-         * resolves to the desired value.
-         * 
-         * Note: The code assumes that the 'ganancias_pedidos_anual' function is defined
-         * elsewhere in the codebase.
-         */
+
 router.post("/ganancias_pedidos_anual", async (req, res) => {
   let anio = req.body.anio;
   res.json({ ganancias: await ganancias_pedidos_anual(anio) });
@@ -746,11 +676,7 @@ router.post("/mas_pedidos_mes", async (req, res) => {
   let mes = req.body.mes;
   res.json({ data: await mas_pedidos_mes(anio, mes) });
 });
-/**
-         * This is an asynchronous function that handles a request and response. It returns
-         * a JSON object with a key "data" that contains the result of the
-         * "abastecimiento" function, which is awaited.
-         */
+
 router.post("/abastecimiento", async (req, res) => {
   res.json({ data: await abastecimiento() });
 });
@@ -877,14 +803,7 @@ async function ganancias_productos_anual(anio) {
     });
   });
 }
-/**
-                                                                     * Retrieves the top 10 products with the highest earnings for a given year and month.
-                                                                     * 
-                                                                     * @param {number} anio - The year for which to retrieve the earnings.
-                                                                     * @param {number} mes - The month for which to retrieve the earnings.
-                                                                     * @returns {Promise<Array<Object>>} A promise that resolves to an array of objects representing the top 10 products with their earnings.
-                                                                     * @throws {Error} If there is an error executing the SQL query.
-                                                                     */
+
 async function ganancias_productos_mes(anio, mes) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT pr.img, pr.nombre as producto, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM `railway`.`pedidos` LEFT JOIN `railway`.`detallepedidos` as dp ON pedidos.id_pedido = dp.pedido_id LEFT JOIN `railway`.`productos` AS pr ON dp.producto_id = pr.id_producto WHERE YEAR(pedidos.fecha) = " + anio + " AND MONTH(`pedidos`.`fecha`) = " + mes + " GROUP BY pr.img, pr.nombre, dp.precio ORDER BY ganancias DESC LIMIT 10";
@@ -957,21 +876,6 @@ async function actividades_usuarios_mes(anio, mes) {
   return new Promise((resolve, reject) => {
 
     const sql = "SELECT nums.num AS dia, IFNULL(COUNT(usuarios.id_usuario), 0) AS product_count FROM (SELECT 1 AS num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION SELECT 31) AS nums LEFT JOIN `railway`.`usuarios` ON nums.num = DAY(`usuarios`.`fecha`) AND MONTH(`usuarios`.`fecha`) = " + mes + " AND YEAR(`usuarios`.`fecha`) = " + anio + " GROUP BY nums.num;";
-    /**
-                                                                                                     * This method takes in two parameters: "error" and "result". It returns a promise
-                                                                                                     * that either resolves with an array of product counts or rejects with an error.
-                                                                                                     * 
-                                                                                                     * If an error is passed as the "error" parameter, the promise is rejected with
-                                                                                                     * that error.
-                                                                                                     * 
-                                                                                                     * If no error is passed and the "result" array has a length greater than 0, the
-                                                                                                     * method maps over each item in the "result" array and extracts the
-                                                                                                     * "product_count" property. It then resolves the promise with an array of these
-                                                                                                     * product counts.
-                                                                                                     * 
-                                                                                                     * If no error is passed and the "result" array has a length of 0, the method
-                                                                                                     * resolves the promise with null.
-                                                                                                     */
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -1007,21 +911,6 @@ async function actividades_proveedores_mes(anio, mes) {
   return new Promise((resolve, reject) => {
 
     const sql = "SELECT nums.num AS dia, IFNULL(COUNT(proveedores.id_proveedor), 0) AS product_count FROM (SELECT 1 AS num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION SELECT 31) AS nums LEFT JOIN `railway`.`proveedores` ON nums.num = DAY(`proveedores`.`fecha`) AND MONTH(`proveedores`.`fecha`) = " + mes + " AND YEAR(`proveedores`.`fecha`) = " + anio + " GROUP BY nums.num;";
-    /**
-                                                                                                                     * This method takes in two parameters: "error" and "result". It returns a promise
-                                                                                                                     * that either resolves with an array of product counts or rejects with an error.
-                                                                                                                     * 
-                                                                                                                     * If an error is passed as the "error" parameter, the promise is rejected with
-                                                                                                                     * that error.
-                                                                                                                     * 
-                                                                                                                     * If no error is passed and the "result" array has a length greater than 0, the
-                                                                                                                     * method maps over each item in the "result" array and extracts the
-                                                                                                                     * "product_count" property. It then resolves the promise with an array of these
-                                                                                                                     * product counts.
-                                                                                                                     * 
-                                                                                                                     * If no error is passed and the "result" array has a length of 0, the method
-                                                                                                                     * resolves the promise with null.
-                                                                                                                     */
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -1057,34 +946,7 @@ async function mas_pedidos_anual(anio) {
     });
   });
 }
-/**
-                                                                                                                                     * This is an asynchronous function named `mas_pedidos_mes` that retrieves the top
-                                                                                                                                     * 10 most ordered products for a given year and month from a database. The
-                                                                                                                                     * function takes two parameters: `anio` (year) and `mes` (month).
-                                                                                                                                     * 
-                                                                                                                                     * The function returns a Promise that resolves to an array of objects representing
-                                                                                                                                     * the products. Each object contains the following properties:
-                                                                                                                                     * 
-                                                                                                                                     * - `img`: The image of the product (as a string).
-                                                                                                                                     * - `codigo`: The code of the product.
-                                                                                                                                     * - `nombre`: The name of the product.
-                                                                                                                                     * - `precio`: The price of the product.
-                                                                                                                                     * - `vendidos`: The total quantity of the product sold.
-                                                                                                                                     * - `ganancias`: The total earnings generated by selling the product.
-                                                                                                                                     * 
-                                                                                                                                     * The function executes a SQL query to fetch the required data from the database.
-                                                                                                                                     * It joins the `pedidos` and `detallepedidos` tables to retrieve the product
-                                                                                                                                     * information along with the total quantity sold and earnings for each product.
-                                                                                                                                     * The query filters the results based on the provided year and month. The
-                                                                                                                                     * products are then sorted in descending order of the quantity sold and limited
-                                                                                                                                     * to the top 10.
-                                                                                                                                     * 
-                                                                                                                                     * If the query is successful and returns results, the function converts the image
-                                                                                                                                     * property to a string (if it exists) and resolves the Promise with the resulting
-                                                                                                                                     * array of products. If the query returns no results, an empty array is resolved.
-                                                                                                                                     * If an error occurs during the query execution, the Promise is rejected with the
-                                                                                                                                     * error.
-                                                                                                                                     */
+
 async function mas_pedidos_mes(anio, mes) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT pr.img, pr.codigo, pr.nombre, dp.precio, dp.vendidos, dp.ganancias FROM (SELECT dp.producto_id, dp.precio, SUM(dp.cantidad) AS vendidos, SUM(dp.total) AS ganancias FROM railway.pedidos LEFT JOIN railway.detallepedidos AS dp ON pedidos.id_pedido = dp.pedido_id WHERE YEAR(pedidos.fecha) = ? AND MONTH(pedidos.fecha) = ? GROUP BY dp.producto_id, dp.precio ORDER BY vendidos DESC LIMIT 10) AS dp LEFT JOIN railway.productos AS pr ON dp.producto_id = pr.id_producto;"
@@ -1106,17 +968,7 @@ async function mas_pedidos_mes(anio, mes) {
     });
   });
 }
-/**
-                                                                                                                                             * This is an asynchronous function named "obtener_num_clientes" that returns a
-                                                                                                                                             * Promise. It retrieves the number of clients from a database table named
-                                                                                                                                             * "usuarios" using a SQL query. The function takes no parameters.
-                                                                                                                                             * 
-                                                                                                                                             * The function executes the SQL query using the "connection" object. If an error
-                                                                                                                                             * occurs during the query execution, the Promise is rejected with the error. If
-                                                                                                                                             * the query is successful and returns at least one row, the Promise is resolved
-                                                                                                                                             * with the value of the "num_clientes" column from the first row. If the query
-                                                                                                                                             * returns no rows, the Promise is resolved with a value of null.
-                                                                                                                                             */
+
 async function obtener_num_clientes() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT count(*) AS num_clientes FROM usuarios";
@@ -1157,21 +1009,7 @@ router.post("/obtener_mas_pedidos", async (req, res) => {
 async function obtener_mas_pedidos2() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT p.id_producto, p.img, p.nombre, p.precio, p.medida, p.cantidad, c.categoria, SUM(d.cantidad) AS vendidos FROM productos p INNER JOIN detallepedidos d ON p.id_producto = d.producto_id INNER JOIN categorias c ON p.categoria_id = c.id_categoria WHERE p.categoria_id = c.id_categoria GROUP BY p.id_producto ORDER BY vendidos DESC LIMIT 20;";
-    /**
-                                                                                                                                                             * This method takes in two parameters: `error` and `result`. It returns a promise
-                                                                                                                                                             * that either resolves with the modified `result` or rejects with the provided
-                                                                                                                                                             * `error`.
-                                                                                                                                                             * 
-                                                                                                                                                             * If an `error` is provided, the method will reject the promise with the given
-                                                                                                                                                             * `error`.
-                                                                                                                                                             * 
-                                                                                                                                                             * If the `result` array has a length greater than 0, the method will iterate over
-                                                                                                                                                             * each element in the `result` array. If an `img` property exists in an element,
-                                                                                                                                                             * it will be converted to a string using the `toString()` method.
-                                                                                                                                                             * 
-                                                                                                                                                             * Finally, if the `result` array is empty, the method will resolve the promise
-                                                                                                                                                             * with `null`.
-                                                                                                                                                             */
+
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -1219,17 +1057,6 @@ router.post("/obtener_recientes", async (req, res) => {
 async function obtener_recientes() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT `pedidos`.`id_pedido`, `usuarios`.`nombre` AS `cliente`, `productos`.`nombre` AS `producto`, `productos`.`precio`, pedidos.`estado` FROM `pedidos` JOIN `detallepedidos` ON `pedidos`.`id_pedido` = `detallepedidos`.`pedido_id` JOIN `productos` ON `detallepedidos`.`producto_id` = `productos`.`id_producto` JOIN `usuarios` ON `pedidos`.`usuario_id` = `usuarios`.`id_usuario` ORDER BY `pedidos`.`fecha` DESC LIMIT 10;";
-    /**
-                                                                                                                                                                             * This method takes in two parameters: `error` and `result`. It is a callback
-                                                                                                                                                                             * function that handles the response of an asynchronous operation.
-                                                                                                                                                                             * 
-                                                                                                                                                                             * If an `error` is present, it will reject the promise with the provided error.
-                                                                                                                                                                             * Otherwise, it will check if the `result` array has a length greater than 0. If
-                                                                                                                                                                             * it does, it will iterate over each element in the `result` array and convert
-                                                                                                                                                                             * the `img` property to a string if it exists. Finally, it will resolve the
-                                                                                                                                                                             * promise with the modified `result` array. If the `result` array is empty, it
-                                                                                                                                                                             * will resolve the promise with `null`.
-                                                                                                                                                                             */
     connection.query(sql, (error, result) => {
       if (error) {
         reject(error);
@@ -1248,21 +1075,7 @@ async function obtener_recientes() {
     });
   });
 }
-/**
-                                                                                                                                                                                     * This is an asynchronous function named "obtener_num_proveedores" that returns a
-                                                                                                                                                                                     * Promise. It retrieves the count of records from the "proveedores" table in a
-                                                                                                                                                                                     * database using a SQL query. The function takes no parameters.
-                                                                                                                                                                                     * 
-                                                                                                                                                                                     * The function executes the SQL query using the "connection" object and handles
-                                                                                                                                                                                     * the result in a callback function. If an error occurs during the query
-                                                                                                                                                                                     * execution, the Promise is rejected with the error. Otherwise, if the query
-                                                                                                                                                                                     * returns at least one record, the Promise is resolved with the value of the
-                                                                                                                                                                                     * "num_proveedores" field from the first record. If the query returns no records,
-                                                                                                                                                                                     * the Promise is resolved with a null value.
-                                                                                                                                                                                     * 
-                                                                                                                                                                                     * To use this function, you need to have a valid "connection" object established
-                                                                                                                                                                                     * with the database.
-                                                                                                                                                                                     */
+
 async function obtener_num_proveedores() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT count(*) AS num_proveedores FROM proveedores;";
@@ -1279,6 +1092,7 @@ async function obtener_num_proveedores() {
     });
   });
 }
+
 router.get("/productos", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
   const sqlCategorias = "SELECT * FROM categorias ORDER BY categoria ASC";
@@ -1324,11 +1138,6 @@ router.post("/obtener_inventario", async (req, res) => {
     if (error) {
       res.json({ data: error.message });
     } else {
-      /**
-                                                                                                                                                                                                 * The method takes an object as a parameter and checks if the object has a
-                                                                                                                                                                                                 * property called "img". If the "img" property exists, it converts its value to a
-                                                                                                                                                                                                 * string.
-                                                                                                                                                                                                 */
       productos.forEach(element => {
         if (element.img) {
           element.img = element.img.toString();
@@ -1387,26 +1196,6 @@ router.post("/asignar_producto", async (req, res) => {
 router.post("/aprobar_pedidos", async (req, res) => {
   const { seleccionados } = req.body;
   if (seleccionados.length > 0) {
-    /**
-                                                                                                                                                                                             * Updates the estado field of a detallepedido with the specified id_detalle_pedido
-                                                                                                                                                                                             * to 'Aprobado'.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * Parameters:
-                                                                                                                                                                                             * - id_detalle_pedido: The id of the detallepedido to be updated.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * Example usage:
-                                                                                                                                                                                             * ```
-                                                                                                                                                                                             * id_detalle_pedido => {
-                                                                                                                                                                                                 * const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Aprobado'
-                                                                                                                                                                                                 * WHERE id_detalle_pedido = ?`;
-                                                                                                                                                                                                 * connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result)
-                                                                                                                                                                                                 * => {
-                                                                                                                                                                                                     * if (error) {
-                                                                                                                                                                                                         * console.error(`Error al actualizar seleccionado con ID ${id}:`, error);
-                                                                                                                                                                                                         * }
-                                                                                                                                                                                                     * });
-                                                                                                                                                                                                 * }
-                                                                                                                                                                                             */
     seleccionados.forEach(id_detalle_pedido => {
       const sqlUpdateSeleccionado = `UPDATE detallepedidos SET estado = 'Aprobado' WHERE id_detalle_pedido = ?`;
       connection.query(sqlUpdateSeleccionado, [id_detalle_pedido], (error, result) => {
@@ -1493,43 +1282,13 @@ router.post('/registrar_cliente', (req, res) => {
         } else {
           if (results) {
             const enlace = `https://consultagrosa-production.up.railway.app/validar?usuario=${encodeURIComponent(results.insertId)}`;
-            /**
-                                                                                                                                                                                                     * MailOptions object.
-                                                                                                                                                                                                     */
+
             var mailOptions = {
               form: 'consultagrosaprueba@gmail.com',
               to: correo,
               subject: 'Confirma tu cuenta',
               text: `Para activar tu cuenta, haz clic en el siguiente enlace: ${enlace}`,
             };
-            /**
-                                                                                                                                                                                                     * This method takes two parameters: `error` and `info`. It is typically used as a
-                                                                                                                                                                                                     * callback function to handle the response of an asynchronous operation.
-                                                                                                                                                                                                     * 
-                                                                                                                                                                                                     * If an `error` is provided, the method will set the HTTP status code to 500 and
-                                                                                                                                                                                                     * return a JSON response with the following structure:
-                                                                                                                                                                                                     * ```
-                                                                                                                                                                                                     * {
-                                                                                                                                                                                                         * "type": "error",
-                                                                                                                                                                                                         * "message": <error message>,
-                                                                                                                                                                                                         * "data": null
-                                                                                                                                                                                                         * }
-                                                                                                                                                                                                     * ```
-                                                                                                                                                                                                     * 
-                                                                                                                                                                                                     * If no `error` is provided, the method will set the HTTP status code to 200 and
-                                                                                                                                                                                                     * return a JSON response with the following structure:
-                                                                                                                                                                                                     * ```
-                                                                                                                                                                                                     * {
-                                                                                                                                                                                                         * "type": "success",
-                                                                                                                                                                                                         * "message": "Se ha enviado un correo de verificacion a <correo>",
-                                                                                                                                                                                                         * "data": null
-                                                                                                                                                                                                         * }
-                                                                                                                                                                                                     * ```
-                                                                                                                                                                                                     * Note that `<correo>` should be replaced with the actual email address.
-                                                                                                                                                                                                     * 
-                                                                                                                                                                                                     * This method is typically used in an Express.js route handler to send a response
-                                                                                                                                                                                                     * back to the client after completing an operation.
-                                                                                                                                                                                                     */
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
                 res.status(500).json({ type: "error", message: error.message, data: null });
@@ -1548,9 +1307,7 @@ router.post('/registrar_cliente', (req, res) => {
 router.post('/reenviar_correo', (req, res) => {
   const { correo } = req.body;
   const enlaceValidacion = `https://consultagrosa-production.up.railway.app/validar?correo=${encodeURIComponent(correo)}`;
-  /**
-                                                                                                                                                                                             * MailOptions object.
-                                                                                                                                                                                             */
+
   var mailOptions = {
     form: 'consultagrosaprueba@gmail.com',
     to: correo,
@@ -1580,19 +1337,7 @@ router.post("/obtener_inventario_total", async (req, res) => {
     }
   });
 });
-/**
-                                                                                                                                                                                         * This method is an asynchronous function that handles a request and response. It
-                                                                                                                                                                                         * executes a SQL query to retrieve data from multiple tables using JOIN
-                                                                                                                                                                                         * operations. The query selects all columns from the "usuarios" table and joins
-                                                                                                                                                                                         * it with the "perfiles" table on the "perfil_id" column. It also performs left
-                                                                                                                                                                                         * joins with the "ciudades" table on the "ciudad_id" column and the "provincias"
-                                                                                                                                                                                         * table on the "provincia_id" column.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If an error occurs during the query execution, the method sends a JSON response
-                                                                                                                                                                                         * with the error message. Otherwise, if the query returns any rows, the method
-                                                                                                                                                                                         * sends a JSON response with the result data. If no rows are returned, the method
-                                                                                                                                                                                         * sends a JSON response with a null value for the data.
-                                                                                                                                                                                         */
+
 router.post("/obtener_usuarios", async (req, res) => {
   const sql = "SELECT * FROM usuarios INNER JOIN perfiles ON usuarios.perfil_id = perfiles.id_perfil LEFT JOIN ciudades ON usuarios.ciudad_id = ciudades.id_ciudad LEFT JOIN provincias ON ciudades.provincia_id = provincias.id_provincia";
   connection.query(sql, (error, result) => {
@@ -1653,23 +1398,6 @@ router.post("/obtener_provincias", async (req, res) => {
 router.post("/obtener_kardex", async (req, res) => {
   const id_producto = req.body.id_producto;
   const sql = "SELECT * FROM kardex WHERE producto_id = ?";
-  /**
-                                                                                                                                                                                             * This method is a callback function that takes two parameters: "error" and
-                                                                                                                                                                                             * "result". It is typically used in asynchronous operations to handle the
-                                                                                                                                                                                             * response.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If an error occurs during the operation, the function will execute the code
-                                                                                                                                                                                             * inside the "if" block. It will set the HTTP status code to 500 (Internal Server
-                                                                                                                                                                                             * Error) and send a JSON response with an "error" property containing the error
-                                                                                                                                                                                             * message.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If the operation is successful and no error occurs, the function will execute
-                                                                                                                                                                                             * the code inside the "else" block. It will send a JSON response with a "data"
-                                                                                                                                                                                             * property containing the result.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * This method is commonly used in web development to handle API responses and
-                                                                                                                                                                                             * provide appropriate feedback to the client.
-                                                                                                                                                                                             */
   connection.query(sql, [id_producto], (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -1694,27 +1422,7 @@ router.post("/obtener_ciudades", async (req, res) => {
     }
   });
 });
-/**
-                                                                                                                                                                                         * This is an asynchronous function that handles a request and response. It
-                                                                                                                                                                                         * executes a SQL query to retrieve all records from the "perfiles" table.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The function takes two parameters: "req" (request) and "res" (response).
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * Inside the function, a SQL query string is defined as "SELECT * FROM perfiles".
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The query is executed using the "connection.query()" method. It takes two
-                                                                                                                                                                                         * parameters: the SQL query and a callback function.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If an error occurs during the query execution, the callback function sets the
-                                                                                                                                                                                         * response status to 500 (Internal Server Error) and sends a JSON response with
-                                                                                                                                                                                         * the error message.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If the query is successful and returns one or more records, the callback
-                                                                                                                                                                                         * function sends a JSON response with the data.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If the query is successful but returns no records, the callback function sends a
-                                                                                                                                                                                         * JSON response with a null value for the data.
-                                                                                                                                                                                         */
+
 router.post("/obtener_perfiles", async (req, res) => {
   const sql = "SELECT * FROM perfiles";
   connection.query(sql, (error, result) => {
@@ -1729,6 +1437,7 @@ router.post("/obtener_perfiles", async (req, res) => {
     }
   });
 });
+
 router.post("/obtener_productos", async (req, res) => {
   const sql = "SELECT * FROM productos";
   connection.query(sql, (error, result) => {
@@ -1743,24 +1452,7 @@ router.post("/obtener_productos", async (req, res) => {
     }
   });
 });
-/**
-                                                                                                                                                                                         * This method is a JavaScript arrow function that takes two parameters: `req` and
-                                                                                                                                                                                         * `res`. It retrieves the `id_usuario` from the request body and assigns it to a
-                                                                                                                                                                                         * variable. It also retrieves the `IVA` value from the environment variables.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The method then logs the `id_usuario` to the console. It constructs an SQL query
-                                                                                                                                                                                         * to select data from the `carritos` and `productos` tables, joining them on the
-                                                                                                                                                                                         * `id_producto` and `producto_id` columns respectively. The query filters the
-                                                                                                                                                                                         * results based on the `usuario_id` parameter.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The method executes the SQL query using the `connection.query` method, passing
-                                                                                                                                                                                         * the `id_usuario` as a parameter. If an error occurs during the query execution,
-                                                                                                                                                                                         * it sends a 500 status response with the error message. Otherwise, it iterates
-                                                                                                                                                                                         * over the query result and converts the `img` property to a string if it exists.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * Finally, the method sends a JSON response containing the query result data and
-                                                                                                                                                                                         * the `IVA` value.
-                                                                                                                                                                                         */
+
 router.post('/obtener_carrito', (req, res) => {
   const id_usuario = req.body.id_usuario;
   iva = process.env.IVA;
@@ -1770,11 +1462,6 @@ router.post('/obtener_carrito', (req, res) => {
     if (error) {
       res.status(500).json({ error: error.message });
     } else {
-      /**
-                                                                                                                                                                                                 * The method takes an object as a parameter and checks if the object has a
-                                                                                                                                                                                                 * property called "img". If the "img" property exists, it converts its value to a
-                                                                                                                                                                                                 * string.
-                                                                                                                                                                                                 */
       result.forEach(element => {
         if (element.img) {
           element.img = element.img.toString();
@@ -1820,17 +1507,6 @@ router.post('/update_usuario', (req, res) => {
   const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
   sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
   values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
-  /**
-                                                                                                                                                                                             * This method is a callback function that handles the error and results of a
-                                                                                                                                                                                             * database operation. It takes two parameters: "error" and "results".
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If an error occurs, it will be logged to the console. If the error message
-                                                                                                                                                                                             * indicates a duplicate entry for the "codigo" or "tag" fields, a corresponding
-                                                                                                                                                                                             * error message will be sent as a JSON response with a 500 status code.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If no error occurs, and there are results available, the "id_producto" will be
-                                                                                                                                                                                             * logged to the console and a success message will be sent as a JSON response.
-                                                                                                                                                                                             */
   connection.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
@@ -1945,52 +1621,11 @@ router.post('/vaciar_carrito', (req, res) => {
     }
   });
 });
-/**
-                                                                                                                                                                                         * This method is used to insert a new record into the "kardex" table in a
-                                                                                                                                                                                         * database. It takes in the request and response objects as parameters.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * Parameters:
-                                                                                                                                                                                         * - req: The request object containing the data to be inserted.
-                                                                                                                                                                                         * - res: The response object used to send a response back to the client.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * Request Body:
-                                                                                                                                                                                         * - idproducto: The ID of the product.
-                                                                                                                                                                                         * - cantidad: The quantity of the product.
-                                                                                                                                                                                         * - total: The total price of the product.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * The method executes an SQL query to insert the data into the "kardex" table. The
-                                                                                                                                                                                         * query uses placeholders (?) to prevent SQL injection and accepts the following
-                                                                                                                                                                                         * values:
-                                                                                                                                                                                         * - idproducto: The ID of the product.
-                                                                                                                                                                                         * - Date(): The current date and time.
-                                                                                                                                                                                         * - "salida": The type of movement (in this case, "salida" represents an outgoing
-                                                                                                                                                                                         * movement).
-                                                                                                                                                                                         * - cantidad: The quantity of the product.
-                                                                                                                                                                                         * - total: The total price of the product.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If an error occurs during the execution of the query, the error message is
-                                                                                                                                                                                         * logged and sent back as a response to the client.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If the query is successful and returns results, a success message is sent back
-                                                                                                                                                                                         * as a response.
-                                                                                                                                                                                         * 
-                                                                                                                                                                                         * If the query is successful but does not return any results, a "No found" message
-                                                                                                                                                                                         * is sent back as a response.
-                                                                                                                                                                                         */
+
 router.post('/insertar_salida', (req, res) => {
   const { idproducto, cantidad, total } = req.body;
   const sql = "INSERT INTO `kardex` (`producto_id`,`fecha`,`tipo_mov`,`cantidad`,`precio_total`) VALUES(?, ?, ?, ?, ?);";
-  /**
-                                                                                                                                                                                             * This is a callback function that takes two parameters: "error" and "results". It
-                                                                                                                                                                                             * is typically used in asynchronous operations to handle the response or error
-                                                                                                                                                                                             * returned by the operation.
-                                                                                                                                                                                             * 
-                                                                                                                                                                                             * If an error is present, it will be logged to the console and a response with the
-                                                                                                                                                                                             * error message will be sent. If there is no error, it will check if there are
-                                                                                                                                                                                             * any results. If there are results, a response with the message "Success" will
-                                                                                                                                                                                             * be sent. If there are no results, a response with the message "Not found" will
-                                                                                                                                                                                             * be sent.
-                                                                                                                                                                                             */
+
   connection.query(sql, [idproducto, Date(), "salida", cantidad, total], (error, results) => {
     if (error) {
       console.log(error);
@@ -2207,53 +1842,16 @@ router.get("/logoutadministrador", async (req, res) => {
   res.redirect("/admin");
 });
 router.get('/carrito', (req, res) => {
-  // Realiza la consulta a la base de datos para obtener los datos del carrito
   connection.query('SELECT * FROM carrito', (err, results) => {
     if (err) {
       console.error('Error al obtener los datos del carrito:', err);
       return res.status(500).json({ error: 'Error en el servidor' });
     }
     console.log(results);
-    // Devuelve los datos del carrito como respuesta JSON
     res.json(results);
   });
 });
 
-/**
-                                                                                                                                                                                                         * This is an asynchronous function that handles a login request. It takes in a
-                                                                                                                                                                                                         * request object (req) and a response object (res) as parameters.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * The function first extracts the username and password from the request body
-                                                                                                                                                                                                         * using destructuring assignment.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * Then, it constructs a SQL query to select user information from the database
-                                                                                                                                                                                                         * based on the provided username and a specific profile ID. The query joins
-                                                                                                                                                                                                         * multiple tables to retrieve additional information about the user.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * The function executes the query using the connection object and handles any
-                                                                                                                                                                                                         * errors that may occur during the execution. If an error occurs, it sends a JSON
-                                                                                                                                                                                                         * response with an error message and a status code of 500.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * If the query returns no results, it sends a JSON response indicating that the
-                                                                                                                                                                                                         * username and/or password are incorrect.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * If the query returns a result, it compares the provided password with the hashed
-                                                                                                                                                                                                         * password stored in the database using the bcrypt.compare() function. If the
-                                                                                                                                                                                                         * passwords match, it checks if the user's account is validated. If the account
-                                                                                                                                                                                                         * is not validated, it sends a JSON response with a warning message and the
-                                                                                                                                                                                                         * user's email.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * If the passwords do not match, it sends a JSON response indicating that the
-                                                                                                                                                                                                         * username and/or password are incorrect.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * If the passwords match and the account is validated, it sets the user's
-                                                                                                                                                                                                         * information in the session object and sends a JSON response with a success
-                                                                                                                                                                                                         * message.
-                                                                                                                                                                                                         * 
-                                                                                                                                                                                                         * The function uses the async/await syntax to handle asynchronous operations and
-                                                                                                                                                                                                         * ensure that the response is sent only after the database query and password
-                                                                                                                                                                                                         * comparison are completed.
-                                                                                                                                                                                                         */
 router.post("/validar_cliente", async (req, res) => {
   const { usuario, contrasena } = req.body
   const query = 'SELECT *FROM `usuarios`LEFT JOIN `perfiles` ON `perfil_id` = `perfiles`.`id_perfil` LEFT JOIN `ciudades` ON `ciudad_id` = `ciudades`.`id_ciudad` LEFT JOIN `provincias` ON `ciudades`.`provincia_id` = `provincias`.`id_provincia` WHERE `usuarios`.`usuario` = ? AND perfil_id = 2';
@@ -2300,25 +1898,6 @@ router.post("/validar_administrador", async (req, res) => {
       return;
     } else {
       const usuario = results[0];
-      /**
-                                                                                                                                                                                                                 * This method takes two parameters: `err` and `match`. It is a callback function
-                                                                                                                                                                                                                 * that handles the result of a user authentication process.
-                                                                                                                                                                                                                 * 
-                                                                                                                                                                                                                 * If an error occurs (`err` is truthy), it sends a response with a status code of
-                                                                                                                                                                                                                 * 500 and a JSON object containing an error message indicating incorrect username
-                                                                                                                                                                                                                 * and/or password.
-                                                                                                                                                                                                                 * 
-                                                                                                                                                                                                                 * If the authentication is successful (`match` is truthy), it sets the
-                                                                                                                                                                                                                 * `req.session.credentials` object with the authenticated user's information and
-                                                                                                                                                                                                                 * sends a response with a status code of 200 and a JSON object containing a
-                                                                                                                                                                                                                 * success message.
-                                                                                                                                                                                                                 * 
-                                                                                                                                                                                                                 * If the authentication fails (`match` is falsy), it sends a response with a
-                                                                                                                                                                                                                 * status code of 500 and a JSON object containing an error message indicating
-                                                                                                                                                                                                                 * incorrect username and/or password.
-                                                                                                                                                                                                                 * 
-                                                                                                                                                                                                                 * Additionally, it logs appropriate messages to the console for debugging purposes.
-                                                                                                                                                                                                                 */
       bcrypt.compare(contrasena, usuario.contrasena, (err, match) => {
         if (err) {
           res.status(500).json({ error: "Usuario y/o contraseña incorrrectos" });
