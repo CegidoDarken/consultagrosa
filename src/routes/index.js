@@ -1848,7 +1848,7 @@ router.post('/update_usuario', (req, res) => {
   });
 });
 router.post('/insertar_producto', (req, res) => {
-  let tag="";
+  let tag = "";
   const currentDate = new Date(Date.now());
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
@@ -2005,16 +2005,17 @@ router.post('/insertar_salida', (req, res) => {
   });
 });
 
-router.post("/buscarproductotag", async (req, res) => {
-  const { tag } = req.body;
-  console.log(tag);
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag = ?";
-  connection.query(sql, [tag], (error, results) => {
+router.post("/buscarproductocodigo", async (req, res) => {
+  const { codigo } = req.body;
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND codigo = ?";
+  connection.query(sql, [codigo], (error, results) => {
     if (error) {
       res.send({ message: error.message });
     } else {
-      if (results.length > 0) {
-        results[0].img = results[0].img.toString();
+      if (results) {
+        if (results[0].img) {
+          results[0].img = results[0].img.toString();
+        }
         res.send(results[0]);
       } else {
         res.send({ message: "Producto no reconocido" });

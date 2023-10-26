@@ -37,7 +37,8 @@
                                                 <% if (productos) { %>
                                                     <% productos.forEach(row=> { %>
                                                         <option data-producto="<%= row.nombre %>"
-                                                            value="<%= row.id_producto %>" }> Codigo: <%= row.codigo %> | Nombre: <%= row.nombre %> | Medida: <%= row.medida %>
+                                                            value="<%= row.id_producto %>" }> Codigo: <%= row.codigo %>
+                                                                | Nombre: <%= row.nombre %> | Medida: <%= row.medida %>
                                                         </option>
                                                         <% })}; %>
                                             </select>
@@ -91,9 +92,10 @@
                 <script>
                     $('.js-example-basic-single').select2({ theme: 'bootstrap-5' });
                     function ExportToExcel() {
+                        var date = new Date().toJSON().slice(0, 10).split('-').reverse().join('/')
                         var elt = document.getElementById('datatable');
-                        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-                        return XLSX.writeFile(wb, 'Kardex' + Date.now() + "." + 'xlsx');
+                        var wb = XLSX.utils.table_to_book(elt, { sheet: "Kardex PEPS " + $('#productos').find('option:selected').data('producto') });
+                        return XLSX.writeFile(wb, "Kardex PEPS " + $('#productos').find('option:selected').data('producto') + " " + date + "." + "xlsx");
                     }
 
                     function ExportToPDF() {
@@ -135,7 +137,7 @@
                                 doc.internal.pageSize.getHeight() - 20
                             );
                         }
-                        doc.save(('Kardex' + Date.now() + "." + 'pdf'));
+                        doc.save(("Kardex PEPS " + $('#productos').find('option:selected').data('producto')) + " " + date + "." + "pdf");
                     }
                     $(document).ready(function () {
                         var tabla = $('#datatable').DataTable({

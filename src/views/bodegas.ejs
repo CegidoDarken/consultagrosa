@@ -4,6 +4,7 @@
 <head>
     <title>Bodegas</title>
 </head>
+
 <body>
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
@@ -44,6 +45,7 @@
                                                     <tr>
                                                         <th>Sección</th>
                                                         <th>Bodeguero</th>
+                                                        <th>Cantidad</th>
                                                         <th>Capacidad</th>
                                                         <th>Acciones</th>
                                                     </tr>
@@ -90,7 +92,8 @@
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
-                                                            <input type="number" class="form-control" id="identificacion"
+                                                            <input type="number" class="form-control"
+                                                                id="identificacion"
                                                                 placeholder="Ingese su número de Cédula/RUC" required>
                                                             <label for="identificacion">Cédula/RUC</label>
                                                         </div>
@@ -106,7 +109,7 @@
                                                         <div class="form-floating">
                                                             <select name="categoria" class="form-select"
                                                                 id="provincias">
-                                                                <option selected disabled >Provincias</option>
+                                                                <option selected disabled>Provincias</option>
                                                             </select>
                                                             <label for="floatingSelect">Selecione una provincia</label>
                                                         </div>
@@ -115,7 +118,7 @@
                                                         <label for="editcategoria" class="form-label">Ciudad</label>
                                                         <div class="form-floating">
                                                             <select name="categoria" class="form-select" id="ciudades">
-                                                                <option selected disabled >Ciudades</option>
+                                                                <option selected disabled>Ciudades</option>
                                                             </select>
                                                             <label for="floatingSelect">Selecione una ciudad</label>
                                                         </div>
@@ -261,7 +264,8 @@
                             },
                             bLengthChange: false,
                             info: true,
-                            paging: true, columns: [
+                            paging: true,
+                            columns: [
                                 { data: "seccion", defaultContent: "-" },
                                 { data: "nombre", defaultContent: "-" },
                                 { data: "capacidad", defaultContent: "-" },

@@ -60,7 +60,6 @@
                                                         <th>Nombre</th>
                                                         <th>Proveedor</th>
                                                         <th>Categoría</th>
-                                                        <th>Tag</th>
                                                         <th>Medidas</th>
                                                         <th>Precio</th>
                                                         <th>Cantidad</th>
@@ -113,7 +112,7 @@
                                                             <label for="codigo">Código</label>
                                                         </div>
                                                     </div>
-                                                    <div class=" col-8 text-start">
+                                                    <!--<div class=" col-8 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="number" class="form-control" id="tag"
                                                                 name="tag" placeholder="Ingrese un tag"
@@ -125,7 +124,7 @@
                                                         <button class="btn btn-primary control mt-2" type="button"
                                                             onclick="asignar_tag()"><i class="bi bi-hash"></i>
                                                             Generar</button>
-                                                    </div>
+                                                    </div>-->
                                                     <div class=" col-12 text-start">
                                                         <div class="form-floating mb-3">
                                                             <input type="text" class="form-control" id="nombre"
@@ -137,7 +136,7 @@
                                                     <div class="col-12">
                                                         <div class="form-floating mb-3">
                                                             <select name="proveedor" class="form-select"
-                                                                id="proveedores">
+                                                                id="proveedores" required>
                                                                 <option value="" selected disabled>Selecciona una opción
                                                                 </option>
                                                                 <% if (proveedores) { %>
@@ -175,13 +174,13 @@
                                                                 <option value="" selected disabled>Selecciona una opción
                                                                 </option>
                                                                 <optgroup label="Litros">
-                                                                    <option value="1L">1 Litro</option>
+                                                                    <option value="1L">1 Litros</option>
                                                                     <option value="5L">5 Litros</option>
                                                                     <option value="20L">20 Litros</option>
                                                                     <option value="25L">25 Litros</option>
                                                                 </optgroup>
                                                                 <optgroup label="Kilogramos">
-                                                                    <option value="1Kg">1 Kilogramo</option>
+                                                                    <option value="1Kg">1 Kilogramos</option>
                                                                     <option value="5Kg">5 Kilogramos</option>
                                                                     <option value="20Kg">20 Kilogramos</option>
                                                                     <option value="25Kg">25 Kilogramos</option>
@@ -240,7 +239,7 @@
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar producto</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">¿Estás seguro de que deseas eiminar este producto?</div>
+                        <div class="modal-body">¿Estás seguro de que deseas eliminar este producto?</div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button class="btn btn-danger" id="eliminar">Eliminar</button>
@@ -266,7 +265,6 @@
                             { data: "producto", defaultContent: "-" },
                             { data: "proveedor", defaultContent: "-" },
                             { data: "categoria", defaultContent: "-" },
-                            { data: "tag", defaultContent: "-" },
                             { data: "medida", defaultContent: "-" },
                             { data: "precio", defaultContent: "-" },
                             { data: "cantidad", defaultContent: "-" },
@@ -293,38 +291,32 @@
                             {
                                 targets: 0,
                                 render: function (data, type, row, meta) {
-                                    return `<img src="${row.img}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
-                                }
-                            },
-                            {
-                                targets: 3,
-                                visible: false
-                            },
-                            {
-                                targets: 5,
-                                render: function (data, type, row, meta) {
-                                    var data = table.row(meta.row).data();
-                                    if (data.tag) {
-                                        return `<span class="badge rounded-pill text-bg-primary text-light">#${data.tag}</span>`;
-                                    } else {
-                                        return `<span class="badge rounded-pill text-bg-warning text-light border-0">Sin asignar</span>`;
+                                    if (data) {
+                                        return `<img src="${data}" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                                     }
+                                    return `<img src="img/no-image-icon.png" style=" width: 100%;height: 80px;object-fit: contain;object-position: center;">`;
                                 }
                             },
                             {
-                                targets: 7,
+                                targets: 1,
+                                render: function (data, type, row, meta) {
+                                    return `<span class="badge rounded-pill text-bg-primary text-light text-lg">${data}</span>`;
+                                }
+                            },
+                            {
+                                targets: 6,
                                 render: function (data, type, row, meta) {
                                     return "$" + row.precio;
                                 }
                             },
                             {
-                                targets: 9,
+                                targets: 8,
                                 render: function (data, type, row, meta) {
                                     return "$" + row.total;
                                 }
                             },
                             {
-                                targets: 10,
+                                targets: 9,
                                 render: function (data, type, row, meta) {
                                     if (type === 'display' || type === 'filter') {
                                         return new Date(data).toLocaleDateString();
@@ -333,7 +325,7 @@
                                 }
                             },
                             {
-                                targets: 11,
+                                targets: 10,
                                 render: function (data, type, row, meta) {
                                     console.log(row.categoria_id);
                                     return `<div class="d-flex flex-row mb-3"><center><button type="button" class="btn btn-primary btn-sm m-1" data-id="${row.id_producto}" data-img="${row.img ?? 'img/no-image-icon.png'}" data-codigo="${row.codigo}" data-categoria="${row.categoria_id}" data-nombre="${row.producto}" data-tag="${row.tag}" data-descripcion="${row.descripcion ?? ""}" data-cantidad="${row.cantidad}" data-precio="${row.precio}" data-medida="${row.medida}" data-total="${row.total}" data-proveedor="${row.proveedor_id}" onclick="update_producto(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-id="${row.id_producto}" title="Eliminar" onclick="delete_producto(this)"><i class="bi bi-trash"></i></button></center></div>`;
