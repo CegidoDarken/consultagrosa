@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Escanear RFID</title>
+    <title>Sensor RFID</title>
 </head>
 
 <body>
@@ -10,11 +10,11 @@
         <%- include("partials/_sidebarpanel") %>
             <main id="main" class="main">
                 <div class="pagetitle">
-                    <h1>Escanear RFID</h1>
+                    <h1>Sensor RFID</h1>
                     <nav>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
-                            <li class="breadcrumb-item active">Escanear RFID</li>
+                            <li class="breadcrumb-item">Inicio</li>
+                            <li class="breadcrumb-item active">Sensor RFID</li>
                         </ol>
                     </nav>
                 </div>
@@ -502,7 +502,7 @@
                     fetch('/buscarproductocodigo', {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ codigo: message.trim().replace('l', '') }),
+                        body: JSON.stringify({ codigo: message.trim().replace('l', '').replace('n', '') }),
                     }).then(response => response.json()).then(async data => {
                         if (data.message) {
                             Swal.fire({

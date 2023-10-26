@@ -19,7 +19,7 @@
                     <h1>Kardex PEPS</h1>
                     <nav>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Inicio</li>
                             <li class="breadcrumb-item">Reportes</li>
                             <li class="breadcrumb-item active">Kardex</li>
                         </ol>
@@ -139,8 +139,11 @@
                         }
                         doc.save(("Kardex PEPS " + $('#productos').find('option:selected').data('producto')) + " " + date + "." + "pdf");
                     }
+
                     $(document).ready(function () {
                         var tabla = $('#datatable').DataTable({
+                            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todas"]],
+                            "pageLength": 10,
                             ajax: {
                                 url: '/obtener_kardex',
                                 type: 'POST',

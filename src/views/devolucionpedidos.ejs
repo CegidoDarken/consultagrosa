@@ -77,7 +77,7 @@
                     <h1>Pedidos</h1>
                     <nav>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Inicio</li>
                             <li class="breadcrumb-item">Reportes</li>
                             <li class="breadcrumb-item">Pedidos</li>
                             <li class="breadcrumb-item active">Devolución</li>
@@ -347,7 +347,7 @@
                                 {
                                     targets: 8,
                                     render: function (data, type, row, meta) {
-                                        return `<input type="number" class="form-control text-center" min="0" name="cant_dev" id="floatingInput" value="0"  placeholder="Ingrese la cantidad a devolver" disabled />`;
+                                        return `<input type="number" class="form-control text-center" min="0" max="${row.cantidad}" name="cant_dev" id="floatingInput" value="0"  placeholder="Ingrese la cantidad a devolver" disabled />`;
                                     }
                                 },
                                 {

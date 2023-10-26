@@ -77,7 +77,7 @@
                     <h1>Pedidos</h1>
                     <nav>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/admin">Inicio</a></li>
+                            <li class="breadcrumb-item">Inicio</li>
                             <li class="breadcrumb-item">Reportes</li>
                             <li class="breadcrumb-item active">Pedidos</li>
                         </ol>
@@ -115,7 +115,7 @@
                                                     <tr class="text-light" style="background-color: #59ab6e;">
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
-                                                            style="width: 0px; min-width: 120px;">#</th>
+                                                            style="width: 0px; min-width: 120px;">Pedido #</th>
                                                         <th class="dt-center sorting" tabindex="0"
                                                             aria-controls="carrito-table" rowspan="1" colspan="1"
                                                             style="width: 0px; min-width: 120px;">FECHA</th>
@@ -262,12 +262,13 @@
                     var pedidos;
                     var id_pedido;
                     $(document).ready(function () {
-                        tabla = $('#datatable').dataTable({
+                        tabla = $('#datatable').DataTable({
+                            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todas"]],
+                            "pageLength": 10,
                             ajax: {
                                 url: '/obtener_pedidos',
                                 type: 'POST',
                             },
-                            dom: 'Bfrtip',
                             columns: [
                                 { data: 'id_pedido', defaultContent: "-" },
                                 { data: 'fecha', defaultContent: "-" },
@@ -305,10 +306,10 @@
                                                 acciones = `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <a class="btn btn-primary btn-sm" title="Devolución" href="/devolucionpedidos?pedido=${row.id_pedido}"><i class="bi bi-arrow-repeat"></i></a>`;
                                                 break;
                                             case 'Cancelado':
-                                                acciones =  `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
+                                                acciones = `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
                                                 break;
                                             case 'Pendiente':
-                                                acciones =  `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
+                                                acciones = `<button class="btn btn-info btn-sm" title="Detalles" onclick="detalle_pedidos(${row.id_pedido})"><i class="bi bi-eye-fill"></i></button> <button class="btn btn-primary btn-sm" title="Devolución" disabled><i class="bi bi-arrow-repeat"></i></button>`;
                                                 break;
                                             default:
                                                 acciones = 'badge bg-secondary';
@@ -565,7 +566,9 @@
                                     timer: 3000
                                 }).then((result) => {
                                     pedidos.ajax.reload();
-                                    tabla.ajax.reload();
+                                    if (tabla) {
+                                        tabla.ajax.reload();
+                                    }
                                 })
                                 $("#example-select-all").prop('checked', false);
 
@@ -612,7 +615,9 @@
                                     timer: 3000
                                 }).then((result) => {
                                     pedidos.ajax.reload();
-                                    tabla.ajax.reload();
+                                    if (tabla) {
+                                        tabla.ajax.reload();
+                                    }
                                 })
                                 $("#example-select-all").prop('checked', false);
                             }).catch(error => {

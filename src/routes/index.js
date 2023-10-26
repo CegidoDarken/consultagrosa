@@ -407,7 +407,7 @@ router.get("/analisis", async (req, res) => {
 });
 router.get("/escanear", async (req, res) => {
   credentials = req.session.credentials ? req.session.credentials.administrador : null;
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND tag != ''";
+  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria";
   connection.query(sql, (error, productos) => {
     if (error) {
       res.send({ message: error });
@@ -1476,15 +1476,15 @@ router.post('/obtener_iva', (req, res) => {
 });
 
 router.post('/update_producto', (req, res) => {
-  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
+  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, img, id_producto } = req.body;
   let sql;
   let values;
   if (img) {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
-    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`img`=? WHERE id_producto=?";
+    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, img, id_producto];
   } else {
-    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?, `categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=? WHERE id_producto=?";
-    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, id_producto];
+    sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?, `categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=? WHERE id_producto=?";
+    values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, id_producto];
   }
 
   connection.query(sql, values, (error, results) => {
@@ -1503,6 +1503,7 @@ router.post('/update_producto', (req, res) => {
     }
   });
 });
+
 router.post('/update_usuario', (req, res) => {
   const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
   sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
@@ -1529,7 +1530,8 @@ router.post('/insertar_producto', (req, res) => {
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const { codigo, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  let { codigo, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
+  codigo= codigo.toUpperCase();
   var caracteres = "0123456789";
   for (var i = 0; i < 10; i++) {
     var indiceAleatorio = Math.floor(Math.random() * caracteres.length);
@@ -1642,22 +1644,27 @@ router.post('/insertar_salida', (req, res) => {
 
 router.post("/buscarproductocodigo", async (req, res) => {
   const { codigo } = req.body;
-  const sql = "SELECT * FROM productos,categorias WHERE productos.categoria_id = categorias.id_categoria AND codigo = ?";
+  const sql = "SELECT * FROM productos JOIN categorias ON productos.categoria_id = categorias.id_categoria WHERE codigo = ?";
+  
   connection.query(sql, [codigo], (error, results) => {
     if (error) {
-      res.send({ message: error.message });
-    } else {
-      if (results) {
-        if (results[0].img) {
-          results[0].img = results[0].img.toString();
-        }
-        res.send(results[0]);
-      } else {
-        res.send({ message: "Producto no reconocido" });
+      return res.status(500).json({ message: "Error en la consulta de la base de datos." });
+    }
+
+    if (results && results.length > 0) {
+      const product = results[0];
+      
+      if (product.img !== null) {
+        product.img = product.img.toString();
       }
+
+      return res.json(product);
+    } else {
+      return res.status(404).json({ message: "Producto no encontrado" });
     }
   });
 });
+
 
 
 router.post("/kardex_saldo", async (req, res) => {
