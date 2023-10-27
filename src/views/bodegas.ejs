@@ -45,9 +45,7 @@
                                                     <tr>
                                                         <th>Sección</th>
                                                         <th>Bodeguero</th>
-                                                        <th>Cantidad</th>
                                                         <th>Capacidad</th>
-                                                        <th>Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -275,14 +273,14 @@
                                     targets: "_all",
                                     className: "dt-center",
                                 },
-                                {
+                                /*{
                                     targets: 3,
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
                                         return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
                                     }
-                                }
+                                }*/
                             ],
                             "language": {
                                 "sEmptyTable": "No hay datos disponibles en la tabla",

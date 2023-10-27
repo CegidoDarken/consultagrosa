@@ -91,63 +91,72 @@
                                                     <div class="col-12">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="nombre"
-                                                                placeholder="Ingese su nombre" required>
+                                                                name="nombre" placeholder="Ingese su nombre" required>
                                                             <label for="nombre">Nombre Completo</label>
                                                         </div>
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="usuario"
-                                                                placeholder="Ingese su nombre de usuario" required>
+                                                                name="usuario" placeholder="Ingese su nombre de usuario"
+                                                                required>
                                                             <label for="usuario">Usuario</label>
                                                         </div>
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
                                                             <input type="number" class="form-control"
-                                                                id="identificacion"
+                                                                name="identificacion" id="identificacion"
                                                                 placeholder="Ingese su número de Cédula/RUC" required>
                                                             <label for="identificacion">Cédula/RUC</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <input type="email" class="form-control" id="correo"
-                                                                placeholder="Ingese su correo" required>
+                                                            <input type="number" name="telefono" class="form-control"
+                                                                id="telefono" placeholder="Ingese su telefono" required>
+                                                            <label for="telefono">Telefono</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-floating">
+                                                            <input type="email" name="correo" class="form-control"
+                                                                id="correo" placeholder="Ingese su correo" required>
                                                             <label for="correo">Correo</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select"
-                                                                id="provincias">
+                                                            <select name="provincias" class="form-select"
+                                                                name="provincia_id" id="provincias">
                                                                 <option selected disabled>Selecione una opción
                                                                 </option>
                                                             </select>
-                                                            <label for="floatingSelect">Provincias</label>
+                                                            <label for="provincias">Provincias</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="ciudades">
+                                                            <select name="ciudad_id" class="form-select" id="ciudades">
                                                                 <option selected disabled>Selecione una opción</option>
                                                             </select>
-                                                            <label for="floatingSelect">Ciudades</label>
+                                                            <label for="ciudades">Ciudades</label>
                                                         </div>
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="direccion"
-                                                                placeholder="Ingese su direccion" required>
+                                                                name="direccion" placeholder="Ingese su direccion"
+                                                                required>
                                                             <label for="direccion">Dirección</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="perfiles">
+                                                            <select name="perfil_id" class="form-select" id="perfiles">
                                                                 <option selected disabled>Selecione una opción</option>
                                                             </select>
-                                                            <label for="floatingSelect">Perfiles</label>
+                                                            <label for="perfiles">Perfiles</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -180,7 +189,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="cambiar_contasena_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            <div class="modal fade" id="cambiarModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -188,21 +197,27 @@
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Cambiar Contaseña</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body"><label class="form-label" for="nueva_contrasena">Nueva
-                                contraseña</label><input class="form-control" type="password" name="nueva_contrasena"
-                                id="nueva_contrasena"></div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a class="btn btn-primary" href="">Guardar cambios</a>
-                        </div>
+                        <form id="cambiarForm">
+                            <div class="modal-body"><label class="form-label" for="nueva_contrasena">Nueva
+                                    contraseña</label><input class="form-control" type="password"
+                                    name="nueva_contrasena" id="nueva_contrasena"></div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
+                    var op = '';
+                    var id_usuario = '';
+                    var provinciasSelect = document.getElementById("provincias");
+                    var table;
                     $(document).ready(function () {
-                        var op = '';
-                        var provinciasSelect = document.getElementById("provincias");
+
                         fetch("/obtener_provincias", {
                             method: "POST"
                         })
@@ -271,7 +286,7 @@
                                 console.error("Error:", error);
                             });
 
-                        var table = $('#datatable').DataTable({
+                        table = $('#datatable').DataTable({
                             ajax: {
                                 url: "/obtener_usuarios",
                                 "type": "POST",
@@ -300,7 +315,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" data-perfil="${data.perfil_id ?? ''}" data-provincia="${data.provincia_id ?? ''}" data-ciudad="${data.id_ciudad ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button><button type="button" class="btn btn-warning text-light btn-sm m-1" data-bs-toggle="modal" data-bs-target="#cambiar_contasena_modal"  title="Cambiar contraseña"><i class="bi bi-key"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_usuario}" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-telefono="${data.telefono ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" data-perfil="${data.perfil_id ?? ''}" data-provincia="${data.provincia_id ?? ''}" data-ciudad="${data.id_ciudad ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-warning text-light btn-sm m-1" data-id="${data.id_usuario}" onclick="cambiar(this)"> <i class="bi bi-key"></i></button></div>`;
                                     }
                                 }
                             ],
@@ -341,20 +356,28 @@
                             await table.ajax.reload()
                         });
                     });
+                    function cambiar(button) {
+                        $("#cambiarForm")[0].reset();
+                        id_usuario = button.getAttribute('data-id')
+                        $('#cambiarModal').modal('show');
+                    };
                     function edit(button) {
                         $("#usuarioModalLabel").text("Editar Usuario");
                         $("#usuarioForm")[0].reset();
                         var nombre = button.getAttribute('data-nombre');
                         var usuario = button.getAttribute('data-usuario');
                         var identificacion = button.getAttribute('data-identificacion');
+                        var telefono = button.getAttribute('data-telefono');
                         var correo = button.getAttribute('data-correo');
                         var direccion = button.getAttribute('data-direccion');
                         var perfil = button.getAttribute('data-perfil');
                         var provincia = button.getAttribute('data-provincia');
                         var ciudad = button.getAttribute('data-ciudad');
+                        id_usuario = button.getAttribute('data-id')
                         $("#nombre").val(nombre);
                         $("#usuario").val(usuario);
                         $("#identificacion").val(identificacion);
+                        $("#telefono").val(telefono);
                         $("#correo").val(correo);
                         $("#direccion").val(direccion);
                         $('#provincias option[value="' + provincia + '"]').prop('selected', true);
@@ -385,23 +408,85 @@
                             .catch(function (error) {
                                 console.error("Error:", error);
                             });
+                        op = '/update_usuario';
                         $('#usuarioModal').modal('show');
                     }
+
                     function add() {
                         $("#usuarioForm")[0].reset();
                         $("#usuarioModalLabel").text("Nuevo Usuario");
                         $('#usuarioModal').modal('show');
-                        op = '';
+                        id_usuario = '';
+                        op = '/insertar_usuario';
                     }
 
                     $('#usuarioForm').submit(async function (e) {
                         e.preventDefault();
                         const formData = new FormData(event.target);
+                        formData.append('id_usuario', id_usuario);
                         const response = await fetch(op, {
                             method: 'POST',
                             body: formData
                         });
                         const data = await response.json();
+                        if (data.message) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            table.ajax.reload();
+                            $("#usuarioForm")[0].reset();
+                            $('#usuarioModal').modal('hide');
+                        } else if (data.error) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'error',
+                                title: data.error,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                        }
+                    });
+
+                    $('#cambiarForm').submit(async function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(event.target);
+                        formData.append('id_usuario', id_usuario);
+                        const response = await fetch('/cambiar_contrasena', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (data.message) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            $('#cambiarModal').modal('hide');
+                            $("#cambiarForm")[0].reset();
+                        } else if (data.error) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'error',
+                                title: data.error,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                        }
                     });
                 </script>
 

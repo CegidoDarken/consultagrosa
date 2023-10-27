@@ -4,6 +4,7 @@
 <head>
     <title>Inventario</title>
 </head>
+
 <body>
     <%- include("partials/_headerpanel") %>
         <%- include("partials/_sidebarpanel") %>
@@ -23,6 +24,12 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card">
+                                <div class="card-header">
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button class="btn btn-primary" type="button" onclick="add()"><i
+                                                class="bi bi-plus"></i>Nuevo proveedor</button>
+                                    </div>
+                                </div>
                                 <div class="card-header">
                                     <div class="input-group mb-3">
                                         <form class="form-floating">
@@ -64,15 +71,16 @@
                 </section>
             </main>
 
-            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal fade" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="editModalLabel">Editar usuario</h1>
+                            <h1 class="modal-title fs-5" id="proveedorModalLabel">Editar usuario</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="formulario">
+                            <form id="proveedorForm">
                                 <div class="card mb-3 border-0">
                                     <div class="row g-0">
                                         <div class="col-md-12">
@@ -81,20 +89,14 @@
                                                     <div class="col-12">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="nombre"
-                                                                placeholder="Ingese su nombre" required>
+                                                                placeholder="Ingese su nombre" name="nombre" required>
                                                             <label for="nombre">Nombre</label>
                                                         </div>
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
-                                                            <input type="text" class="form-control" id="usuario"
-                                                                placeholder="Ingese su nombre de usuario" required>
-                                                            <label for="usuario">Usuario</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class=" col-12">
-                                                        <div class="form-floating">
-                                                            <input type="number" class="form-control" id="identificacion"
+                                                            <input type="number" class="form-control"
+                                                                id="identificacion" name="identificacion"
                                                                 placeholder="Ingese su número de Cédula/RUC" required>
                                                             <label for="identificacion">Cédula/RUC</label>
                                                         </div>
@@ -102,40 +104,40 @@
                                                     <div class="col-12">
                                                         <div class="form-floating">
                                                             <input type="email" class="form-control" id="correo"
-                                                                placeholder="Ingese su correo" required>
+                                                                placeholder="Ingese su correo" name="correo" required>
                                                             <label for="correo">Correo</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select"
+                                                            <select name="provincias" class="form-select"
                                                                 id="provincias">
-                                                                <option selected disabled >Provincias</option>
+                                                                <option selected disabled>Provincias</option>
                                                             </select>
-                                                            <label for="floatingSelect">Selecione una provincia</label>
+                                                            <label for="provincias">Selecione una provincia</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label for="editcategoria" class="form-label">Ciudad</label>
                                                         <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="ciudades">
-                                                                <option selected disabled >Ciudades</option>
+                                                            <select class="form-select" id="ciudades" name="ciudad_id">
+                                                                <option selected disabled>Ciudades</option>
                                                             </select>
-                                                            <label for="floatingSelect">Selecione una ciudad</label>
+                                                            <label for="ciudades">Selecione una ciudad</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-floating">
+                                                            <input type="number" name="telefono" class="form-control"
+                                                                id="telefono" placeholder="Ingese su telefono" required>
+                                                            <label for="telefono">Telefono</label>
                                                         </div>
                                                     </div>
                                                     <div class=" col-12">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="direccion"
-                                                                placeholder="Ingese su direccion" required>
+                                                                placeholder="Ingese su direccion" name="direccion"
+                                                                required>
                                                             <label for="direccion">Dirección</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select name="categoria" class="form-select" id="perfiles">
-                                                            </select>
-                                                            <label for="floatingSelect">Selecione un perfil</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -146,7 +148,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
                         </form>
                     </div>
@@ -168,26 +170,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="cambiar_contasena_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Cambiar Contaseña</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body"><label class="form-label" for="nueva_contrasena">Nueva
-                                contraseña</label><input class="form-control" type="password" name="nueva_contrasena"
-                                id="nueva_contrasena"></div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a class="btn btn-primary" href="">Guardar cambios</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <%- include("partials/_fotterpanel") %>
                 <script>
+                    var table;
                     $(document).ready(function () {
                         var provinciasSelect = document.getElementById("provincias");
                         fetch("/obtener_provincias", {
@@ -237,27 +222,8 @@
                                     console.error("Error:", error);
                                 });
                         });
-                        var perfilesSelect = document.getElementById("perfiles");
-                        fetch("/obtener_perfiles", {
-                            method: "POST"
-                        })
-                            .then(function (response) {
-                                return response.json();
-                            })
-                            .then(function (data) {
-                                if (data.data !== null) {
-                                    data.data.forEach(function (provincia) {
-                                        var option = document.createElement("option");
-                                        option.value = provincia.id_perfil;
-                                        option.text = provincia.perfil;
-                                        perfilesSelect.appendChild(option);
-                                    });
-                                }
-                            })
-                            .catch(function (error) {
-                                console.error("Error:", error);
-                            });
-                        var table = $('#datatable').DataTable({
+
+                        table = $('#datatable').DataTable({
                             ajax: {
                                 url: "/obtener_proveedores",
                                 "type": "POST",
@@ -284,7 +250,7 @@
                                     render: function (data, type, row, meta) {
                                         var data = table.row(meta.row).data();
                                         var dataAsString = JSON.stringify(data);
-                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-direccion="${data.direccion ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button><button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal"  title="Eliminar"><i class="bi bi-trash"></i></button></div>`;
+                                        return `<div class="d-flex flex-row mb-3"><button type="button" class="btn btn-primary btn-sm m-1" data-id="${data.id_proveedor}" data-nombre="${data.nombre ?? ""}" data-usuario="${data.usuario ?? ''}" data-identificacion="${data.identificacion ?? ''}" data-correo="${data.correo ?? ''}" data-provincia="${data.provincia_id ?? ''}" data-ciudad="${data.id_ciudad ?? ''}" data-direccion="${data.direccion ?? ''}" data-telefono="${data.telefono ?? ''}" onclick="edit(this)" title="Editar"><i class="bi bi-pencil-square"></i></i></button></div>`;
                                     }
                                 }
                             ],
@@ -326,29 +292,54 @@
                         });
                     });
                     function edit(button) {
+                        $("#proveedorModalLabel").text("Editar Proveedor");
+                        $("#proveedorForm")[0].reset();
                         var nombre = button.getAttribute('data-nombre');
                         var usuario = button.getAttribute('data-usuario');
                         var identificacion = button.getAttribute('data-identificacion');
                         var correo = button.getAttribute('data-correo');
                         var direccion = button.getAttribute('data-direccion');
+                        var telefono = button.getAttribute('data-telefono');
+                        var provincia = button.getAttribute('data-provincia');
+                        var ciudad = button.getAttribute('data-ciudad');
+                        id_proveedor = button.getAttribute('data-id');
                         $("#nombre").val(nombre);
                         $("#usuario").val(usuario);
                         $("#identificacion").val(identificacion);
                         $("#correo").val(correo);
                         $("#direccion").val(direccion);
-                        $('#editModal').modal('show');
-                    }
-                    function calculardesc() {
-                        var desc = $('#descuento').val();
-                        var precio = $('#precio').val();
-                        $('#preciodesc').val(parseFloat(precio - (precio * (desc / 100))).toFixed(2));
+                        $("#telefono").val(telefono);
+                        $('#provincias option[value="' + provincia + '"]').prop('selected', true);
+                        fetch("/obtener_ciudades", {
+                            method: "POST",
+                            body: JSON.stringify({ provinciaId: provincia }),
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        })
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (data) {
+                                $("#ciudades").html('');
+                                if (data.data !== null) {
+                                    $("#ciudades").html("<option value='' selected disabled>Selecciona una opción</option>");
+                                    data.data.forEach(function (ciudad) {
+                                        var option = document.createElement("option");
+                                        option.value = ciudad.id_ciudad;
+                                        option.text = ciudad.ciudad;
+                                        $("#ciudades").append(option);
+                                    });
+                                    $('#ciudades option[value="' + ciudad + '"]').prop('selected', true);
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error("Error:", error);
+                            });
+                        $('#proveedorModal').modal('show');
+                        op = '/update_proveedor';
                     }
 
-                    function calculartotal() {
-                        var cantidad = $('#cantidad').val();
-                        var precio = $('#precio').val();
-                        $('#total').val(parseFloat(cantidad * precio).toFixed(2));
-                    }
                     function limit(input) {
                         if (input.id === "descuento") {
                             input.value = input.value.replace(/^0+/, '');
@@ -365,6 +356,48 @@
                             }
                         }
                     }
+
+                    function add() {
+                        $("#proveedorForm")[0].reset();
+                        $("#proveedorModalLabel").text("Nuevo Proveedor");
+                        $('#proveedorModal').modal('show');
+                        id_proveedor = '';
+                        op = '/insertar_proveedor';
+                    }
+                    $('#proveedorForm').submit(async function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(event.target);
+                        formData.append('id_proveedor', id_proveedor);
+                        const response = await fetch(op, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (data.message) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                            table.ajax.reload();
+                            $("#proveedorForm")[0].reset();
+                            $('#proveedorModal').modal('hide');
+                        } else if (data.error) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'bottom-end',
+                                icon: 'error',
+                                title: data.error,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                        }
+                    });
                 </script>
 
 </body>

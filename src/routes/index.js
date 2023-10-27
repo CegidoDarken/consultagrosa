@@ -1490,11 +1490,10 @@ router.post('/update_producto', (req, res) => {
   connection.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
-      if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
+      if (error.message.includes(`Duplicate entry '${codigo}' for key 'productos.unique_codigo'`)) {
         res.status(500).json({ error: "Código ya existente" });
-      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
-        res.status(500).json({ error: "Tag ya existente" });
       }
+      res.status(500).json({ error: error.message });
     } else {
       if (results) {
         console.log(id_producto);
@@ -1505,25 +1504,37 @@ router.post('/update_producto', (req, res) => {
 });
 
 router.post('/update_usuario', (req, res) => {
-  const { codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto } = req.body;
-  sql = "UPDATE `productos` SET `codigo`=?,`tag`=?,`proveedor_id`=?,`categoria_id`=?,`nombre`=?,`descripcion`=?,`medida`=?, `precio`=?,`cantidad`=?,`total`=?,`img`=? WHERE id_producto=?";
-  values = [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, id_producto];
+  const { perfil_id, ciudad_id, usuario, nombre, direccion, identificacion, correo, telefono, id_usuario } = req.body;
+  sql = "UPDATE `usuarios` SET `perfil_id`=?,`ciudad_id`=?,`usuario`=?,`nombre`=?,`direccion`=?,`identificacion`=?, `correo`=?,`telefono`=? WHERE id_usuario=?";
+  values = [perfil_id, ciudad_id, usuario, nombre, direccion, identificacion, correo, telefono, id_usuario];
   connection.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
-      if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
-        res.status(500).json({ error: "Código ya existente" });
-      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
-        res.status(500).json({ error: "Tag ya existente" });
-      }
+      res.status(500).json({ error: error.message });
     } else {
       if (results) {
-        console.log(id_producto);
+        console.log(id_usuario);
         res.json({ message: "Guardado exitosamente" });
       }
     }
   });
 });
+router.post('/update_proveedor', (req, res) => {
+  const { identificacion, nombre, direccion, ciudad_id, correo, telefono, id_proveedor} = req.body;
+  sql = "UPDATE `proveedores` SET `identificacion`=?,`nombre`=?,`direccion`=?,`ciudad_id`=?,`correo`=?,`telefono`=? WHERE id_proveedor=?";
+  values = [identificacion, nombre, direccion, ciudad_id, correo, telefono, id_proveedor];
+  connection.query(sql, values, (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ error: error.message });
+    } else {
+      if (results) {
+        res.json({ message: "Guardado exitosamente" });
+      }
+    }
+  });
+});
+
 router.post('/insertar_producto', (req, res) => {
   let tag = "";
   const currentDate = new Date(Date.now());
@@ -1531,7 +1542,7 @@ router.post('/insertar_producto', (req, res) => {
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
   let { codigo, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
-  codigo= codigo.toUpperCase();
+  codigo = codigo.toUpperCase();
   var caracteres = "0123456789";
   for (var i = 0; i < 10; i++) {
     var indiceAleatorio = Math.floor(Math.random() * caracteres.length);
@@ -1541,11 +1552,11 @@ router.post('/insertar_producto', (req, res) => {
   connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, 0, 0, img, `${year}-${month}-${day}`], (error, results) => {
     if (error) {
       console.log(error);
-      if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
+      if (error.message.includes(`Duplicate entry '${codigo}' for key 'productos.unique_codigo'`)) {
         res.status(500).json({ error: "Código ya existente" });
-      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
-        res.status(500).json({ error: "Tag ya existente, intentelo nuevamente" });
+        return;
       }
+      res.status(500).json({ error: error.message });
     } else {
       if (results) {
         res.json({ message: "Guardado exitosamente" });
@@ -1553,25 +1564,68 @@ router.post('/insertar_producto', (req, res) => {
     }
   });
 });
+
 router.post('/insertar_usuario', (req, res) => {
   const currentDate = new Date(Date.now());
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const { perfiles, ciudades, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img } = req.body;
-  const sql = "INSERT INTO usuarios (perfil_id, ciudad_id, usuario, contrasena, nombre, direccion, identificacion, correo, telefono, fecha, estado) VALUES (?, 1, 'nombre_usuario', 'contrasena', 'Nombre Completo', 'Dirección', 'identificacion123', 'correo@example.com', '1234567890', '2023-09-02', 'Activo');";
-  connection.query(sql, [codigo, tag, proveedor, categoria, nombre, descripcion, medida, precio, cantidad, total, img, `${year}-${month}-${day}`], (error, results) => {
+  const { perfil_id, ciudad_id, usuario, nombre, direccion, identificacion, correo, telefono } = req.body;
+  const sql = "INSERT INTO usuarios (perfil_id, ciudad_id, usuario, contrasena, nombre, direccion, identificacion, correo, telefono, fecha, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+  bcrypt.hash(identificacion, 10, (error, hash) => {
+    if (error) {
+      res.status(500).json({ type: "error", message: error.message, data: null });
+    } else {
+      connection.query(sql, [perfil_id, ciudad_id, usuario, hash, nombre, direccion, identificacion, correo, telefono, `${year}-${month}-${day}`, 1,], (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ error: error.message });
+        } else {
+          if (results) {
+            res.json({ message: "Guardado exitosamente" });
+          }
+        }
+      });
+    }
+  });
+});
+
+router.post('/insertar_proveedor', (req, res) => {
+  const currentDate = new Date(Date.now());
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const { identificacion, nombre, direccion, ciudad_id, correo, telefono } = req.body;
+  const sql = "INSERT INTO proveedores (identificacion, nombre, direccion, ciudad_id, correo, telefono, fecha, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+  connection.query(sql, [identificacion, nombre, direccion, ciudad_id, correo, telefono, `${year}-${month}-${day}`, 1,], (error, results) => {
     if (error) {
       console.log(error);
-      if (error.message === `Duplicate entry '${codigo}' for key 'productos.unique_codigo'`) {
-        res.status(500).json({ error: "Código ya existente" });
-      } else if (error.message === `Duplicate entry '${tag}' for key 'productos.tag_UNIQUE'`) {
-        res.status(500).json({ error: "Tag ya existente" });
-      }
+      res.status(500).json({ error: error.message });
     } else {
       if (results) {
         res.json({ message: "Guardado exitosamente" });
       }
+    }
+  });
+});
+
+router.post('/cambiar_contrasena', (req, res) => {
+  const { nueva_contrasena, id_usuario } = req.body;
+  const sql = "UPDATE usuarios SET contrasena=? WHERE id_usuario=?";
+  bcrypt.hash(nueva_contrasena, 10, (error, hash) => {
+    if (error) {
+      res.status(500).json({ type: "error", message: error.message, data: null });
+    } else {
+      connection.query(sql, [hash, id_usuario], (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ error: error.message });
+        } else {
+          if (results) {
+            res.json({ message: "Guardado exitosamente" });
+          }
+        }
+      });
     }
   });
 });
@@ -1583,7 +1637,11 @@ router.post('/delete_producto', (req, res) => {
   connection.query(sql, [idProducto], (error, results) => {
     if (error) {
       console.log(error);
-      res.send({ message: error });
+      if (error.message.includes(`Cannot delete or update a parent row`)) {
+        res.status(500).json({ message: "Producto no se pudo eliminar" });
+        return;
+      }
+      res.send({ message: error.message });
     } else {
       if (results) {
         res.send({ message: "Success" });
@@ -1645,7 +1703,7 @@ router.post('/insertar_salida', (req, res) => {
 router.post("/buscarproductocodigo", async (req, res) => {
   const { codigo } = req.body;
   const sql = "SELECT * FROM productos JOIN categorias ON productos.categoria_id = categorias.id_categoria WHERE codigo = ?";
-  
+
   connection.query(sql, [codigo], (error, results) => {
     if (error) {
       return res.status(500).json({ message: "Error en la consulta de la base de datos." });
@@ -1653,7 +1711,7 @@ router.post("/buscarproductocodigo", async (req, res) => {
 
     if (results && results.length > 0) {
       const product = results[0];
-      
+
       if (product.img !== null) {
         product.img = product.img.toString();
       }
